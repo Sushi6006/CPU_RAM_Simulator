@@ -8,6 +8,7 @@ struct Process {
     int id;
     int mem_req;
     int job_time;
+    int status;
     process_t *next;
 };
 // a (linked) list of processes

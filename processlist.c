@@ -16,6 +16,7 @@ process_list_t *init_process_list() {
         exit(EXIT_FAILURE);
     }
     process_list->head_process = process_list->foot_process = NULL;
+    process_list->process_count = 0;
 
     return process_list;
 }
@@ -36,9 +37,11 @@ process_list_t *add_process(process_list_t *list, int arrival_time, int id, int 
     new_process->id = id;
     new_process->mem_req = mem_req;
     new_process->job_time = job_time;
+    new_process->status = NOT_READY;
     new_process->next = NULL;
 
     // add to the list
+    list->process_count++;
     if (list->foot_process == NULL) {
         // first process
         list->head_process = list->foot_process = new_process;

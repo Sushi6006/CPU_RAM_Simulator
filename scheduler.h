@@ -24,8 +24,12 @@
 #define BYO 'c'         // tbd
 
 // define states of processes
-#define RUNNING 1
-#define FINISHED 0
+#define NOT_READY -1  // havent encountered the process
+#define IDLE 0        // never excuted
+#define RUNNING 1     // currently running
+#define PAUSED 2      // excuted but stopped
+#define EVICTED 3     // evicted
+#define FINISHED 4    // finished
 
 // functions for input
 void read_args(int argc, char *argv[],
@@ -42,5 +46,7 @@ void cs(process_list_t *process_list);
 void virtual_mem();
 void swapping();
 void cm();
+
+void print_stats(int process_executed, int total_turnaround, float total_overhead, float max_overhead, int time);
 
 #endif

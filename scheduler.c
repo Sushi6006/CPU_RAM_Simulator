@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
     // sort the processes
     sort(process_list);
 
-    print_process_list(process_list);
+    select_algo(process_list, quantum, sch_algo);
 
     // TODO: CPU
     return 0;
@@ -114,5 +114,59 @@ void select_algo(process_list_t *process_list, int quantum, int sch_algo) {
 
 // first-come first-served
 void fcfs(process_list_t *process_list) {
+
+    process_t *curr_process = process_list->head_process;  // current process
+    int time = 0;
+
+    // for stats
+    int process_executed = 0;
+    // init min with the value of 61 because min job time would be 1 in a 60 unit time frame
+    // int min_throughput = 61, max_throughput = 0, total_throughput = 0;
+    int total_turnaround = 0;
+    float max_overhead = 0, total_overhead = 0;
+
+    // TODO: calculate throughput
+    // every loop is one process
+    while (curr_process != NULL) {
+        // if process arrives
+        if (curr_process->arrival_time <= time) {
+            // started
+            printf("%d, RUNNING, id=%d, remaining-time=%d\n", time, curr_process->id, curr_process->job_time);
+            time += curr_process->job_time;
+
+            // finished
+            process_executed++;
+            printf("%d, FINISHED, id=%d, proc-remaining=%d\n", time, curr_process->id, process_list->process_count - process_executed);
+            int turnaround = time - curr_process->arrival_time;
+            float overhead = (float)turnaround / (float)curr_process->job_time;
+            total_turnaround += turnaround;
+            total_overhead += overhead;
+            max_overhead = overhead > max_overhead ? overhead : max_overhead;
+
+            // move on to the next process
+            curr_process = curr_process->next;
+        } else {
+            time++;  // 1 unit of time pass by if nothing happens
+        }
+
+    }
+
+    // print stats
+    print_stats(process_executed, total_turnaround, total_overhead, max_overhead, time);
+}
+
+void rr(process_list_t *process_list, int quantum) {
+
+}
+
+void cs(process_list_t *process_list) {
     
+}
+
+
+void print_stats(int process_executed, int total_turnaround, float total_overhead, float max_overhead, int time) {
+    printf("Throughput %d, %d, %d\n", 2, 1, 3);  // TODO: fill this in with actual values
+    printf("Turnaround time: %d\n", total_turnaround / process_executed);
+    printf("Time overhead %.2f %.2f\n", max_overhead, total_overhead / process_executed);
+    printf("Makespan %d\n", time);
 }
