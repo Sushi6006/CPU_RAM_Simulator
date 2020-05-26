@@ -3,9 +3,12 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "scheduler.h"
 #include "dbgoutput.h"
+#include "scheduler.h"
+#include "processlist.h"
 
+
+// print all the specs given by command line
 void print_spec(char* file_name, int sch_algo, int mem_allo, int mem_size, int quantum) {
 
     char sch_algo_name[MAX_NAME_LEN], mem_allo_name[MAX_NAME_LEN];
@@ -36,4 +39,20 @@ void print_spec(char* file_name, int sch_algo, int mem_allo, int mem_size, int q
     printf("Memory Size:          %d\n", mem_size);
     printf("Quantum:              %d\n", quantum);
 
+}
+
+// print information of one process
+void print_process(process_t process) {
+    printf("===== PROCESS %2d =====\n", process.id);
+    printf("  Arrival Time: %d\n", process.arrival_time);
+    printf("  Job Time:     %d\n", process.job_time);
+    printf("  Mem Required: %d\n\n", process.mem_req);
+}
+
+void print_process_list(process_list_t *process_list) {
+    process_t *current_process = process_list->head_process;
+    while (current_process != NULL) {
+        print_process(*current_process);
+        current_process = current_process->next;
+    }
 }
