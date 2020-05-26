@@ -2,47 +2,53 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+
 #include "scheduler.h"
+#include "dbgoutput.h"
 
 
 int main(int argc, char *argv[]) {
 
     // initialise all the variables
     char *file_name;  // the file name
-    int sche_algo;    // indicate what scheduling algorithm is being used
+    int sch_algo;     // indicate the scheduling algorithm
+    int mem_allo;     // indicate the memory allocation method
+    int mem_size;     // size of memory given
+    int quantum;
 
+    sch_algo = mem_allo = mem_size = quantum = UNSPECIFIED;  // init
+
+    // reading flags
     int c;
-
     while ((c = getopt(argc, argv, "f:a:m:s:q:"))) {
         int getopt_ended = 0;
         switch (c) {
-            case 'f':
+            case FLAG_FILE:
                 file_name = (char*)malloc(sizeof(char) * MAX_FILENAME);
                 sprintf(file_name, "%s", optarg);
-                printf("file name: %s\n", file_name);
                 break;
-            case 'a':
-                printf("a flag found\n");
+            case FLAG_SCH_ALGO:
+                sch_algo = optarg[0];
                 break;
-            case 'm':
-                printf("m flag found\n");
+            case FLAG_MEM_ALLO:
+                mem_allo = optarg[0];
                 break;
-            case 's':
-                printf("s flag found\n");
+            case FLAG_MEM_SIZE:
+                mem_size = atoi(optarg);
                 break;
-            case 'q':
-                printf("q flag found\n");
+            case FLAG_QUANTUM:
+                quantum = atoi(optarg);
                 break;
             default:
                 getopt_ended = 1;  // finished reading the flags
         }
 
         if (getopt_ended) break;
-
     }
 
-    free(file_name);
+    print_spec(file_name, sch_algo, mem_allo, mem_size, quantum);
 
+    free(file_name);
     return 0;
 }
 

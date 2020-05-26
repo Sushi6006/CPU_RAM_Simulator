@@ -1,5 +1,5 @@
 build:
-	gcc -o scheduler scheduler.c -Wall
+	gcc -o scheduler scheduler.c  dbgoutput.c -Wall
 
 run:
 	./scheduler
