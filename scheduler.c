@@ -96,7 +96,7 @@ process_list_t *read_process(char *file_name) {
     return process_list;
 }
 
-// select 
+// select algo for the simulation
 void select_algo(process_list_t *process_list, int quantum, int sch_algo) {
     switch (sch_algo) {
         case SCH_FF:

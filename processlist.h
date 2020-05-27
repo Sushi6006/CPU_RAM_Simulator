@@ -9,6 +9,7 @@ struct Process {
     int mem_req;
     int job_time;
     int status;
+    int remaining_time;
     process_t *next;
 };
 // a (linked) list of processes

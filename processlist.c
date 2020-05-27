@@ -82,22 +82,28 @@ void swap(process_t *node1, process_t *node2) {
         exit(EXIT_FAILURE);
     }
 
-    int temp_arrival, temp_id, temp_mem, temp_jobtime;
+    int temp_arrival, temp_id, temp_mem, temp_jobtime, temp_status, temp_remaining;
 
     temp_arrival = node1->arrival_time;
     temp_id = node1->id;
     temp_mem = node1->mem_req;
     temp_jobtime = node1->job_time;
+    temp_status = node1->status;
+    temp_remaining = node1->remaining_time;
 
     node1->arrival_time = node2->arrival_time;
     node1->id = node2->id;
     node1->mem_req = node2->mem_req;
     node1->job_time = node2->job_time;
+    node1->status = node2->status;
+    node1->remaining_time = node2->remaining_time;
 
     node2->arrival_time = temp_arrival;
     node2->id = temp_id;
     node2->mem_req = temp_mem;
     node2->job_time = temp_jobtime;
+    node2->status = temp_status;
+    node1->remaining_time = temp_remaining;
 }
 
 // sort the list (bubble)
