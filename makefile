@@ -1,5 +1,5 @@
 build:
-	gcc -o scheduler dbgoutput.c processlist.c scheduler.c -Wall
+	gcc -o scheduler dbgoutput.c processlist.c scheduler.c -Wall -lm
 
 run_test:
 	./scheduler -f processes.txt -a ff -s 200 -m p

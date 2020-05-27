@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <math.h>
 
 #include "scheduler.h"
 #include "dbgoutput.h"
@@ -25,9 +26,10 @@ int main(int argc, char *argv[]) {
     // sort the processes
     sort(process_list);
 
+    // enter cpu scheduling
     select_algo(process_list, quantum, sch_algo);
 
-    // TODO: CPU
+
     return 0;
 }
 
@@ -121,38 +123,64 @@ void fcfs(process_list_t *process_list) {
     // for stats
     int process_executed = 0;
     // init min with the value of 61 because min job time would be 1 in a 60 unit time frame
-    // int min_throughput = 61, max_throughput = 0, total_throughput = 0;
+    int min_throughput = 61, max_throughput = 0, total_throughput = 0;
+    // this keeps track of throughput in each time period
+    int throughput = 0, last_timestamp = 0, interval_count = 0;
     int total_turnaround = 0;
     float max_overhead = 0, total_overhead = 0;
 
-    // TODO: calculate throughput
     // every loop is one process
     while (curr_process != NULL) {
         // if process arrives
         if (curr_process->arrival_time <= time) {
-            // started
+            // process started running
             printf("%d, RUNNING, id=%d, remaining-time=%d\n", time, curr_process->id, curr_process->job_time);
             time += curr_process->job_time;
 
-            // finished
+            // process finished
             process_executed++;
             printf("%d, FINISHED, id=%d, proc-remaining=%d\n", time, curr_process->id, process_list->process_count - process_executed);
+            // calculate throughput
+            if (time < last_timestamp + THROUGHPUT_TIMEFRAME) {
+                throughput++;
+            } else {
+                if (time == last_timestamp + THROUGHPUT_TIMEFRAME) {
+                    throughput++;
+                }
+                // update time interval
+                interval_count++;
+                last_timestamp += THROUGHPUT_TIMEFRAME;
+                // update min, max, total
+                if (throughput > max_throughput) {
+                    max_throughput = throughput;
+                }
+                if (throughput < min_throughput) {
+                    min_throughput = throughput;
+                }
+                total_throughput += throughput;
+                throughput = 1;
+            }
+            // calculate turnaround
             int turnaround = time - curr_process->arrival_time;
-            float overhead = (float)turnaround / (float)curr_process->job_time;
             total_turnaround += turnaround;
+            // calculate overhead
+            float overhead = (float)turnaround / (float)curr_process->job_time;
             total_overhead += overhead;
             max_overhead = overhead > max_overhead ? overhead : max_overhead;
 
             // move on to the next process
             curr_process = curr_process->next;
+
         } else {
-            time++;  // 1 unit of time pass by if nothing happens
+            time++;  // 1 unit of time pass by if no process arrives
         }
 
     }
 
     // print stats
-    print_stats(process_executed, total_turnaround, total_overhead, max_overhead, time);
+    int avg_throughput = (int)ceil((float)total_throughput / (float)interval_count);
+    print_stats(process_executed, total_turnaround, total_overhead, max_overhead, time,
+                avg_throughput, min_throughput, max_throughput);
 }
 
 void rr(process_list_t *process_list, int quantum) {
@@ -163,10 +191,11 @@ void cs(process_list_t *process_list) {
     
 }
 
-
-void print_stats(int process_executed, int total_turnaround, float total_overhead, float max_overhead, int time) {
-    printf("Throughput %d, %d, %d\n", 2, 1, 3);  // TODO: fill this in with actual values
-    printf("Turnaround time: %d\n", total_turnaround / process_executed);
+// print stats at the end
+void print_stats(int process_executed, int total_turnaround, float total_overhead, float max_overhead, int time,
+                 int avg_throughput, int min_throughput, int max_throughput) {
+    printf("Throughput %d, %d, %d\n", avg_throughput, min_throughput, max_throughput);
+    printf("Turnaround time %d\n", (int)ceil((float)total_turnaround / (float)process_executed));
     printf("Time overhead %.2f %.2f\n", max_overhead, total_overhead / process_executed);
     printf("Makespan %d\n", time);
 }

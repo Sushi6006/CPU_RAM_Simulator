@@ -31,6 +31,8 @@
 #define EVICTED 3     // evicted
 #define FINISHED 4    // finished
 
+#define THROUGHPUT_TIMEFRAME 60
+
 // functions for input
 void read_args(int argc, char *argv[],
                char* file_name, int *sch_algo, int *mem_allo, int *mem_size, int *quantum);
@@ -47,6 +49,7 @@ void virtual_mem();
 void swapping();
 void cm();
 
-void print_stats(int process_executed, int total_turnaround, float total_overhead, float max_overhead, int time);
+void print_stats(int process_executed, int total_turnaround, float total_overhead, float max_overhead, int time,
+                 int avg_throughput, int min_throughput, int max_throughput);
 
 #endif
