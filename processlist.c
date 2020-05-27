@@ -5,7 +5,7 @@
 
 #include "processlist.h"
 #include "scheduler.h"
-#include "dbgoutput.h"
+#include "output.h"
 
 // create an empty (linked) list of processes
 process_list_t *init_process_list() {

@@ -25,11 +25,17 @@
 
 // define states of processes
 #define NOT_READY -1  // havent encountered the process
+#define NOT_READY_TXT ""
 #define IDLE 0        // never excuted
+#define IDLE_TXT ""
 #define RUNNING 1     // currently running
+#define RUNNING_TXT "RUNNING"
 #define PAUSED 2      // excuted but stopped
+#define PAUSED_TXT ""
 #define EVICTED 3     // evicted
+#define EVICTED_TXT "EVICTED"
 #define FINISHED 4    // finished
+#define FINISHED_TXT "FINISHED"
 
 #define THROUGHPUT_TIMEFRAME 60
 

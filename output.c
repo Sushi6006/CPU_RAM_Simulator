@@ -2,11 +2,34 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <math.h>
 
-#include "dbgoutput.h"
+#include "output.h"
 #include "scheduler.h"
 #include "processlist.h"
 
+// print out the status when changed
+void print_status(int time, process_t *process, int proc_remain) {
+    switch (process->status) {
+        case RUNNING:
+            printf("%d, RUNNING, id=%d, remaining-time=%d\n", time, process->id, process->remaining_time);
+            break;
+        case FINISHED:
+            printf("%d, FINISHED, id=%d, proc-remaining=%d\n", time, process->id, proc_remain);
+            break;
+        default:
+            break;
+    }
+}
+
+// print stats at the end
+void print_stats(int process_executed, int total_turnaround, float total_overhead, float max_overhead, int time,
+                 int avg_throughput, int min_throughput, int max_throughput) {
+    printf("Throughput %d, %d, %d\n", avg_throughput, min_throughput, max_throughput);
+    printf("Turnaround time %d\n", (int)ceil((float)total_turnaround / (float)process_executed));
+    printf("Time overhead %.2f %.2f\n", max_overhead, total_overhead / process_executed);
+    printf("Makespan %d\n", time);
+}
 
 // print all the specs given by command line
 void print_spec(char* file_name, int sch_algo, int mem_allo, int mem_size, int quantum) {

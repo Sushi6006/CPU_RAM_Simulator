@@ -15,4 +15,4 @@ Project done by Leyan LIN in May, 2020
   - `scheduler.c` is the main file
   - `scheduler.h` contains scheduling, allocation, processes related stuff
   - `processlist.c` and `processlist.h` manages the data types and does linked list stuff
-  - `dbgoutput.c` and `dbgoutput.h` is for output for debugging
+  - `output.c` and `output.h` are for outputs

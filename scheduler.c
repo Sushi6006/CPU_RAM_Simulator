@@ -5,7 +5,7 @@
 #include <math.h>
 
 #include "scheduler.h"
-#include "dbgoutput.h"
+#include "output.h"
 #include "processlist.h"
 
 int main(int argc, char *argv[]) {
@@ -134,12 +134,16 @@ void fcfs(process_list_t *process_list) {
         // if process arrives
         if (curr_process->arrival_time <= time) {
             // process started running
-            printf("%d, RUNNING, id=%d, remaining-time=%d\n", time, curr_process->id, curr_process->job_time);
+            curr_process->status = RUNNING;
+            print_status(time, curr_process, process_list->process_count - process_executed);
+            // printf("%d, RUNNING, id=%d, remaining-time=%d\n", time, curr_process->id, curr_process->job_time);
             time += curr_process->job_time;
 
             // process finished
+            curr_process->status = FINISHED;
+            print_status(time, curr_process, process_list->process_count - process_executed);
             process_executed++;
-            printf("%d, FINISHED, id=%d, proc-remaining=%d\n", time, curr_process->id, process_list->process_count - process_executed);
+            // printf("%d, FINISHED, id=%d, proc-remaining=%d\n", time, curr_process->id, );
             // calculate throughput
             if (time < last_timestamp + THROUGHPUT_TIMEFRAME) {
                 throughput++;
@@ -184,18 +188,9 @@ void fcfs(process_list_t *process_list) {
 }
 
 void rr(process_list_t *process_list, int quantum) {
-
+    // process_list_t arrived_list = ;
 }
 
 void cs(process_list_t *process_list) {
     
-}
-
-// print stats at the end
-void print_stats(int process_executed, int total_turnaround, float total_overhead, float max_overhead, int time,
-                 int avg_throughput, int min_throughput, int max_throughput) {
-    printf("Throughput %d, %d, %d\n", avg_throughput, min_throughput, max_throughput);
-    printf("Turnaround time %d\n", (int)ceil((float)total_turnaround / (float)process_executed));
-    printf("Time overhead %.2f %.2f\n", max_overhead, total_overhead / process_executed);
-    printf("Makespan %d\n", time);
 }
