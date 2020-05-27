@@ -21,24 +21,33 @@ process_list_t *init_process_list() {
     return process_list;
 }
 
-// insert a node at the end of the process list
-process_list_t *add_process(process_list_t *list, int arrival_time, int id, int mem_req, int job_time) {
-
-    // init new process
+// create a process (pointer) with information
+process_t *create_process(int arrival_time, int id, int mem_req, int job_time) {
+    
     process_t *new_process;
     new_process = (process_t*)malloc(sizeof(*new_process));
-    if ((list == NULL) || (new_process == NULL)) {
+    if (new_process == NULL) {
         perror("ERROR null list or new process node");
         exit(EXIT_FAILURE);
     }
 
-    // assign values to the new process
     new_process->arrival_time = arrival_time;
     new_process->id = id;
     new_process->mem_req = mem_req;
     new_process->job_time = job_time;
     new_process->status = NOT_READY;
     new_process->next = NULL;
+
+    return new_process;
+}
+
+// insert a node at the end of the process list
+process_list_t *add_process(process_list_t *list, process_t *new_process) {
+    // init new process
+    if ((list == NULL) || (new_process == NULL)) {
+        perror("ERROR adding process to list");
+        exit(EXIT_FAILURE);
+    }
 
     // add to the list
     list->process_count++;

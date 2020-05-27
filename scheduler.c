@@ -85,7 +85,7 @@ process_list_t *read_process(char *file_name) {
     while ((read = getline(&line, &len, process_file)) != -1) {
         int arrival_time, id, mem_size, job_time;
         sscanf(line, "%d%d%d%d", &arrival_time, &id, &mem_size, &job_time);
-        process_list = add_process(process_list, arrival_time, id, mem_size, job_time);
+        process_list = add_process(process_list, create_process(arrival_time, id, mem_size, job_time));
     }
 
     // print_process_list(process_list);
@@ -188,7 +188,23 @@ void fcfs(process_list_t *process_list) {
 }
 
 void rr(process_list_t *process_list, int quantum) {
-    // process_list_t arrived_list = ;
+
+    int time = 0;
+
+    process_list_t *arrived_list = init_process_list();
+    process_t *curr_process, *arriving_process = process_list->head_process;
+    int process_executed = 0;
+    
+    // let the processes with 0 arrival time arrive 
+    while (arriving_process->arrival_time <= time) {
+        add_process(arrived_list, arriving_process);
+        arriving_process = arriving_process->next;
+    }
+    curr_process = arrived_list->head_process;
+
+    while (process_executed != process_list->process_count) {
+        
+    }
 }
 
 void cs(process_list_t *process_list) {

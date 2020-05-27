@@ -20,7 +20,8 @@ typedef struct ProcessList {
 } process_list_t;
 
 process_list_t *init_process_list();
-process_list_t *add_process(process_list_t *list, int arrival_time, int id, int mem_req, int job_time);
+process_t *create_process(int arrival_time, int id, int mem_req, int job_time);
+process_list_t *add_process(process_list_t *list, process_t *new_process);
 
 int compare(process_t *node1, process_t *node2);
 void swap(process_t *node1, process_t *node2);
