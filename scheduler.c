@@ -219,6 +219,7 @@ void rr(process_list_t *process_list, int quantum) {
         print_status(time, curr_process, process_list->process_count - process_executed);
         if (curr_process->remaining_time > quantum) {
             time += quantum;
+            // let process arrive before moving curr proc to the end
             arrived_list = rr_proc_arrive(arriving_process, arrived_list, time);
             curr_process->remaining_time -= quantum;
             arrived_list = move_proc_to_end(arrived_list, curr_process);
