@@ -48,7 +48,6 @@ process_list_t *read_process(char *file_name);
 void select_algo(process_list_t *process_list, int quantum, int sch_algo);
 void fcfs(process_list_t *process_list);
 void rr(process_list_t *process_list, int quantum);
-process_list_t *rr_proc_arrive(process_t *arriving_proc, process_list_t *arrived_list, int time, int *arrived_count);
 void cs(process_list_t *process_list);
 
 // memory allocation
@@ -56,7 +55,7 @@ void virtual_mem();
 void swapping();
 void cm();
 
-void print_stats(int process_executed, int total_turnaround, float total_overhead, float max_overhead, int time,
-                 int avg_throughput, int min_throughput, int max_throughput);
-
+void calc_stats(int *min_tp, int *max_tp, int *tot_tp, int *tp, int *last_timestamp,
+                int *tot_turnaround, float *max_overhead, float *tot_overhead, int *last_recorded,
+                int time, process_t *proc);
 #endif

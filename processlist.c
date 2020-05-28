@@ -87,6 +87,30 @@ process_list_t *move_proc_to_end(process_list_t *list, process_t *process) {
     return add_process(list, process);
 }
 
+// processes arrive, used by rr
+process_list_t *proc_arrive(process_t *arriving_proc, process_list_t *arrived_list, int time, int *arrived_count) {
+    if (arriving_proc == NULL) {  // no more process to arrive
+        return arrived_list;
+    }
+    if (arrived_list == NULL) {
+        perror("ERROR adding process to null list");
+        exit(EXIT_FAILURE);
+    }
+    while ((arriving_proc != NULL) && (arriving_proc->arrival_time <= time)) {
+        // add to list only if it hasnt been added
+        if (arriving_proc->status == NOT_READY) {
+            // make a copy of arriving proc and add to `arrived list`
+            arriving_proc->status = ARRIVED;
+            (*arrived_count)++;
+            arrived_list = add_process(arrived_list,
+                                       create_process(arriving_proc->arrival_time, arriving_proc->id,
+                                                      arriving_proc->mem_req, arriving_proc->job_time));
+        }
+        arriving_proc = arriving_proc->next;
+    }
+    return arrived_list;
+}
+
 // compare two processes
 // return 1 if node1 is greater, 0 if node2 is greater
 int compare(process_t *node1, process_t *node2) {

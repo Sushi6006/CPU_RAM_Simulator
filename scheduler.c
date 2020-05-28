@@ -125,7 +125,7 @@ void fcfs(process_list_t *process_list) {
     // init min with the value of 61 because min job time would be 1 in a 60 unit time frame
     int min_throughput = 61, max_throughput = 0, total_throughput = 0;
     // this keeps track of throughput in each time period
-    int throughput = 0, last_timestamp = 0, interval_count = 0;
+    int throughput = 0, last_timestamp = 0, last_finished = 0;
     int total_turnaround = 0;
     float max_overhead = 0, total_overhead = 0;
 
@@ -142,38 +142,12 @@ void fcfs(process_list_t *process_list) {
             curr_process->status = FINISHED;
             print_status(time, curr_process, process_list->process_count - executed_count);
             executed_count++;
-            // calculate throughput
-            if (time < last_timestamp + THROUGHPUT_TIMEFRAME) {
-                throughput++;
-            } else {
-                if (time == last_timestamp + THROUGHPUT_TIMEFRAME) {
-                    throughput++;
-                }
-                // there is an interval where no process was compeleted
-                if (time > last_timestamp + THROUGHPUT_TIMEFRAME) {
-                    min_throughput = 0;
-                }
-                // update time interval
-                interval_count++;
-                last_timestamp += THROUGHPUT_TIMEFRAME;
-                // update min, max, total
-                if (throughput > max_throughput) {
-                    max_throughput = throughput;
-                }
-                if (throughput < min_throughput) {
-                    min_throughput = throughput;
-                }
-                total_throughput += throughput;
-                throughput = 1;
-            }
-            // calculate turnaround
-            int turnaround = time - curr_process->arrival_time;
-            total_turnaround += turnaround;
-            // calculate overhead
-            float overhead = (float)turnaround / (float)curr_process->job_time;
-            total_overhead += overhead;
-            max_overhead = overhead > max_overhead ? overhead : max_overhead;
-
+            
+            // calculate stats
+            calc_stats(&min_throughput, &max_throughput, &total_throughput, &throughput, &last_timestamp,
+                       &total_turnaround, &max_overhead, &total_overhead, &last_finished,
+                       time, curr_process);
+            
             // move on to the next process
             curr_process = curr_process->next;
 
@@ -191,21 +165,31 @@ void fcfs(process_list_t *process_list) {
 // robin round
 void rr(process_list_t *process_list, int quantum) {
 
+    // init
     int time = 0;
 
+    // for list to arrive
     process_list_t *arrived_list = init_process_list();
     process_t *curr_process, *arriving_process = process_list->head_process;
     int executed_count = 0, arrived_count = 0;
     
     // let the processes with 0 arrival time arrive 
-    arrived_list = rr_proc_arrive(arriving_process, arrived_list, time, &arrived_count);
+    arrived_list = proc_arrive(arriving_process, arrived_list, time, &arrived_count);
     curr_process = arrived_list->head_process;
+
+    // stats
+    // init min with the value of 61 because min job time would be 1 in a 60 unit time frame
+    // int min_throughput = 61, max_throughput = 0, total_throughput = 0;
+    // this keeps track of throughput in each time period
+    // int throughput = 0, last_timestamp = 0;
+    // int total_turnaround = 0;
+    // float max_overhead = 0, total_overhead = 0;
 
     // executing all processes
     while (executed_count != process_list->process_count) {
 
         // let process arrive
-        arrived_list = rr_proc_arrive(arriving_process, arrived_list, time, &arrived_count);
+        arrived_list = proc_arrive(arriving_process, arrived_list, time, &arrived_count);
 
         // start new process
         curr_process = arrived_list->head_process;
@@ -228,13 +212,13 @@ void rr(process_list_t *process_list, int quantum) {
         } else if (curr_process->remaining_time > quantum) {  
             time += quantum;
             // let process arrive before moving curr proc to the end
-            arrived_list = rr_proc_arrive(arriving_process, arrived_list, time, &arrived_count);
+            arrived_list = proc_arrive(arriving_process, arrived_list, time, &arrived_count);
             curr_process->remaining_time -= quantum;
             arrived_list = move_proc_to_end(arrived_list, curr_process);
         } else {
             // current process finishes
             time += curr_process->remaining_time;
-            arrived_list = rr_proc_arrive(arriving_process, arrived_list, time, &arrived_count);
+            arrived_list = proc_arrive(arriving_process, arrived_list, time, &arrived_count);
             curr_process->remaining_time = 0;
             curr_process->status = FINISHED;
             executed_count++;
@@ -244,31 +228,43 @@ void rr(process_list_t *process_list, int quantum) {
     }
 }
 
-// processes arrive, used by rr
-process_list_t *rr_proc_arrive(process_t *arriving_proc, process_list_t *arrived_list, int time, int *arrived_count) {
-    if (arriving_proc == NULL) {  // no more process to arrive
-        return arrived_list;
-    }
-    if (arrived_list == NULL) {
-        perror("ERROR adding process to null list");
-        exit(EXIT_FAILURE);
-    }
-    while ((arriving_proc != NULL) && (arriving_proc->arrival_time <= time)) {
-        // add to list only if it hasnt been added
-        if (arriving_proc->status == NOT_READY) {
-            // make a copy of arriving proc and add to `arrived list`
-            arriving_proc->status = ARRIVED;
-            (*arrived_count)++;
-            arrived_list = add_process(arrived_list,
-                                       create_process(arriving_proc->arrival_time, arriving_proc->id,
-                                                      arriving_proc->mem_req, arriving_proc->job_time));
-        }
-        arriving_proc = arriving_proc->next;
-    }
-    return arrived_list;
-}
-
-
 void cs(process_list_t *process_list) {
     
+}
+
+// calculate required stats
+// tp=throughput
+void calc_stats(int *min_tp, int *max_tp, int *tot_tp, int *tp, int *last_timestamp,
+                int *tot_turnaround, float *max_overhead, float *tot_overhead, int *last_finished,
+                int time, process_t *proc) {
+    
+    // calculate throughput
+    if (time < (*last_timestamp) + THROUGHPUT_TIMEFRAME) {
+        (*tp)++;
+    } else {
+        if (time == (*last_timestamp) + THROUGHPUT_TIMEFRAME) {
+            (*tp)++;
+        }
+        // there is an interval where no process was compeleted
+        if (time > (*last_finished) + THROUGHPUT_TIMEFRAME) {
+            (*min_tp) = 0;
+        }
+        (*last_timestamp) += THROUGHPUT_TIMEFRAME;
+        // update min, max and total
+        if ((*tp) > (*max_tp)) (*max_tp) = (*tp);
+        if ((*tp) < (*min_tp)) (*min_tp) = (*tp);
+        (*tot_tp) += (*tp);
+        (*tp) = 1;
+    }
+    (*last_finished) = time;
+
+    // calculate turnaround
+    int turnaround = time - proc->arrival_time ;
+    (*tot_turnaround) += turnaround;
+    
+    // calculate overhead
+    float overhead = (float)turnaround / (float)proc->job_time;
+    (*tot_overhead) += overhead;
+    if (overhead > (*max_overhead)) (*max_overhead) = overhead;
+
 }
