@@ -140,8 +140,8 @@ void fcfs(process_list_t *process_list) {
 
             // process finished
             curr_process->status = FINISHED;
-            print_status(time, curr_process, process_list->process_count - executed_count);
             executed_count++;
+            print_status(time, curr_process, process_list->process_count - executed_count);
             
             // calculate stats
             calc_stats(&min_throughput, &max_throughput, &total_throughput, &throughput, &last_timestamp,
@@ -177,13 +177,13 @@ void rr(process_list_t *process_list, int quantum) {
     arrived_list = proc_arrive(arriving_process, arrived_list, time, &arrived_count);
     curr_process = arrived_list->head_process;
 
-    // stats
+    // for stats
     // init min with the value of 61 because min job time would be 1 in a 60 unit time frame
-    // int min_throughput = 61, max_throughput = 0, total_throughput = 0;
+    int min_throughput = 61, max_throughput = 0, total_throughput = 0;
     // this keeps track of throughput in each time period
-    // int throughput = 0, last_timestamp = 0;
-    // int total_turnaround = 0;
-    // float max_overhead = 0, total_overhead = 0;
+    int throughput = 0, last_timestamp = 0, last_finished = 0;
+    int total_turnaround = 0;
+    float max_overhead = 0, total_overhead = 0;
 
     // executing all processes
     while (executed_count != process_list->process_count) {
@@ -205,27 +205,47 @@ void rr(process_list_t *process_list, int quantum) {
         // all process arrived and executing last process
         if ((arrived_count == process_list->process_count) && (curr_process->next == NULL)) {
             time += curr_process->remaining_time;
+            // finishing process
             curr_process->status = FINISHED;
             executed_count++;
             print_status(time, curr_process, process_list->process_count - executed_count);
+            
+            // calculate stats
+            calc_stats(&min_throughput, &max_throughput, &total_throughput, &throughput, &last_timestamp,
+                       &total_turnaround, &max_overhead, &total_overhead, &last_finished,
+                       time, curr_process);
+
+            // remove finished process
             arrived_list = delete_head_proc(arrived_list, curr_process);
         } else if (curr_process->remaining_time > quantum) {  
             time += quantum;
             // let process arrive before moving curr proc to the end
             arrived_list = proc_arrive(arriving_process, arrived_list, time, &arrived_count);
             curr_process->remaining_time -= quantum;
+            // move process to end of queue
             arrived_list = move_proc_to_end(arrived_list, curr_process);
         } else {
-            // current process finishes
             time += curr_process->remaining_time;
+            // finishing process
             arrived_list = proc_arrive(arriving_process, arrived_list, time, &arrived_count);
             curr_process->remaining_time = 0;
             curr_process->status = FINISHED;
             executed_count++;
             print_status(time, curr_process, process_list->process_count - executed_count);
+
+            // calculate stats
+            calc_stats(&min_throughput, &max_throughput, &total_throughput, &throughput, &last_timestamp,
+                       &total_turnaround, &max_overhead, &total_overhead, &last_finished,
+                       time, curr_process);
+            
+            // remove finished process
             arrived_list = delete_head_proc(arrived_list, curr_process);
         }
     }
+
+    // print stats
+    print_stats(executed_count, total_turnaround, total_overhead, max_overhead, time,
+                (int)ceil((float)time / THROUGHPUT_TIMEFRAME), min_throughput, max_throughput);
 }
 
 void cs(process_list_t *process_list) {
