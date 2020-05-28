@@ -115,6 +115,7 @@ void select_algo(process_list_t *process_list, int quantum, int sch_algo) {
 }
 
 // first-come first-served
+// TODO: throughput is broken (min could be 0)
 void fcfs(process_list_t *process_list) {
 
     process_t *curr_process = process_list->head_process;  // current process
@@ -187,6 +188,7 @@ void fcfs(process_list_t *process_list) {
                 avg_throughput, min_throughput, max_throughput);
 }
 
+// robin round
 void rr(process_list_t *process_list, int quantum) {
 
     int time = 0;
@@ -196,16 +198,66 @@ void rr(process_list_t *process_list, int quantum) {
     int process_executed = 0;
     
     // let the processes with 0 arrival time arrive 
-    while (arriving_process->arrival_time <= time) {
-        add_process(arrived_list, arriving_process);
-        arriving_process = arriving_process->next;
-    }
+    arrived_list = rr_proc_arrive(arriving_process, arrived_list, time);
     curr_process = arrived_list->head_process;
 
+    // executing all processes
     while (process_executed != process_list->process_count) {
-        
+
+        // let process arrive
+        arrived_list = rr_proc_arrive(arriving_process, arrived_list, time);
+
+        // start new process
+        curr_process = arrived_list->head_process;
+        if (curr_process == NULL) {
+            print_process_list(arrived_list);
+            continue;
+        }
+
+        // do stuff with arrived processes
+        curr_process->status = RUNNING;
+        print_status(time, curr_process, process_list->process_count - process_executed);
+        if (curr_process->remaining_time > quantum) {
+            time += quantum;
+            arrived_list = rr_proc_arrive(arriving_process, arrived_list, time);
+            curr_process->remaining_time -= quantum;
+            arrived_list = move_proc_to_end(arrived_list, curr_process);
+        } else {
+            // current process finishes
+            time += curr_process->remaining_time;
+            arrived_list = rr_proc_arrive(arriving_process, arrived_list, time);
+            curr_process->remaining_time = 0;
+            curr_process->status = FINISHED;
+            process_executed++;
+            print_status(time, curr_process, process_list->process_count - process_executed);
+            arrived_list = delete_head_proc(arrived_list, curr_process);
+        }
     }
 }
+
+// processes arrive, used by rr
+process_list_t *rr_proc_arrive(process_t *arriving_proc, process_list_t *arrived_list, int time) {
+    if (arriving_proc == NULL) {  // no more process to arrive
+        return arrived_list;
+    }
+    if (arrived_list == NULL) {
+        perror("ERROR adding process to null list");
+        exit(EXIT_FAILURE);
+    }
+    while ((arriving_proc != NULL) && (arriving_proc->arrival_time <= time)) {
+        // add to list only if it hasnt been added
+        if (arriving_proc->status == NOT_READY) {
+            // make a copy of arriving proc and add to `arrived list`
+            arriving_proc->status = ARRIVED;
+            arrived_list = add_process(arrived_list,
+                                       create_process(arriving_proc->arrival_time, arriving_proc->id,
+                                                      arriving_proc->mem_req, arriving_proc->job_time));
+        }
+        arriving_proc = arriving_proc->next;
+    }
+    return arrived_list;
+}
+
 
 void cs(process_list_t *process_list) {
     

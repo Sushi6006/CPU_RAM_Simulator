@@ -26,8 +26,8 @@
 // define states of processes
 #define NOT_READY -1  // havent encountered the process
 #define NOT_READY_TXT ""
-#define IDLE 0        // never excuted
-#define IDLE_TXT ""
+#define ARRIVED 0     // never excuted
+#define ARRIVED_TEXT ""
 #define RUNNING 1     // currently running
 #define RUNNING_TXT "RUNNING"
 #define PAUSED 2      // excuted but stopped
@@ -48,6 +48,7 @@ process_list_t *read_process(char *file_name);
 void select_algo(process_list_t *process_list, int quantum, int sch_algo);
 void fcfs(process_list_t *process_list);
 void rr(process_list_t *process_list, int quantum);
+process_list_t *rr_proc_arrive(process_t *arriving_proc, process_list_t *arrived_list, int time);
 void cs(process_list_t *process_list);
 
 // memory allocation

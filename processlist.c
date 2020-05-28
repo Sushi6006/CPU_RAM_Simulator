@@ -36,6 +36,7 @@ process_t *create_process(int arrival_time, int id, int mem_req, int job_time) {
     new_process->mem_req = mem_req;
     new_process->job_time = job_time;
     new_process->status = NOT_READY;
+    new_process->remaining_time = job_time;
     new_process->next = NULL;
 
     return new_process;
@@ -43,7 +44,7 @@ process_t *create_process(int arrival_time, int id, int mem_req, int job_time) {
 
 // insert a node at the end of the process list
 process_list_t *add_process(process_list_t *list, process_t *new_process) {
-    // init new process
+
     if ((list == NULL) || (new_process == NULL)) {
         perror("ERROR adding process to list");
         exit(EXIT_FAILURE);
@@ -60,6 +61,30 @@ process_list_t *add_process(process_list_t *list, process_t *new_process) {
     }
 
     return list;
+}
+
+// delete head process
+process_list_t *delete_head_proc(process_list_t *list, process_t *process) {
+    if ((list == NULL) || (process == NULL)) {
+        perror("ERROR removing process from list");
+        exit(EXIT_FAILURE);
+    }
+
+    list->head_process = process->next;
+    free(process);
+    return list;
+}
+
+// move a process to the end
+process_list_t *move_proc_to_end(process_list_t *list, process_t *process) {
+    if ((list == NULL) || (process == NULL)) {
+        perror("ERROR moving process to end of list");
+        exit(EXIT_FAILURE);
+    }
+
+    list->head_process = process->next;
+    process->next = NULL;
+    return add_process(list, process);
 }
 
 // compare two processes
