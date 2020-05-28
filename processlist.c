@@ -64,14 +64,17 @@ process_list_t *add_process(process_list_t *list, process_t *new_process) {
 }
 
 // delete head process
-process_list_t *delete_head_proc(process_list_t *list, process_t *process) {
-    if ((list == NULL) || (process == NULL)) {
+process_list_t *delete_head_proc(process_list_t *list) {
+
+    if (list == NULL) {
         perror("ERROR removing process from list");
         exit(EXIT_FAILURE);
     }
 
-    list->head_process = process->next;
-    free(process);
+    process_t *head_proc = list->head_process;
+    list->head_process = head_proc->next;
+    free(head_proc);
+
     return list;
 }
 
@@ -109,6 +112,30 @@ process_list_t *proc_arrive(process_t *arriving_proc, process_list_t *arrived_li
         arriving_proc = arriving_proc->next;
     }
     return arrived_list;
+}
+
+// find the minimum and return the process ahead of it
+// so the minimum process can be removed
+process_t *find_pre_min(process_list_t *list) {
+
+    if (list == NULL) {
+        perror("ERROR finding minimum in empty list");
+        exit(EXIT_FAILURE);
+    }
+
+    process_t *pre_min_proc = NULL;
+    process_t *curr_proc = list->head_process;
+    int min_jobtime = curr_proc->job_time;
+    
+    while (curr_proc->next != NULL) {
+        if (curr_proc->next->job_time < min_jobtime) {
+            pre_min_proc = curr_proc;
+            min_jobtime = curr_proc->next->job_time;
+        }
+    }
+
+    return pre_min_proc;
+
 }
 
 // compare two processes

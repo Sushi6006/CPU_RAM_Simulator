@@ -106,7 +106,7 @@ void select_algo(process_list_t *process_list, int quantum, int sch_algo) {
             rr(process_list, quantum);
             break;
         case BYO:
-            cs(process_list);
+            sjf(process_list);
             break;
         default:
             perror("ERROR selecting scheduling algorithm");
@@ -116,6 +116,11 @@ void select_algo(process_list_t *process_list, int quantum, int sch_algo) {
 
 // first-come first-served
 void fcfs(process_list_t *process_list) {
+
+    if (process_list == NULL) {
+        perror("ERROR scheduling empty list");
+        exit(EXIT_FAILURE);
+    }
 
     process_t *curr_process = process_list->head_process;  // current process
     int time = 0;
@@ -135,7 +140,7 @@ void fcfs(process_list_t *process_list) {
         if (curr_process->arrival_time <= time) {
             // process started running
             curr_process->status = RUNNING;
-            print_status(time, curr_process, process_list->process_count - executed_count);            
+            print_status(time, curr_process, process_list->process_count - executed_count);
             time += curr_process->job_time;
 
             // process finished
@@ -165,6 +170,11 @@ void fcfs(process_list_t *process_list) {
 // robin round
 void rr(process_list_t *process_list, int quantum) {
 
+    if (process_list == NULL) {
+        perror("ERROR scheduling empty list");
+        exit(EXIT_FAILURE);
+    }
+
     // init
     int time = 0;
 
@@ -193,10 +203,6 @@ void rr(process_list_t *process_list, int quantum) {
 
         // start new process
         curr_process = arrived_list->head_process;
-        if (curr_process == NULL) {
-            print_process_list(arrived_list);
-            continue;
-        }
 
         // run the first in queue
         curr_process->status = RUNNING;
@@ -216,7 +222,7 @@ void rr(process_list_t *process_list, int quantum) {
                        time, curr_process);
 
             // remove finished process
-            arrived_list = delete_head_proc(arrived_list, curr_process);
+            arrived_list = delete_head_proc(arrived_list);
         } else if (curr_process->remaining_time > quantum) {  
             time += quantum;
             // let process arrive before moving curr proc to the end
@@ -239,7 +245,7 @@ void rr(process_list_t *process_list, int quantum) {
                        time, curr_process);
             
             // remove finished process
-            arrived_list = delete_head_proc(arrived_list, curr_process);
+            arrived_list = delete_head_proc(arrived_list);
         }
     }
 
@@ -248,8 +254,97 @@ void rr(process_list_t *process_list, int quantum) {
                 (int)ceil((float)time / THROUGHPUT_TIMEFRAME), min_throughput, max_throughput);
 }
 
-void cs(process_list_t *process_list) {
+// shortest job first / shortest process next (spn)
+void sjf(process_list_t *process_list) {
+
+    if (process_list == NULL) {
+        perror("ERROR scheduling empty list");
+        exit(EXIT_FAILURE);
+    }
     
+    int time = 0;
+
+    // for processes to arrive
+    process_list_t *arrived_list = init_process_list();
+    process_t *curr_process, *min_process;
+    process_t *arriving_process = process_list->head_process;
+    
+    // for stats
+    int executed_count = 0, arrived_count = 0;
+    // init min with the value of 61 because min job time would be 1 in a 60 unit time frame
+    int min_throughput = 61, max_throughput = 0, total_throughput = 0;
+    // this keeps track of throughput in each time period
+    int throughput = 0, last_timestamp = 0, last_finished = 0;
+    int total_turnaround = 0;
+    float max_overhead = 0, total_overhead = 0;
+
+    while (executed_count < process_list->process_count) {
+        // new processes arrive
+        // printf("\n\n========== ARRIVING PROC ==========\n");
+        // print_process(arriving_process);
+        arrived_list = proc_arrive(arriving_process, arrived_list, time, &arrived_count);
+        
+        printf("\n============= head here ==============\n");
+        print_process(arrived_list->head_process);
+        if (arrived_count == 4) {
+            break;
+        }
+
+        if (arrived_list->head_process == NULL) {
+            time++;  // no process arrived
+            continue;
+        }
+
+        // find min and remove it
+        curr_process = find_pre_min(arrived_list);
+        if (curr_process != NULL) {
+            min_process = curr_process->next;        // the min to be executed
+            curr_process->next = min_process->next;  // remove min from list
+        } else {  // head is min
+            min_process = arrived_list->head_process;
+            min_process = create_process(min_process->arrival_time, min_process->id,
+                                         min_process->mem_req, min_process->job_time);
+            arrived_list = delete_head_proc(arrived_list);
+        }
+
+        if (min_process == NULL) {
+            perror("ERROR finding minimum job time");
+            exit(EXIT_FAILURE);
+        }
+
+        printf("========== MIN PROC ==========\n");
+        print_process(min_process);
+
+        // run the process
+        min_process->status = RUNNING;
+        print_status(time, min_process, process_list->process_count - executed_count);
+        time += min_process->job_time;
+
+        // new processes arrive
+        // arrived_list = proc_arrive(arriving_process, arrived_list, time, &arrived_count);
+
+        // finish the process
+        min_process->status = FINISHED;
+        executed_count++;
+        print_status(time, min_process, process_list->process_count - executed_count);
+
+        // printf("\n\n========== TIME: %d ==========\n", time);
+        // printf("========== CURR LI ==========\n");
+        // print_process_list(arrived_list);
+        // printf("========== MIN PROC ==========\n");
+        // print_process(min_process);
+
+        // calculate stats
+        calc_stats(&min_throughput, &max_throughput, &total_throughput, &throughput, &last_timestamp,
+                   &total_turnaround, &max_overhead, &total_overhead, &last_finished,
+                   time, min_process);
+
+    }
+
+    // print stats
+    print_stats(executed_count, total_turnaround, total_overhead, max_overhead, time,
+                (int)ceil((float)time / THROUGHPUT_TIMEFRAME), min_throughput, max_throughput);
+
 }
 
 // calculate required stats

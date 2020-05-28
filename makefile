@@ -5,16 +5,19 @@ run_test:
 	./scheduler -f processes.txt -a ff -s 200 -m p
 
 run_test2:
-	./scheduler -f processes.txt -a rr -s 200 -m p -q 10
+	./scheduler -f processes2.txt -a cs -s 200 -m p -q 10
 
 clean:
 	rm -f scheduler
 
 everything:
 	rm -f scheduler
-	gcc -o scheduler scheduler.c -Wall
+	gcc -o scheduler output.c processlist.c scheduler.c -Wall -lm
 
 gitpush:
 	git add -A
 	git commit -m "$(m)"
 	git push
+
+wordcount:
+	wc -w report.txt

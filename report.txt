@@ -1,0 +1,5 @@
+FCFS scheduling algorithm is nonpreemitive, meaning that all processes will run until it is finished. Short processes at the very end will have very long waiting time, turnaround time and very large overhead. Also, this algorithm is inefficient when I/O is required.
+# worst case: all long processes are in front of short processes
+
+Round-robin scheduling algorithm is preemitive. Though all the processes get a fair share from the CPU, the efficient quantum is hard to find and constantly switching from process to process will also slow down the algorithm.
+# worst case: all processes 

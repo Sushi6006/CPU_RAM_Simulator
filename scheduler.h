@@ -48,7 +48,7 @@ process_list_t *read_process(char *file_name);
 void select_algo(process_list_t *process_list, int quantum, int sch_algo);
 void fcfs(process_list_t *process_list);
 void rr(process_list_t *process_list, int quantum);
-void cs(process_list_t *process_list);
+void sjf(process_list_t *process_list);
 
 // memory allocation
 void virtual_mem();

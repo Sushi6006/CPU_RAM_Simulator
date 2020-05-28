@@ -66,6 +66,10 @@ void print_spec(char* file_name, int sch_algo, int mem_allo, int mem_size, int q
 
 // print information of one process
 void print_process(process_t *process) {
+    if (process == NULL) {
+        perror("ERROR printing null process");
+        exit(EXIT_FAILURE);
+    }
     printf("===== PROCESS %2d =====\n", process->id);
     printf("  Arrival Time: %d\n", process->arrival_time);
     printf("  Job Time:     %d\n", process->job_time);
