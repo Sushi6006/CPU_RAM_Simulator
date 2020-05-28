@@ -115,7 +115,6 @@ void select_algo(process_list_t *process_list, int quantum, int sch_algo) {
 }
 
 // first-come first-served
-// TODO: throughput is broken (min could be 0)
 void fcfs(process_list_t *process_list) {
 
     process_t *curr_process = process_list->head_process;  // current process
@@ -136,21 +135,23 @@ void fcfs(process_list_t *process_list) {
         if (curr_process->arrival_time <= time) {
             // process started running
             curr_process->status = RUNNING;
-            print_status(time, curr_process, process_list->process_count - process_executed);
-            // printf("%d, RUNNING, id=%d, remaining-time=%d\n", time, curr_process->id, curr_process->job_time);
+            print_status(time, curr_process, process_list->process_count - process_executed);            
             time += curr_process->job_time;
 
             // process finished
             curr_process->status = FINISHED;
             print_status(time, curr_process, process_list->process_count - process_executed);
             process_executed++;
-            // printf("%d, FINISHED, id=%d, proc-remaining=%d\n", time, curr_process->id, );
             // calculate throughput
             if (time < last_timestamp + THROUGHPUT_TIMEFRAME) {
                 throughput++;
             } else {
                 if (time == last_timestamp + THROUGHPUT_TIMEFRAME) {
                     throughput++;
+                }
+                // there is an interval where no process was compeleted
+                if (time > last_timestamp + THROUGHPUT_TIMEFRAME) {
+                    min_throughput = 0;
                 }
                 // update time interval
                 interval_count++;
@@ -183,9 +184,8 @@ void fcfs(process_list_t *process_list) {
     }
 
     // print stats
-    int avg_throughput = (int)ceil((float)total_throughput / (float)interval_count);
     print_stats(process_executed, total_turnaround, total_overhead, max_overhead, time,
-                avg_throughput, min_throughput, max_throughput);
+                (int)ceil((float)time / THROUGHPUT_TIMEFRAME), min_throughput, max_throughput);
 }
 
 // robin round
