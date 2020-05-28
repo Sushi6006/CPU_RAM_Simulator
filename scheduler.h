@@ -48,7 +48,7 @@ process_list_t *read_process(char *file_name);
 void select_algo(process_list_t *process_list, int quantum, int sch_algo);
 void fcfs(process_list_t *process_list);
 void rr(process_list_t *process_list, int quantum);
-process_list_t *rr_proc_arrive(process_t *arriving_proc, process_list_t *arrived_list, int time);
+process_list_t *rr_proc_arrive(process_t *arriving_proc, process_list_t *arrived_list, int time, int *arrived_count);
 void cs(process_list_t *process_list);
 
 // memory allocation

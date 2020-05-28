@@ -121,7 +121,7 @@ void fcfs(process_list_t *process_list) {
     int time = 0;
 
     // for stats
-    int process_executed = 0;
+    int executed_count = 0;
     // init min with the value of 61 because min job time would be 1 in a 60 unit time frame
     int min_throughput = 61, max_throughput = 0, total_throughput = 0;
     // this keeps track of throughput in each time period
@@ -135,13 +135,13 @@ void fcfs(process_list_t *process_list) {
         if (curr_process->arrival_time <= time) {
             // process started running
             curr_process->status = RUNNING;
-            print_status(time, curr_process, process_list->process_count - process_executed);            
+            print_status(time, curr_process, process_list->process_count - executed_count);            
             time += curr_process->job_time;
 
             // process finished
             curr_process->status = FINISHED;
-            print_status(time, curr_process, process_list->process_count - process_executed);
-            process_executed++;
+            print_status(time, curr_process, process_list->process_count - executed_count);
+            executed_count++;
             // calculate throughput
             if (time < last_timestamp + THROUGHPUT_TIMEFRAME) {
                 throughput++;
@@ -184,7 +184,7 @@ void fcfs(process_list_t *process_list) {
     }
 
     // print stats
-    print_stats(process_executed, total_turnaround, total_overhead, max_overhead, time,
+    print_stats(executed_count, total_turnaround, total_overhead, max_overhead, time,
                 (int)ceil((float)time / THROUGHPUT_TIMEFRAME), min_throughput, max_throughput);
 }
 
@@ -195,17 +195,17 @@ void rr(process_list_t *process_list, int quantum) {
 
     process_list_t *arrived_list = init_process_list();
     process_t *curr_process, *arriving_process = process_list->head_process;
-    int process_executed = 0;
+    int executed_count = 0, arrived_count = 0;
     
     // let the processes with 0 arrival time arrive 
-    arrived_list = rr_proc_arrive(arriving_process, arrived_list, time);
+    arrived_list = rr_proc_arrive(arriving_process, arrived_list, time, &arrived_count);
     curr_process = arrived_list->head_process;
 
     // executing all processes
-    while (process_executed != process_list->process_count) {
+    while (executed_count != process_list->process_count) {
 
         // let process arrive
-        arrived_list = rr_proc_arrive(arriving_process, arrived_list, time);
+        arrived_list = rr_proc_arrive(arriving_process, arrived_list, time, &arrived_count);
 
         // start new process
         curr_process = arrived_list->head_process;
@@ -214,30 +214,38 @@ void rr(process_list_t *process_list, int quantum) {
             continue;
         }
 
-        // do stuff with arrived processes
+        // run the first in queue
         curr_process->status = RUNNING;
-        print_status(time, curr_process, process_list->process_count - process_executed);
-        if (curr_process->remaining_time > quantum) {
+        print_status(time, curr_process, process_list->process_count - executed_count);
+
+        // all process arrived and executing last process
+        if ((arrived_count == process_list->process_count) && (curr_process->next == NULL)) {
+            time += curr_process->remaining_time;
+            curr_process->status = FINISHED;
+            executed_count++;
+            print_status(time, curr_process, process_list->process_count - executed_count);
+            arrived_list = delete_head_proc(arrived_list, curr_process);
+        } else if (curr_process->remaining_time > quantum) {  
             time += quantum;
             // let process arrive before moving curr proc to the end
-            arrived_list = rr_proc_arrive(arriving_process, arrived_list, time);
+            arrived_list = rr_proc_arrive(arriving_process, arrived_list, time, &arrived_count);
             curr_process->remaining_time -= quantum;
             arrived_list = move_proc_to_end(arrived_list, curr_process);
         } else {
             // current process finishes
             time += curr_process->remaining_time;
-            arrived_list = rr_proc_arrive(arriving_process, arrived_list, time);
+            arrived_list = rr_proc_arrive(arriving_process, arrived_list, time, &arrived_count);
             curr_process->remaining_time = 0;
             curr_process->status = FINISHED;
-            process_executed++;
-            print_status(time, curr_process, process_list->process_count - process_executed);
+            executed_count++;
+            print_status(time, curr_process, process_list->process_count - executed_count);
             arrived_list = delete_head_proc(arrived_list, curr_process);
         }
     }
 }
 
 // processes arrive, used by rr
-process_list_t *rr_proc_arrive(process_t *arriving_proc, process_list_t *arrived_list, int time) {
+process_list_t *rr_proc_arrive(process_t *arriving_proc, process_list_t *arrived_list, int time, int *arrived_count) {
     if (arriving_proc == NULL) {  // no more process to arrive
         return arrived_list;
     }
@@ -250,6 +258,7 @@ process_list_t *rr_proc_arrive(process_t *arriving_proc, process_list_t *arrived
         if (arriving_proc->status == NOT_READY) {
             // make a copy of arriving proc and add to `arrived list`
             arriving_proc->status = ARRIVED;
+            (*arrived_count)++;
             arrived_list = add_process(arrived_list,
                                        create_process(arriving_proc->arrival_time, arriving_proc->id,
                                                       arriving_proc->mem_req, arriving_proc->job_time));
