@@ -99,14 +99,23 @@ process_list_t *read_process(char *file_name) {
 // run the process
 void run_proc(process_t *proc, int time) {
     proc->status = RUNNING;
-    print_status(time, proc, -1);  // -1 as proc remain bc it wont be printed anyway
+    char *msg = (char*)malloc(MAX_MSG_LEN * sizeof(char));
+    sprintf(msg, RUNNING_MSG, proc->remaining_time);
+    print_status(time, proc, msg);  // -1 as proc remain bc it wont be printed anyway
+
+    // set time for memory
 }
 
 // finish up the prcoess
 void finish_proc(process_t *proc, int time, int *executed_count, int total_proc) {
+    
     proc->status = FINISHED;
     (*executed_count)++;
-    print_status(time, proc, total_proc - (*executed_count));
+
+    char *msg = (char*)malloc(MAX_MSG_LEN * sizeof(char));
+    sprintf(msg, FINISHED_MSG, total_proc - (*executed_count));
+    print_status(time, proc, msg);
+    // set time for memory
 }
 
 // select algo for the simulation

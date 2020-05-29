@@ -7,16 +7,19 @@
 #include "output.h"
 #include "scheduler.h"
 #include "processlist.h"
+#include "memory.h"
 
 // print out the status when changed
-void print_status(int time, process_t *process, int proc_remain) {
+void print_status(int time, process_t *process, char *msg) {
     switch (process->status) {
         case RUNNING:
-            printf("%d, RUNNING, id=%d, remaining-time=%d\n", time, process->id, process->remaining_time);
+            printf("%d, RUNNING, id=%d, %s\n", time, process->id, msg);
             break;
         case FINISHED:
-            printf("%d, FINISHED, id=%d, proc-remaining=%d\n", time, process->id, proc_remain);
+            printf("%d, FINISHED, id=%d, %s\n", time, process->id, msg);
             break;
+        case EVICTED:
+            printf("%d, EVICTED, id=%d, %s\n", time, process->id, msg);
         default:
             break;
     }
@@ -91,3 +94,43 @@ void print_process_list(process_list_t *process_list) {
         current_process = current_process->next;
     }
 }
+
+// print information of a unit of memory
+void print_memory(unit_t mem_unit, int mem_id) {
+    printf("%2d. === proc_id:   %d\n", mem_id, mem_unit.proc_id);
+    printf("    === time_used: %d\n", mem_unit.time_used);
+}
+
+// print list of memory
+void print_memory_list(unit_t *mem_list, int size) {
+    for (int i = 0; i < size; i++) {
+        print_memory(mem_list[i], i);
+    }
+}
+
+// print information of one status node
+void print_status_node(status_t *status) {
+    if (status == NULL) {
+        perror("ERROR printing null status");
+        exit(EXIT_FAILURE);
+    }
+    printf("===== STATUS %2d =====\n", status->status);
+    printf("  Start:  %d\n", status->start);
+    printf("  Size:   %d\n", status->size);
+}
+
+// print the whole list of status
+void print_status_list(status_list_t *list) {
+
+    if (list == NULL) {
+        perror("ERROR printing empty list");
+        exit(EXIT_FAILURE);
+    }
+
+    status_t *curr_status = list->head;
+    while (curr_status != NULL) {
+        print_status_node(curr_status);
+        curr_status = curr_status->next;
+    }
+}
+

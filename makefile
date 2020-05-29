@@ -25,6 +25,7 @@ gitpush:
 wordcount:
 	wc -w report.txt
 
-# from github.com/joshcarp/scheduler_tester
 test:
+	# give permission using chmod first, then run the script from joshcarp/scheduler_test
+	chmod 755 -R scripts/
 	./scripts/test.sh

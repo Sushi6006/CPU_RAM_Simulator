@@ -27,7 +27,7 @@ process_t *create_process(int arrival_time, int id, int mem_req, int job_time) {
     process_t *new_process;
     new_process = (process_t*)malloc(sizeof(*new_process));
     if (new_process == NULL) {
-        perror("ERROR null list or new process node");
+        perror("ERROR creating new process node");
         exit(EXIT_FAILURE);
     }
 
