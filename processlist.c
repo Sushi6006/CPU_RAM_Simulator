@@ -111,6 +111,7 @@ process_list_t *proc_arrive(process_t *arriving_proc, process_list_t *arrived_li
         }
         arriving_proc = arriving_proc->next;
     }
+
     return arrived_list;
 }
 

@@ -184,8 +184,8 @@ void rr(process_list_t *process_list, int quantum) {
     int executed_count = 0, arrived_count = 0;
     
     // let the processes with 0 arrival time arrive 
-    arrived_list = proc_arrive(arriving_process, arrived_list, time, &arrived_count);
-    curr_process = arrived_list->head_process;
+    // arrived_list = proc_arrive(arriving_process, arrived_list, time, &arrived_count);
+    // curr_process = arrived_list->head_process;
 
     // for stats
     // init min with the value of 61 because min job time would be 1 in a 60 unit time frame
@@ -282,13 +282,11 @@ void sjf(process_list_t *process_list) {
         // new processes arrive
         // printf("\n\n========== ARRIVING PROC ==========\n");
         // print_process(arriving_process);
+        // print_process(arriving_process);
         arrived_list = proc_arrive(arriving_process, arrived_list, time, &arrived_count);
         
         printf("\n============= head here ==============\n");
-        print_process(arrived_list->head_process);
-        if (arrived_count == 4) {
-            break;
-        }
+        // print_process(arrived_list->head_process);
 
         if (arrived_list->head_process == NULL) {
             time++;  // no process arrived
