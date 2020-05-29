@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
     int sch_algo;  // indicate the scheduling algorithm
     int mem_allo;  // indicate the memory allocation method
     int mem_size;  // size of memory given
-    int quantum;
+    int quantum = -1;
     sch_algo = mem_allo = mem_size = quantum = UNSPECIFIED;  // init value
 
     // parse command line arguments
@@ -103,6 +103,10 @@ void select_algo(process_list_t *process_list, int quantum, int sch_algo) {
             fcfs(process_list);
             break;
         case SCH_RR:
+            if (quantum == -1) {  // quantum not given
+                perror("ERROR trying to run Round-Robin without quantum");
+                exit(EXIT_FAILURE);
+            }
             rr(process_list, quantum);
             break;
         case BYO:
@@ -182,10 +186,6 @@ void rr(process_list_t *process_list, int quantum) {
     process_list_t *arrived_list = init_process_list();
     process_t *curr_process, *arriving_process = process_list->head_process;
     int executed_count = 0, arrived_count = 0;
-    
-    // let the processes with 0 arrival time arrive 
-    // arrived_list = proc_arrive(arriving_process, arrived_list, time, &arrived_count);
-    // curr_process = arrived_list->head_process;
 
     // for stats
     // init min with the value of 61 because min job time would be 1 in a 60 unit time frame
@@ -201,10 +201,8 @@ void rr(process_list_t *process_list, int quantum) {
         // let process arrive
         arrived_list = proc_arrive(arriving_process, arrived_list, time, &arrived_count);
 
-        // start new process
-        curr_process = arrived_list->head_process;
-
         // run the first in queue
+        curr_process = arrived_list->head_process;
         curr_process->status = RUNNING;
         print_status(time, curr_process, process_list->process_count - executed_count);
 
@@ -280,14 +278,8 @@ void sjf(process_list_t *process_list) {
 
     while (executed_count < process_list->process_count) {
         // new processes arrive
-        // printf("\n\n========== ARRIVING PROC ==========\n");
-        // print_process(arriving_process);
-        // print_process(arriving_process);
         arrived_list = proc_arrive(arriving_process, arrived_list, time, &arrived_count);
         
-        printf("\n============= head here ==============\n");
-        // print_process(arrived_list->head_process);
-
         if (arrived_list->head_process == NULL) {
             time++;  // no process arrived
             continue;
@@ -295,48 +287,38 @@ void sjf(process_list_t *process_list) {
 
         // find min and remove it
         curr_process = find_pre_min(arrived_list);
-        if (curr_process != NULL) {
-            min_process = curr_process->next;        // the min to be executed
-            curr_process->next = min_process->next;  // remove min from list
+        if (curr_process != NULL) { 
+            process_t *temp = curr_process->next;
+            curr_process->next = temp->next;  // remove min_process from list
+            if (curr_process->next == NULL) {
+                arrived_list->foot_process = curr_process;
+            }
+            min_process = create_process(temp->arrival_time, temp->id,
+                                         temp->mem_req, temp->job_time);
+            free(temp);
+
         } else {  // head is min
-            min_process = arrived_list->head_process;
-            min_process = create_process(min_process->arrival_time, min_process->id,
-                                         min_process->mem_req, min_process->job_time);
+            process_t *temp = arrived_list->head_process;
+            min_process = create_process(temp->arrival_time, temp->id,
+                                         temp->mem_req, temp->job_time);
             arrived_list = delete_head_proc(arrived_list);
+            // free(temp);  <- already freed in `delete_head_proc`
         }
-
-        if (min_process == NULL) {
-            perror("ERROR finding minimum job time");
-            exit(EXIT_FAILURE);
-        }
-
-        printf("========== MIN PROC ==========\n");
-        print_process(min_process);
 
         // run the process
         min_process->status = RUNNING;
         print_status(time, min_process, process_list->process_count - executed_count);
         time += min_process->job_time;
 
-        // new processes arrive
-        // arrived_list = proc_arrive(arriving_process, arrived_list, time, &arrived_count);
-
         // finish the process
         min_process->status = FINISHED;
         executed_count++;
         print_status(time, min_process, process_list->process_count - executed_count);
 
-        // printf("\n\n========== TIME: %d ==========\n", time);
-        // printf("========== CURR LI ==========\n");
-        // print_process_list(arrived_list);
-        // printf("========== MIN PROC ==========\n");
-        // print_process(min_process);
-
         // calculate stats
         calc_stats(&min_throughput, &max_throughput, &total_throughput, &throughput, &last_timestamp,
                    &total_turnaround, &max_overhead, &total_overhead, &last_finished,
                    time, min_process);
-
     }
 
     // print stats

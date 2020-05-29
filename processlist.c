@@ -52,7 +52,7 @@ process_list_t *add_process(process_list_t *list, process_t *new_process) {
 
     // add to the list
     list->process_count++;
-    if (list->foot_process == NULL) {
+    if ((list->head_process == NULL) || (list->foot_process == NULL)) {
         // first process
         list->head_process = list->foot_process = new_process;
     } else {
@@ -133,6 +133,7 @@ process_t *find_pre_min(process_list_t *list) {
             pre_min_proc = curr_proc;
             min_jobtime = curr_proc->next->job_time;
         }
+        curr_proc = curr_proc->next;
     }
 
     return pre_min_proc;
