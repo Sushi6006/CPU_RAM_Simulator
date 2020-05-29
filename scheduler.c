@@ -161,9 +161,6 @@ void fcfs(process_list_t *process_list) {
 
             // process finished
             finish_proc(curr_process, time, &executed_count, process_list->process_count);
-            // curr_process->status = FINISHED;
-            // executed_count++;
-            // print_status(time, curr_process, process_list->process_count - executed_count);
             
             // calculate stats
             calc_stats(&min_throughput, &max_throughput, &total_throughput, &throughput, &last_timestamp,
@@ -244,9 +241,6 @@ void rr(process_list_t *process_list, int quantum) {
             arrived_list = proc_arrive(arriving_process, arrived_list, time, &arrived_count);
             curr_process->remaining_time = 0;
             finish_proc(curr_process, time, &executed_count, process_list->process_count);
-            // curr_process->status = FINISHED;
-            // executed_count++;
-            // print_status(time, curr_process, process_list->process_count - executed_count);
 
             // calculate stats
             calc_stats(&min_throughput, &max_throughput, &total_throughput, &throughput, &last_timestamp,
@@ -322,10 +316,7 @@ void sjf(process_list_t *process_list) {
 
         // finish the process
         finish_proc(min_process, time, &executed_count, process_list->process_count);
-        // min_process->status = FINISHED;
-        // executed_count++;
-        // print_status(time, min_process, process_list->process_count - executed_count);
-
+        
         // calculate stats
         calc_stats(&min_throughput, &max_throughput, &total_throughput, &throughput, &last_timestamp,
                    &total_turnaround, &max_overhead, &total_overhead, &last_finished,
