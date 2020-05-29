@@ -5,7 +5,10 @@ run_test:
 	./scheduler -f processes.txt -a ff -s 200 -m p
 
 run_test2:
-	./scheduler -f processes.txt -a csp -s 200 -m p -q 10
+	./scheduler -f processes.txt -a cs -s 200 -m p -q 10
+
+run_comp:
+	python3 runner.py
 
 clean:
 	rm -f scheduler
