@@ -24,3 +24,7 @@ gitpush:
 
 wordcount:
 	wc -w report.txt
+
+# from github.com/joshcarp/scheduler_tester
+test:
+	./scripts/test.sh
