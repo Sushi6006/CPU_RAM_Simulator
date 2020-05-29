@@ -14,7 +14,8 @@ Project done by Leyan LIN in May, 2020
 - **source files**
   - `scheduler.c` is the main file
   - `scheduler.h` contains scheduling, allocation, processes related stuff
-  - `processlist.c` and `processlist.h` manages the data types and does linked list stuff
+  - `processlist.c` and `processlist.h` manages the data types and functions relating to processes
+  - `memory.c` and `memory.h` manages the data types and functions relating to memory
   - `output.c` and `output.h` are for outputs
 - **misc**
   - `runner.py` is a comparator for different algorithms

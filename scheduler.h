@@ -44,6 +44,10 @@ void read_args(int argc, char *argv[],
                char* file_name, int *sch_algo, int *mem_allo, int *mem_size, int *quantum);
 process_list_t *read_process(char *file_name);
 
+// does stuff with single process
+void run_proc(process_t *proc, int time);
+void finish_proc(process_t *proc, int time, int *executed_count, int total_proc);
+
 // cpu scheduling
 void select_algo(process_list_t *process_list, int quantum, int sch_algo);
 void fcfs(process_list_t *process_list);

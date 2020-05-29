@@ -18,15 +18,15 @@ int main(int argc, char *argv[]) {
     int quantum = -1;
     sch_algo = mem_allo = mem_size = quantum = UNSPECIFIED;  // init value
 
-    // parse command line arguments
+    process_list_t *process_list;
+
+    // read & store processes and other info
     read_args(argc, argv, file_name, &sch_algo, &mem_allo, &mem_size, &quantum);
-    // read & store processes
-    process_list_t *process_list = read_process(file_name);
+    process_list = read_process(file_name);
     free(file_name);
-    // sort the processes
-    sort(process_list);
 
     // enter cpu scheduling
+    sort(process_list);
     select_algo(process_list, quantum, sch_algo);
 
 
@@ -96,6 +96,19 @@ process_list_t *read_process(char *file_name) {
     return process_list;
 }
 
+// run the process
+void run_proc(process_t *proc, int time) {
+    proc->status = RUNNING;
+    print_status(time, proc, -1);  // -1 as proc remain bc it wont be printed anyway
+}
+
+// finish up the prcoess
+void finish_proc(process_t *proc, int time, int *executed_count, int total_proc) {
+    proc->status = FINISHED;
+    (*executed_count)++;
+    print_status(time, proc, total_proc - (*executed_count));
+}
+
 // select algo for the simulation
 void select_algo(process_list_t *process_list, int quantum, int sch_algo) {
     switch (sch_algo) {
@@ -143,14 +156,14 @@ void fcfs(process_list_t *process_list) {
         // if process arrives
         if (curr_process->arrival_time <= time) {
             // process started running
-            curr_process->status = RUNNING;
-            print_status(time, curr_process, process_list->process_count - executed_count);
+            run_proc(curr_process, time);
             time += curr_process->job_time;
 
             // process finished
-            curr_process->status = FINISHED;
-            executed_count++;
-            print_status(time, curr_process, process_list->process_count - executed_count);
+            finish_proc(curr_process, time, &executed_count, process_list->process_count);
+            // curr_process->status = FINISHED;
+            // executed_count++;
+            // print_status(time, curr_process, process_list->process_count - executed_count);
             
             // calculate stats
             calc_stats(&min_throughput, &max_throughput, &total_throughput, &throughput, &last_timestamp,
@@ -203,16 +216,13 @@ void rr(process_list_t *process_list, int quantum) {
 
         // run the first in queue
         curr_process = arrived_list->head_process;
-        curr_process->status = RUNNING;
-        print_status(time, curr_process, process_list->process_count - executed_count);
+        run_proc(curr_process, time);
 
         // all process arrived and executing last process
         if ((arrived_count == process_list->process_count) && (curr_process->next == NULL)) {
             time += curr_process->remaining_time;
             // finishing process
-            curr_process->status = FINISHED;
-            executed_count++;
-            print_status(time, curr_process, process_list->process_count - executed_count);
+            finish_proc(curr_process, time, &executed_count, process_list->process_count);
             
             // calculate stats
             calc_stats(&min_throughput, &max_throughput, &total_throughput, &throughput, &last_timestamp,
@@ -233,9 +243,10 @@ void rr(process_list_t *process_list, int quantum) {
             // finishing process
             arrived_list = proc_arrive(arriving_process, arrived_list, time, &arrived_count);
             curr_process->remaining_time = 0;
-            curr_process->status = FINISHED;
-            executed_count++;
-            print_status(time, curr_process, process_list->process_count - executed_count);
+            finish_proc(curr_process, time, &executed_count, process_list->process_count);
+            // curr_process->status = FINISHED;
+            // executed_count++;
+            // print_status(time, curr_process, process_list->process_count - executed_count);
 
             // calculate stats
             calc_stats(&min_throughput, &max_throughput, &total_throughput, &throughput, &last_timestamp,
@@ -306,14 +317,14 @@ void sjf(process_list_t *process_list) {
         }
 
         // run the process
-        min_process->status = RUNNING;
-        print_status(time, min_process, process_list->process_count - executed_count);
+        run_proc(min_process, time);
         time += min_process->job_time;
 
         // finish the process
-        min_process->status = FINISHED;
-        executed_count++;
-        print_status(time, min_process, process_list->process_count - executed_count);
+        finish_proc(min_process, time, &executed_count, process_list->process_count);
+        // min_process->status = FINISHED;
+        // executed_count++;
+        // print_status(time, min_process, process_list->process_count - executed_count);
 
         // calculate stats
         calc_stats(&min_throughput, &max_throughput, &total_throughput, &throughput, &last_timestamp,
