@@ -52,7 +52,7 @@ void finish_proc(process_t *proc, int time, int *executed_count, int total_proc)
 // cpu scheduling
 void schedule(process_list_t *process_list, unit_t *memory_list, status_list_t *status_list, spec_t spec);
 void fcfs(process_list_t *process_list, unit_t *memory_list, status_list_t *status_list, spec_t spec);
-void rr(process_list_t *process_list, int quantum, unit_t *memory_list, status_list_t *status_list, spec_t spec);
+void rr(process_list_t *process_list, unit_t *memory_list, status_list_t *status_list, spec_t spec);
 void sjf(process_list_t *process_list, unit_t *memory_list, status_list_t *status_list, spec_t spec);
 
 // memory allocation

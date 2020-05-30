@@ -24,6 +24,11 @@ int main(int argc, char *argv[]) {
     if (spec.mem_size != -1) {  // not unlimited
         memory_list = init_memory_list(spec.mem_size);
         status_list = init_status_list(spec.mem_size);
+    } else {
+        // still need to allocate, otherwise
+        // gets terminated abnormally
+        memory_list = init_memory_list(0);
+        status_list = init_status_list(0);
     }
     free(file_name);
 
@@ -132,7 +137,7 @@ void schedule(process_list_t *process_list, unit_t *memory_list, status_list_t *
                 perror("ERROR trying to run Round-Robin without quantum");
                 exit(EXIT_FAILURE);
             }
-            rr(process_list, spec.quantum, memory_list, status_list, spec);
+            rr(process_list, memory_list, status_list, spec);
             break;
         case BYO:
             sjf(process_list, memory_list, status_list, spec);
@@ -194,7 +199,7 @@ void fcfs(process_list_t *process_list, unit_t *memory_list, status_list_t *stat
 }
 
 // robin round
-void rr(process_list_t *process_list, int quantum, unit_t *memory_list, status_list_t *status_list, spec_t spec) {
+void rr(process_list_t *process_list, unit_t *memory_list, status_list_t *status_list, spec_t spec) {
 
     if (process_list == NULL) {
         perror("ERROR scheduling empty list");
@@ -203,6 +208,7 @@ void rr(process_list_t *process_list, int quantum, unit_t *memory_list, status_l
 
     // init
     int time = 0;
+    int quantum = spec.quantum;
 
     // for list to arrive
     process_list_t *arrived_list = init_process_list();
