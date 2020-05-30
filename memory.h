@@ -40,10 +40,10 @@ status_list_t *init_status_list(int size);
 int has_enough(status_list_t *status_list, int req_mem);
 status_t *create_status(int status, int start, int size);
 status_list_t *add_status(status_list_t *list, status_t *new_status);
-status_list_t *update_status(status_list_t *status_list, unit_t *memory_list, int len);
+status_list_t *update_status(unit_t *memory_list, int len);
 
-status_list_t *allocate_proc(unit_t *memory_list, status_list_t *status_list, process_t *proc, int time);
-void *evict_proc(unit_t *memory_list, int memsize, int proc_id);
+status_list_t *allocate_proc(unit_t *memory_list, int memsize, status_list_t *status_list, process_t *proc, int time);
+void evict_proc(unit_t *memory_list, int memsize, int proc_id);
 // void *finish_proc(unit_t *memory_list, int memsize, int proc_id);
 
 #endif

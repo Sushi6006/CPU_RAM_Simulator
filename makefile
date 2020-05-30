@@ -1,5 +1,5 @@
 build:
-	gcc -o scheduler output.c processlist.c scheduler.c -Wall -lm
+	gcc -o scheduler output.c processlist.c memory.c scheduler.c -Wall -lm
 
 run_test:
 	./scheduler -f processes.txt -a ff -s 200 -m p
@@ -24,6 +24,13 @@ gitpush:
 
 wordcount:
 	wc -w report.txt
+
+# some tests
+mem_allo_test:
+	rm -f mem_test
+	gcc -o mem_test output.c processlist.c memory.c scheduler.c mem_allo_test.c -Wall -lm
+	./mem_test
+	
 
 test:
 	# give permission using chmod first, then run the script from joshcarp/scheduler_test

@@ -98,7 +98,7 @@ void print_process_list(process_list_t *process_list) {
 // print information of a unit of memory
 void print_memory(unit_t mem_unit, int mem_id) {
     printf("%2d. === proc_id:   %d\n", mem_id, mem_unit.proc_id);
-    printf("    === time_used: %d\n", mem_unit.time_used);
+    // printf("    === time_used: %d\n", mem_unit.time_used);
 }
 
 // print list of memory
@@ -111,7 +111,7 @@ void print_memory_list(unit_t *mem_list, int size) {
 // print information of one status node
 void print_status_node(status_t *status) {
     if (status == NULL) {
-        perror("ERROR printing null status");
+        perror("ERROR printing null status node");
         exit(EXIT_FAILURE);
     }
     printf("===== STATUS %2d =====\n", status->status);

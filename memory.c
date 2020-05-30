@@ -21,15 +21,14 @@ unit_t *init_memory_list(int size) {
 // create a list of memory status with all memory available
 status_list_t *init_status_list(int size) {
     status_list_t *status_list;
-    status_list = (status_list_t*)malloc(sizeof(*status_list));
+    status_list = (status_list_t*)malloc(size * sizeof(*status_list));
     if (status_list == NULL) {
         perror("ERROR creating status list");
         exit(EXIT_FAILURE);
     }
     // initialise as an empty list with all memory available
-    status_list->head->status = -1;
-    status_list->head->start = 0;
-    status_list->head->next = status_list->foot = NULL;
+    status_list->head = status_list->foot = NULL;
+    status_list = add_status(status_list, create_status(HOLE, 0, size));
 
     return status_list;
 }
@@ -42,7 +41,6 @@ int has_enough(status_list_t *status_list, int req_mem) {
         perror("ERROR finding empty memory in null list");
         exit(EXIT_FAILURE);
     }
-
     status_t *status = status_list->head;
     while (status != NULL) {
         if ((status->status == HOLE) && (status->size >= req_mem)) {
@@ -87,24 +85,28 @@ status_list_t *add_status(status_list_t *list, status_t *new_status) {
         list->foot = new_status;
     }
 
-    return list
+    return list;
 }
 
 // update status list with given memory
-status_list_t *update_status(status_list_t *status_list, unit_t *memory_list, int len) {
-    
+status_list_t *update_status(unit_t *memory_list, int len) {
     // init
-    int curr_status = memory_list[0].proc_id == -1 ? HOLE : OCCU;
+    int last_status = memory_list[0].proc_id == HOLE ? HOLE : OCCU;
     int last_start = 0;
-    
+    status_list_t *status_list;
+    status_list = (status_list_t*)malloc(sizeof(*status_list));
     for (int i = 1; i < len; i++) {
-        if ((memory_list[i].proc_id == -1 ? HOLE : OCCU) != curr_status) {
+        int curr_status = memory_list[i].proc_id == HOLE ? HOLE : OCCU;
+        if (curr_status != last_status) {
             status_list = add_status(status_list,
-                                     create_status(curr_status, last_start, i - last_start));
-            curr_status = memory_list[i].proc_id == -1 ? HOLE : OCCU;
+                                     create_status(last_status, last_start, i - last_start));
+            last_status = curr_status;
             last_start = i;
         }
     }
+    status_list = add_status(status_list, create_status(last_status, last_start, len - last_start));
+    
+    return status_list;
 }
 
 // allocate process into memory, return new status list
@@ -115,7 +117,7 @@ status_list_t *allocate_proc(unit_t *memory_list, int memsize, status_list_t *st
         exit(EXIT_FAILURE);
     }
 
-    int position = has_enough(status_list, proc->mem_req);
+    int position;
     
     // evict processes until has enough space
     while ((position = has_enough(status_list, proc->mem_req)) == -1) {
@@ -137,19 +139,20 @@ status_list_t *allocate_proc(unit_t *memory_list, int memsize, status_list_t *st
         // TODO: print evict message
         // current_time, EVICTED, mem-addresses=<[set_of_pages]>\n
 
-        status_list = update_status(status_list, memory_list, memsize);
+        status_list = update_status(memory_list, memsize);
     }
-    for (int i = 0; i < proc->mem_req; i++) {
-        memory_list[position].proc_id = proc->id;
-        memory_list[position].time_used = time;
-        position++;
+    for (int i = position; i < position + proc->mem_req; i++) {
+        memory_list[i].proc_id = proc->id;
+        memory_list[i].time_used = time;
     }
-    status_list = update_status(status_list, memory_list, memsize);
+
+    status_list = update_status(memory_list, memsize);
+    return status_list;
 
 }
 
 // evict one process from memory
-void *evict_proc(unit_t *memory_list, int memsize, int proc_id) {
+void evict_proc(unit_t *memory_list, int memsize, int proc_id) {
 
     for (int i = 0; i < memsize; i++) {
         if (memory_list[i].proc_id == proc_id) {

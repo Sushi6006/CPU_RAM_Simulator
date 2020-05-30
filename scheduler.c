@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
     free(file_name);
 
     // enter cpu scheduling
-    sort(process_list);
+    sort(process_list);  // sort by proc_id when the arrival time is the same
     select_algo(process_list, quantum, sch_algo);
 
 
@@ -61,9 +61,6 @@ void read_args(int argc, char *argv[], char* file_name, int *sch_algo, int *mem_
 
         if (getopt_ended) break;
     }
-
-    // print out specs parsed
-    // print_spec(file_name, *sch_algo, *mem_allo, *mem_size, *quantum);
 }
 
 // read from file
@@ -101,7 +98,7 @@ void run_proc(process_t *proc, int time) {
     proc->status = RUNNING;
     char *msg = (char*)malloc(MAX_MSG_LEN * sizeof(char));
     sprintf(msg, RUNNING_MSG, proc->remaining_time);
-    print_status(time, proc, msg);  // -1 as proc remain bc it wont be printed anyway
+    print_status(time, proc, msg);
 
     // set time for memory
 }
