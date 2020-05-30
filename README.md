@@ -18,6 +18,7 @@ Project done by Leyan LIN in May, 2020
   - `memory.c` and `memory.h` manages the data types and functions relating to memory
   - `output.c` and `output.h` are for outputs
 - **misc**
+  - `mem_allo_test.c` is for testing memory allocation before implement it
   - `runner.py` is a comparator for different algorithms
   - *from github.com/joshcarp/scheduler_tester*
     - `dockerfile`

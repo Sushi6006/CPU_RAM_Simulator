@@ -2,6 +2,7 @@
 #define _scheduler_h
 
 #include "processlist.h"
+#include "memory.h"
 
 #define MAX_FILENAME  128  // max length for a file name
 #define MAX_SCHE_ALGO 4    // max length for the name of the algorithm
@@ -25,23 +26,23 @@
 
 // define states of processes
 #define NOT_READY -1  // havent encountered the process
-#define NOT_READY_TXT ""
 #define ARRIVED 0     // never excuted
-#define ARRIVED_TEXT ""
 #define RUNNING 1     // currently running
-#define RUNNING_TXT "RUNNING"
-#define PAUSED 2      // excuted but stopped
-#define PAUSED_TXT ""
+#define PAUSED 2      // excuted but stopped, ended up not using this one
 #define EVICTED 3     // evicted
-#define EVICTED_TXT "EVICTED"
 #define FINISHED 4    // finished
-#define FINISHED_TXT "FINISHED"
 
 #define THROUGHPUT_TIMEFRAME 60
 
+typedef struct Specifications {
+    int sch_algo;  // scheduling algorithm
+    int mem_allo;  // memory management
+    int mem_size;  // size of memory
+    int quantum;   // quantum
+} spec_t;
+
 // functions for input
-void read_args(int argc, char *argv[],
-               char* file_name, int *sch_algo, int *mem_allo, int *mem_size, int *quantum);
+void read_args(int argc, char *argv[], char* file_name, spec_t *spec);
 process_list_t *read_process(char *file_name);
 
 // does stuff with single process
@@ -49,10 +50,10 @@ void run_proc(process_t *proc, int time);
 void finish_proc(process_t *proc, int time, int *executed_count, int total_proc);
 
 // cpu scheduling
-void select_algo(process_list_t *process_list, int quantum, int sch_algo);
-void fcfs(process_list_t *process_list);
-void rr(process_list_t *process_list, int quantum);
-void sjf(process_list_t *process_list);
+void schedule(process_list_t *process_list, unit_t *memory_list, status_list_t *status_list, spec_t spec);
+void fcfs(process_list_t *process_list, unit_t *memory_list, status_list_t *status_list, spec_t spec);
+void rr(process_list_t *process_list, int quantum, unit_t *memory_list, status_list_t *status_list, spec_t spec);
+void sjf(process_list_t *process_list, unit_t *memory_list, status_list_t *status_list, spec_t spec);
 
 // memory allocation
 void virtual_mem();
@@ -62,4 +63,6 @@ void cm();
 void calc_stats(int *min_tp, int *max_tp, int *tot_tp, int *tp, int *last_timestamp,
                 int *tot_turnaround, float *max_overhead, float *tot_overhead, int *last_recorded,
                 int time, process_t *proc);
+
+void free_lists(process_list_t *proc_list, unit_t *mem_list, status_list_t* status_list);
 #endif

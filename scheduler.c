@@ -5,36 +5,40 @@
 #include <math.h>
 
 #include "scheduler.h"
-#include "output.h"
 #include "processlist.h"
+#include "memory.h"
+#include "output.h"
 
-int main2(int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
 
     // initialise all the variables
     char *file_name = (char*)malloc(sizeof(char) * MAX_FILENAME);  // the file name
-    int sch_algo;  // indicate the scheduling algorithm
-    int mem_allo;  // indicate the memory allocation method
-    int mem_size;  // size of memory given
-    int quantum = -1;
-    sch_algo = mem_allo = mem_size = quantum = UNSPECIFIED;  // init value
-
-    process_list_t *process_list;
+    spec_t spec;
+    spec.sch_algo = spec.mem_allo = spec.mem_size = spec.quantum = UNSPECIFIED;
 
     // read & store processes and other info
-    read_args(argc, argv, file_name, &sch_algo, &mem_allo, &mem_size, &quantum);
-    process_list = read_process(file_name);
+    read_args(argc, argv, file_name, &spec);
+    process_list_t *process_list = read_process(file_name);
+    unit_t *memory_list;
+    status_list_t *status_list;
+    if (spec.mem_size != -1) {  // not unlimited
+        memory_list = init_memory_list(spec.mem_size);
+        status_list = init_status_list(spec.mem_size);
+    }
     free(file_name);
 
     // enter cpu scheduling
     sort(process_list);  // sort by proc_id when the arrival time is the same
-    select_algo(process_list, quantum, sch_algo);
+    schedule(process_list, memory_list, status_list, spec);
 
+    // free
+    free_lists(process_list, memory_list, status_list);
 
     return 0;
 }
 
 // parse all the args given
-void read_args(int argc, char *argv[], char* file_name, int *sch_algo, int *mem_allo, int *mem_size, int *quantum) {
+void read_args(int argc, char *argv[], char* file_name, spec_t *spec) {
     // reading flags
     int c;
     while ((c = getopt(argc, argv, "f:a:m:s:q:"))) {
@@ -44,16 +48,20 @@ void read_args(int argc, char *argv[], char* file_name, int *sch_algo, int *mem_
                 sprintf(file_name, "%s", optarg);
                 break;
             case FLAG_SCH_ALGO:
-                (*sch_algo) = optarg[0];
+                (*spec).sch_algo = optarg[0];
                 break;
             case FLAG_MEM_ALLO:
-                (*mem_allo) = optarg[0];
+                (*spec).mem_allo = optarg[0];
                 break;
             case FLAG_MEM_SIZE:
-                (*mem_size) = atoi(optarg);
+                if (optarg[0] == 'u') {
+                    (*spec).mem_size = UNSPECIFIED;  // unlimited
+                } else {
+                    (*spec).mem_size = atoi(optarg);
+                }
                 break;
             case FLAG_QUANTUM:
-                (*quantum) = atoi(optarg);
+                (*spec).quantum = atoi(optarg);
                 break;
             default:
                 getopt_ended = 1;  // finished reading the flags
@@ -85,8 +93,6 @@ process_list_t *read_process(char *file_name) {
         process_list = add_process(process_list, create_process(arrival_time, id, mem_size, job_time));
     }
 
-    // print_process_list(process_list);
-
     fclose(process_file);
     free(line);
 
@@ -116,20 +122,20 @@ void finish_proc(process_t *proc, int time, int *executed_count, int total_proc)
 }
 
 // select algo for the simulation
-void select_algo(process_list_t *process_list, int quantum, int sch_algo) {
-    switch (sch_algo) {
+void schedule(process_list_t *process_list, unit_t *memory_list, status_list_t *status_list, spec_t spec) {
+    switch (spec.sch_algo) {
         case SCH_FF:
-            fcfs(process_list);
+            fcfs(process_list, memory_list, status_list, spec);
             break;
         case SCH_RR:
-            if (quantum == -1) {  // quantum not given
+            if (spec.quantum == -1) {  // quantum not given
                 perror("ERROR trying to run Round-Robin without quantum");
                 exit(EXIT_FAILURE);
             }
-            rr(process_list, quantum);
+            rr(process_list, spec.quantum, memory_list, status_list, spec);
             break;
         case BYO:
-            sjf(process_list);
+            sjf(process_list, memory_list, status_list, spec);
             break;
         default:
             perror("ERROR selecting scheduling algorithm");
@@ -138,7 +144,7 @@ void select_algo(process_list_t *process_list, int quantum, int sch_algo) {
 }
 
 // first-come first-served
-void fcfs(process_list_t *process_list) {
+void fcfs(process_list_t *process_list, unit_t *memory_list, status_list_t *status_list, spec_t spec) {
 
     if (process_list == NULL) {
         perror("ERROR scheduling empty list");
@@ -188,7 +194,7 @@ void fcfs(process_list_t *process_list) {
 }
 
 // robin round
-void rr(process_list_t *process_list, int quantum) {
+void rr(process_list_t *process_list, int quantum, unit_t *memory_list, status_list_t *status_list, spec_t spec) {
 
     if (process_list == NULL) {
         perror("ERROR scheduling empty list");
@@ -264,7 +270,7 @@ void rr(process_list_t *process_list, int quantum) {
 }
 
 // shortest job first / shortest process next (spn)
-void sjf(process_list_t *process_list) {
+void sjf(process_list_t *process_list, unit_t *memory_list, status_list_t *status_list, spec_t spec) {
 
     if (process_list == NULL) {
         perror("ERROR scheduling empty list");
@@ -370,4 +376,32 @@ void calc_stats(int *min_tp, int *max_tp, int *tot_tp, int *tp, int *last_timest
     (*tot_overhead) += overhead;
     if (overhead > (*max_overhead)) (*max_overhead) = overhead;
 
+}
+
+// free a linked list
+void free_lists(process_list_t *proc_list, unit_t *mem_list, status_list_t* status_list) {
+    // free process list
+    if (proc_list != NULL) {
+        process_t *prev, *curr = proc_list->head_process;
+        while (curr != NULL) {
+            prev = curr;
+            curr = curr->next;
+            free(prev);
+        }
+        free(proc_list);
+    }
+
+    // free memory list
+    free(mem_list);
+
+    // free status list
+    if (status_list != NULL) {
+        status_t *prev, *curr = status_list->head;
+        while (curr != NULL) {
+            prev = curr;
+            curr = curr->next;
+            free(prev);
+        }
+        free(status_list);
+    }
 }

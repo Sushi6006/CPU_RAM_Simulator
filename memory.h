@@ -5,7 +5,7 @@
 #include "memory.h"
 
 #define PAGE_SIZE 4
-#define ADDR_STR_LEN 8  // max length of a number(with comma) represeting an addr
+#define ADDR_STR_LEN 8  // max length of a number(with comma) represeting an addr,
 
 #define HOLE -1  // indicate the block is not used by any process
 #define OCCU 1   // occupied

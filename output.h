@@ -1,6 +1,7 @@
 #ifndef _dbgoutput_h
 #define _dbgoutput_h
 
+#include "scheduler.h"
 #include "processlist.h"
 #include "memory.h"
 
@@ -27,7 +28,7 @@ void print_stats(int process_executed, int total_turnaround, float total_overhea
                  int avg_throughput, int min_throughput, int max_throughput);
 
 // debug uses
-void print_spec(char* file_name, int sch_algo, int mem_allo, int mem_size, int quantum);
+void print_spec(char* file_name, spec_t spec);
 void print_process(process_t *process);
 void print_process_list(process_list_t *process_list);
 void print_memory(unit_t mem_unit, int mem_id);
