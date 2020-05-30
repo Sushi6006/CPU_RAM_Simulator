@@ -23,8 +23,8 @@ void test_evict() {
     mem_list[8].proc_id = 2;
     mem_list[9].proc_id = 2;
 
-    evict_proc(mem_list, 10, 1);
-    print_memory_list(mem_list, 10);
+    // evict_proc(mem_list, 10, 1,);  // modified later, not working anymore
+    // print_memory_list(mem_list, 10);
 }
 
 // testing `update_status()`  -- PASS
@@ -54,9 +54,11 @@ int main() {
     status_list_t *status_list = init_status_list(size);
     
     // add some proc
-    proc_list = add_process(proc_list, create_process(0, 1, 15, 20));
+    proc_list = add_process(proc_list, create_process(0, 1, 5, 20));
     proc_list = add_process(proc_list, create_process(0, 2, 5, 20));
-    proc_list = add_process(proc_list, create_process(0, 3, 10, 20));
+    proc_list = add_process(proc_list, create_process(0, 3, 5, 20));
+    proc_list = add_process(proc_list, create_process(0, 4, 5, 20));
+    proc_list = add_process(proc_list, create_process(0, 5, 15, 20));
 
     // run procs
     process_t *curr_proc = proc_list->head_process;
@@ -65,7 +67,7 @@ int main() {
         printf("======= %d =======\n", counter);
         run_proc(curr_proc, time);
         status_list = allocate_proc(mem_list, size, status_list, curr_proc, time);
-        print_memory_list(mem_list, size);
+        // print_memory_list(mem_list, size);
         // print_status_list(status_list);
         time += curr_proc->job_time;
         curr_proc = curr_proc->next;

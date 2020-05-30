@@ -10,16 +10,16 @@
 #include "memory.h"
 
 // print out the status when changed
-void print_status(int time, process_t *process, char *msg) {
-    switch (process->status) {
+void print_status(int time, int status, int proc_id, char *msg) {
+    switch (status) {
         case RUNNING:
-            printf("%d, RUNNING, id=%d, %s\n", time, process->id, msg);
+            printf("%d, RUNNING, id=%d, %s\n", time, proc_id, msg);
             break;
         case FINISHED:
-            printf("%d, FINISHED, id=%d, %s\n", time, process->id, msg);
+            printf("%d, FINISHED, id=%d, %s\n", time, proc_id, msg);
             break;
         case EVICTED:
-            printf("%d, EVICTED, id=%d, %s\n", time, process->id, msg);
+            printf("%d, EVICTED, %s\n", time, msg);
         default:
             break;
     }

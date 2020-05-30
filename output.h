@@ -17,12 +17,12 @@
 
 // messages to be printed out
 #define RUNNING_MSG "remaining-time=%d"
-#define EVICTED_MSG "mem-addresses=<%s>"
+#define EVICTED_MSG "mem-addresses=["
 #define FINISHED_MSG "proc-remaining=%d"
 
 
 // for required output
-void print_status(int time, process_t *process, char *msg);
+void print_status(int time, int status, int proc_id, char *msg);
 void print_stats(int process_executed, int total_turnaround, float total_overhead, float max_overhead, int time,
                  int avg_throughput, int min_throughput, int max_throughput);
 

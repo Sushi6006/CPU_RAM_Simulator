@@ -5,6 +5,8 @@
 #include "memory.h"
 
 #define PAGE_SIZE 4
+#define ADDR_STR_LEN 8  // max length of a number(with comma) represeting an addr
+
 #define HOLE -1  // indicate the block is not used by any process
 #define OCCU 1   // occupied
 
@@ -43,7 +45,7 @@ status_list_t *add_status(status_list_t *list, status_t *new_status);
 status_list_t *update_status(unit_t *memory_list, int len);
 
 status_list_t *allocate_proc(unit_t *memory_list, int memsize, status_list_t *status_list, process_t *proc, int time);
-void evict_proc(unit_t *memory_list, int memsize, int proc_id);
+void evict_proc(unit_t *memory_list, int memsize, int proc_id, int *evicted_add, int *evicted_count);
 // void *finish_proc(unit_t *memory_list, int memsize, int proc_id);
 
 #endif

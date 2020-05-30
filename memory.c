@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <math.h>
 
+#include "scheduler.h"
 #include "memory.h"
 #include "processlist.h"
 #include "output.h"
@@ -105,7 +106,7 @@ status_list_t *update_status(unit_t *memory_list, int len) {
         }
     }
     status_list = add_status(status_list, create_status(last_status, last_start, len - last_start));
-    
+
     return status_list;
 }
 
@@ -117,7 +118,9 @@ status_list_t *allocate_proc(unit_t *memory_list, int memsize, status_list_t *st
         exit(EXIT_FAILURE);
     }
 
-    int position;
+    int position;           // where to be allocated
+    int evicted_count = 0;  // whether processes have been evicted
+    int *evicted_add = (int*)malloc(memsize * sizeof(int));  // evicted addresses
     
     // evict processes until has enough space
     while ((position = has_enough(status_list, proc->mem_req)) == -1) {
@@ -135,12 +138,28 @@ status_list_t *allocate_proc(unit_t *memory_list, int memsize, status_list_t *st
         }
         
         // now proc_id is found, remove the process from memory
-        evict_proc(memory_list, memsize, min_proc);
-        // TODO: print evict message
-        // current_time, EVICTED, mem-addresses=<[set_of_pages]>\n
-
+        evict_proc(memory_list, memsize, min_proc, evicted_add, &evicted_count);
         status_list = update_status(memory_list, memsize);
     }
+
+    // print evict message
+    if (evicted_count > 0) {
+
+        // convert evicted add to string
+        char *msg = (char*)malloc(MAX_MSG_LEN * sizeof(char));
+        strcpy(msg, EVICTED_MSG);
+        for (int i = 0; i < evicted_count; i++) {
+            char addr_str[ADDR_STR_LEN];
+            sprintf(addr_str, i < evicted_count - 1 ? "%d," : "%d]", evicted_add[i]);
+            strcat(msg, addr_str);
+        }
+
+        // print messsage
+        print_status(time, EVICTED, -1, msg);  // no proc id needed
+
+        free(msg);
+    }
+
     for (int i = position; i < position + proc->mem_req; i++) {
         memory_list[i].proc_id = proc->id;
         memory_list[i].time_used = time;
@@ -152,14 +171,16 @@ status_list_t *allocate_proc(unit_t *memory_list, int memsize, status_list_t *st
 }
 
 // evict one process from memory
-void evict_proc(unit_t *memory_list, int memsize, int proc_id) {
-
+void evict_proc(unit_t *memory_list, int memsize, int proc_id, int *evicted_add, int *evicted_count) {
+    
     for (int i = 0; i < memsize; i++) {
         if (memory_list[i].proc_id == proc_id) {
             memory_list[i].proc_id = HOLE;
+            evicted_add[*evicted_count] = i;
+            (*evicted_count)++;
         }
     }
 
 }
 
-void *finish_proc(unit_t *memory_list, int memsize, int proc_id);
+// void *finish_proc(unit_t *memory_list, int memsize, int proc_id);

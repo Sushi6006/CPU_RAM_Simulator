@@ -8,7 +8,7 @@
 #include "output.h"
 #include "processlist.h"
 
-int main(int argc, char *argv[]) {
+int main2(int argc, char *argv[]) {
 
     // initialise all the variables
     char *file_name = (char*)malloc(sizeof(char) * MAX_FILENAME);  // the file name
@@ -98,7 +98,7 @@ void run_proc(process_t *proc, int time) {
     proc->status = RUNNING;
     char *msg = (char*)malloc(MAX_MSG_LEN * sizeof(char));
     sprintf(msg, RUNNING_MSG, proc->remaining_time);
-    print_status(time, proc, msg);
+    print_status(time, proc->status, proc->id, msg);
 
     // set time for memory
 }
@@ -111,7 +111,7 @@ void finish_proc(process_t *proc, int time, int *executed_count, int total_proc)
 
     char *msg = (char*)malloc(MAX_MSG_LEN * sizeof(char));
     sprintf(msg, FINISHED_MSG, total_proc - (*executed_count));
-    print_status(time, proc, msg);
+    print_status(time, proc->status, proc->id, msg);
     // set time for memory
 }
 
