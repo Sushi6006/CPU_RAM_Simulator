@@ -34,6 +34,16 @@ status_list_t *init_status_list(int size) {
     return status_list;
 }
 
+// check if process is in memory
+int mem_has_proc(unit_t *mem, int size, int proc_id) {
+    for (int i = 0; i < size; i++) {
+        if (mem[i].proc_id == proc_id) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
 // check if theres a block of memory fit the need
 // return: -1 if no, the address if available
 int has_enough(status_list_t *status_list, int req_mem) {
@@ -111,7 +121,7 @@ status_list_t *update_status(unit_t *memory_list, int len) {
 }
 
 // allocate process into memory, return new status list
-status_list_t *allocate_proc(unit_t *memory_list, int memsize, status_list_t *status_list, process_t *proc, int time) {
+status_list_t *swap_mem(unit_t *memory_list, int memsize, status_list_t *status_list, process_t *proc, int time) {
 
     if ((memory_list == NULL) || (status_list == NULL) || (proc == NULL)) {
         perror("ERROR allocating process to memory");

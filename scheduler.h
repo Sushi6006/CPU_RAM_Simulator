@@ -35,10 +35,11 @@
 #define THROUGHPUT_TIMEFRAME 60
 
 typedef struct Specifications {
-    int sch_algo;  // scheduling algorithm
-    int mem_allo;  // memory management
-    int mem_size;  // size of memory
-    int quantum;   // quantum
+    int sch_algo;    // scheduling algorithm
+    int mem_allo;    // memory management
+    int mem_size;    // size of memory
+    int quantum;     // quantum
+    int proc_count;  // number of processes
 } spec_t;
 
 // functions for input
@@ -46,8 +47,8 @@ void read_args(int argc, char *argv[], char* file_name, spec_t *spec);
 process_list_t *read_process(char *file_name);
 
 // does stuff with single process
-void run_proc(process_t *proc, int time);
-void finish_proc(process_t *proc, int time, int *executed_count, int total_proc);
+int run_proc(process_t *proc, int time, unit_t *memory_list, status_list_t *status_list, spec_t spec);
+void finish_proc(process_t *proc, int time, unit_t *memory_list, status_list_t *status_list, spec_t spec, int *executed_count);
 
 // cpu scheduling
 void schedule(process_list_t *process_list, unit_t *memory_list, status_list_t *status_list, spec_t spec);

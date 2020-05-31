@@ -66,7 +66,7 @@ int main() {
     while (curr_proc != NULL) {
         printf("======= %d =======\n", counter);
         run_proc(curr_proc, time);
-        status_list = allocate_proc(mem_list, size, status_list, curr_proc, time);
+        status_list = swap_mem(mem_list, size, status_list, curr_proc, time);
         // print_memory_list(mem_list, size);
         // print_status_list(status_list);
         time += curr_proc->job_time;

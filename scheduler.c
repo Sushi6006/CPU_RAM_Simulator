@@ -19,6 +19,7 @@ int main(int argc, char *argv[]) {
     // read & store processes and other info
     read_args(argc, argv, file_name, &spec);
     process_list_t *process_list = read_process(file_name);
+    free(file_name);
     unit_t *memory_list;
     status_list_t *status_list;
     if (spec.mem_size != -1) {  // not unlimited
@@ -30,7 +31,8 @@ int main(int argc, char *argv[]) {
         memory_list = init_memory_list(0);
         status_list = init_status_list(0);
     }
-    free(file_name);
+    spec.proc_count = process_list->process_count;
+    
 
     // enter cpu scheduling
     sort(process_list);  // sort by proc_id when the arrival time is the same
@@ -62,7 +64,7 @@ void read_args(int argc, char *argv[], char* file_name, spec_t *spec) {
                 if (optarg[0] == 'u') {
                     (*spec).mem_size = UNSPECIFIED;  // unlimited
                 } else {
-                    (*spec).mem_size = atoi(optarg);
+                    (*spec).mem_size = atoi(optarg) / 4;  // converge to page count
                 }
                 break;
             case FLAG_QUANTUM:
@@ -93,9 +95,9 @@ process_list_t *read_process(char *file_name) {
     char *line = (char*)malloc(MAX_PROC_LINE * sizeof(char));
     size_t len; ssize_t read;
     while ((read = getline(&line, &len, process_file)) != -1) {
-        int arrival_time, id, mem_size, job_time;
-        sscanf(line, "%d%d%d%d", &arrival_time, &id, &mem_size, &job_time);
-        process_list = add_process(process_list, create_process(arrival_time, id, mem_size, job_time));
+        int arrival_time, id, mem_req, job_time;
+        sscanf(line, "%d%d%d%d", &arrival_time, &id, &mem_req, &job_time);
+        process_list = add_process(process_list, create_process(arrival_time, id, mem_req / 4, job_time));
     }
 
     fclose(process_file);
@@ -104,26 +106,41 @@ process_list_t *read_process(char *file_name) {
     return process_list;
 }
 
-// run the process
-void run_proc(process_t *proc, int time) {
+// run the process, returns extra time taken
+int run_proc(process_t *proc, int time, unit_t *memory_list, status_list_t *status_list, spec_t spec) {
+
+    int extra_time = 0;  // extra time took to run the process
+
     proc->status = RUNNING;
     char *msg = (char*)malloc(MAX_MSG_LEN * sizeof(char));
     sprintf(msg, RUNNING_MSG, proc->remaining_time);
     print_status(time, proc->status, proc->id, msg);
 
     // set time for memory
+    // if (spec.mem_size != UNSPECIFIED) {
+    //     if (!mem_has_proc(memory_list, spec.mem_size, proc->id)) {
+    //         swap_mem(memory_list, spec.mem_size, status_list, proc, time);
+    //         extra_time += proc->mem_req * TIME_PER_PAGE;
+    //     }
+    // }
+
+    return extra_time;
 }
 
 // finish up the prcoess
-void finish_proc(process_t *proc, int time, int *executed_count, int total_proc) {
+void finish_proc(process_t *proc, int time, unit_t *memory_list, status_list_t *status_list, spec_t spec, int *executed_count) {
     
     proc->status = FINISHED;
     (*executed_count)++;
 
     char *msg = (char*)malloc(MAX_MSG_LEN * sizeof(char));
-    sprintf(msg, FINISHED_MSG, total_proc - (*executed_count));
+    sprintf(msg, FINISHED_MSG, spec.proc_count - (*executed_count));
     print_status(time, proc->status, proc->id, msg);
-    // set time for memory
+    
+    // free memory allocated to process
+    // int *add_evicted = (int*)malloc(spec.mem_size * sizeof(int));  // will be ignored
+    // int count = 0;  // will be ignored
+    // evict_proc(memory_list, spec.mem_size, proc->id, add_evicted, &count);
 }
 
 // select algo for the simulation
@@ -173,11 +190,11 @@ void fcfs(process_list_t *process_list, unit_t *memory_list, status_list_t *stat
         // if process arrives
         if (curr_process->arrival_time <= time) {
             // process started running
-            run_proc(curr_process, time);
+            time += run_proc(curr_process, time, memory_list, status_list, spec);
             time += curr_process->job_time;
 
             // process finished
-            finish_proc(curr_process, time, &executed_count, process_list->process_count);
+            finish_proc(curr_process, time, memory_list, status_list, spec, &executed_count);
             
             // calculate stats
             calc_stats(&min_throughput, &max_throughput, &total_throughput, &throughput, &last_timestamp,
@@ -231,13 +248,13 @@ void rr(process_list_t *process_list, unit_t *memory_list, status_list_t *status
 
         // run the first in queue
         curr_process = arrived_list->head_process;
-        run_proc(curr_process, time);
+        time += run_proc(curr_process, time, memory_list, status_list, spec);
 
         // all process arrived and executing last process
         if ((arrived_count == process_list->process_count) && (curr_process->next == NULL)) {
             time += curr_process->remaining_time;
             // finishing process
-            finish_proc(curr_process, time, &executed_count, process_list->process_count);
+            finish_proc(curr_process, time, memory_list, status_list, spec, &executed_count);
             
             // calculate stats
             calc_stats(&min_throughput, &max_throughput, &total_throughput, &throughput, &last_timestamp,
@@ -258,7 +275,7 @@ void rr(process_list_t *process_list, unit_t *memory_list, status_list_t *status
             // finishing process
             arrived_list = proc_arrive(arriving_process, arrived_list, time, &arrived_count);
             curr_process->remaining_time = 0;
-            finish_proc(curr_process, time, &executed_count, process_list->process_count);
+            finish_proc(curr_process, time, memory_list, status_list, spec, &executed_count);
 
             // calculate stats
             calc_stats(&min_throughput, &max_throughput, &total_throughput, &throughput, &last_timestamp,
@@ -329,11 +346,11 @@ void sjf(process_list_t *process_list, unit_t *memory_list, status_list_t *statu
         }
 
         // run the process
-        run_proc(min_process, time);
+        time += run_proc(min_process, time, memory_list, status_list, spec);
         time += min_process->job_time;
 
         // finish the process
-        finish_proc(min_process, time, &executed_count, process_list->process_count);
+        finish_proc(min_process, time, memory_list, status_list, spec, &executed_count);
         
         // calculate stats
         calc_stats(&min_throughput, &max_throughput, &total_throughput, &throughput, &last_timestamp,
