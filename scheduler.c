@@ -172,7 +172,7 @@ void finish_proc(process_t *proc, int time, unit_t *memory_list, spec_t spec, in
         }
 
         // print messsage
-        print_status(time, EVICTED, -1, msg);  // no proc id needed
+        print_status(time, EVICTED, -1, msg2);  // no proc id needed
 
         free(msg2);
 
