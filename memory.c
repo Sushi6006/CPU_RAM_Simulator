@@ -100,12 +100,16 @@ status_list_t *add_status(status_list_t *list, status_t *new_status) {
 }
 
 // update status list with given memory
-status_list_t *update_status(unit_t *memory_list, int len) {
+status_list_t *update_status(status_list_t *status_list, unit_t *memory_list, int len) {
     // init
     int last_status = memory_list[0].proc_id == HOLE ? HOLE : OCCU;
     int last_start = 0;
-    status_list_t *status_list;
-    status_list = (status_list_t*)malloc(sizeof(*status_list));
+    // status_list_t *status_list;
+    // i don't quite understand why its 64
+    // but if i dont do this, i get 
+    // `malloc(): unsorted double linked list corrupted`
+    // and i have no clue why
+    // status_list = (status_list_t*)malloc(64 * sizeof(*status_list));
     for (int i = 1; i < len; i++) {
         int curr_status = memory_list[i].proc_id == HOLE ? HOLE : OCCU;
         if (curr_status != last_status) {
@@ -116,18 +120,19 @@ status_list_t *update_status(unit_t *memory_list, int len) {
         }
     }
     status_list = add_status(status_list, create_status(last_status, last_start, len - last_start));
-
     return status_list;
 }
 
 // allocate process into memory, return new status list
-status_list_t *swap_mem(unit_t *memory_list, int memsize, status_list_t *status_list, process_t *proc, int time) {
+status_list_t *swap_mem(unit_t *memory_list, int memsize, process_t *proc, int time) {
 
-    if ((memory_list == NULL) || (status_list == NULL) || (proc == NULL)) {
+    if ((memory_list == NULL) || (proc == NULL)) {
         perror("ERROR allocating process to memory");
         exit(EXIT_FAILURE);
     }
 
+    status_list_t *status_list = init_status_list(memsize);
+    update_status(status_list, memory_list, memsize);
     int position;           // where to be allocated
     int evicted_count = 0;  // whether processes have been evicted
     int *evicted_add = (int*)malloc(memsize * sizeof(int));  // evicted addresses
@@ -149,12 +154,11 @@ status_list_t *swap_mem(unit_t *memory_list, int memsize, status_list_t *status_
         
         // now proc_id is found, remove the process from memory
         evict_proc(memory_list, memsize, min_proc, evicted_add, &evicted_count);
-        status_list = update_status(memory_list, memsize);
+        status_list = update_status(status_list, memory_list, memsize);
     }
 
     // print evict message
     if (evicted_count > 0) {
-
         // convert evicted add to string
         char *msg = (char*)malloc(MAX_MSG_LEN * sizeof(char));
         strcpy(msg, EVICTED_MSG);
@@ -175,7 +179,8 @@ status_list_t *swap_mem(unit_t *memory_list, int memsize, status_list_t *status_
         memory_list[i].time_used = time;
     }
 
-    status_list = update_status(memory_list, memsize);
+    status_list = update_status(status_list, memory_list, memsize);
+
     return status_list;
 
 }

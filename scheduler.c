@@ -21,25 +21,22 @@ int main(int argc, char *argv[]) {
     process_list_t *process_list = read_process(file_name);
     free(file_name);
     unit_t *memory_list;
-    status_list_t *status_list;
     if (spec.mem_size != -1) {  // not unlimited
         memory_list = init_memory_list(spec.mem_size);
-        status_list = init_status_list(spec.mem_size);
     } else {
         // still need to allocate, otherwise
         // gets terminated abnormally
         memory_list = init_memory_list(0);
-        status_list = init_status_list(0);
     }
     spec.proc_count = process_list->process_count;
     
 
     // enter cpu scheduling
     sort(process_list);  // sort by proc_id when the arrival time is the same
-    schedule(process_list, memory_list, status_list, spec);
+    schedule(process_list, memory_list, spec);
 
     // free
-    free_lists(process_list, memory_list, status_list);
+    free_lists(process_list, memory_list);
 
     return 0;
 }
@@ -107,7 +104,7 @@ process_list_t *read_process(char *file_name) {
 }
 
 // run the process, returns extra time taken
-int run_proc(process_t *proc, int time, unit_t *memory_list, status_list_t *status_list, spec_t spec) {
+int run_proc(process_t *proc, int time, unit_t *memory_list, spec_t spec) {
 
     int extra_time = 0;  // extra time took to run the process
 
@@ -117,18 +114,18 @@ int run_proc(process_t *proc, int time, unit_t *memory_list, status_list_t *stat
     print_status(time, proc->status, proc->id, msg);
 
     // set time for memory
-    // if (spec.mem_size != UNSPECIFIED) {
-    //     if (!mem_has_proc(memory_list, spec.mem_size, proc->id)) {
-    //         swap_mem(memory_list, spec.mem_size, status_list, proc, time);
-    //         extra_time += proc->mem_req * TIME_PER_PAGE;
-    //     }
-    // }
+    if (spec.mem_size != UNSPECIFIED) {
+        if (!mem_has_proc(memory_list, spec.mem_size, proc->id)) {
+            swap_mem(memory_list, spec.mem_size, proc, time);   
+            extra_time += proc->mem_req * TIME_PER_PAGE;
+        }
+    }
 
     return extra_time;
 }
 
 // finish up the prcoess
-void finish_proc(process_t *proc, int time, unit_t *memory_list, status_list_t *status_list, spec_t spec, int *executed_count) {
+void finish_proc(process_t *proc, int time, unit_t *memory_list, spec_t spec, int *executed_count) {
     
     proc->status = FINISHED;
     (*executed_count)++;
@@ -138,26 +135,26 @@ void finish_proc(process_t *proc, int time, unit_t *memory_list, status_list_t *
     print_status(time, proc->status, proc->id, msg);
     
     // free memory allocated to process
-    // int *add_evicted = (int*)malloc(spec.mem_size * sizeof(int));  // will be ignored
-    // int count = 0;  // will be ignored
-    // evict_proc(memory_list, spec.mem_size, proc->id, add_evicted, &count);
+    int *add_evicted = (int*)malloc(spec.mem_size * sizeof(int));  // will be ignored
+    int count = 0;  // will be ignored
+    evict_proc(memory_list, spec.mem_size, proc->id, add_evicted, &count);
 }
 
 // select algo for the simulation
-void schedule(process_list_t *process_list, unit_t *memory_list, status_list_t *status_list, spec_t spec) {
+void schedule(process_list_t *process_list, unit_t *memory_list, spec_t spec) {
     switch (spec.sch_algo) {
         case SCH_FF:
-            fcfs(process_list, memory_list, status_list, spec);
+            fcfs(process_list, memory_list, spec);
             break;
         case SCH_RR:
             if (spec.quantum == -1) {  // quantum not given
                 perror("ERROR trying to run Round-Robin without quantum");
                 exit(EXIT_FAILURE);
             }
-            rr(process_list, memory_list, status_list, spec);
+            rr(process_list, memory_list, spec);
             break;
         case BYO:
-            sjf(process_list, memory_list, status_list, spec);
+            sjf(process_list, memory_list, spec);
             break;
         default:
             perror("ERROR selecting scheduling algorithm");
@@ -166,7 +163,7 @@ void schedule(process_list_t *process_list, unit_t *memory_list, status_list_t *
 }
 
 // first-come first-served
-void fcfs(process_list_t *process_list, unit_t *memory_list, status_list_t *status_list, spec_t spec) {
+void fcfs(process_list_t *process_list, unit_t *memory_list, spec_t spec) {
 
     if (process_list == NULL) {
         perror("ERROR scheduling empty list");
@@ -190,11 +187,11 @@ void fcfs(process_list_t *process_list, unit_t *memory_list, status_list_t *stat
         // if process arrives
         if (curr_process->arrival_time <= time) {
             // process started running
-            time += run_proc(curr_process, time, memory_list, status_list, spec);
+            time += run_proc(curr_process, time, memory_list, spec);
             time += curr_process->job_time;
 
             // process finished
-            finish_proc(curr_process, time, memory_list, status_list, spec, &executed_count);
+            finish_proc(curr_process, time, memory_list, spec, &executed_count);
             
             // calculate stats
             calc_stats(&min_throughput, &max_throughput, &total_throughput, &throughput, &last_timestamp,
@@ -216,7 +213,7 @@ void fcfs(process_list_t *process_list, unit_t *memory_list, status_list_t *stat
 }
 
 // robin round
-void rr(process_list_t *process_list, unit_t *memory_list, status_list_t *status_list, spec_t spec) {
+void rr(process_list_t *process_list, unit_t *memory_list, spec_t spec) {
 
     if (process_list == NULL) {
         perror("ERROR scheduling empty list");
@@ -248,13 +245,13 @@ void rr(process_list_t *process_list, unit_t *memory_list, status_list_t *status
 
         // run the first in queue
         curr_process = arrived_list->head_process;
-        time += run_proc(curr_process, time, memory_list, status_list, spec);
+        time += run_proc(curr_process, time, memory_list, spec);
 
         // all process arrived and executing last process
         if ((arrived_count == process_list->process_count) && (curr_process->next == NULL)) {
             time += curr_process->remaining_time;
             // finishing process
-            finish_proc(curr_process, time, memory_list, status_list, spec, &executed_count);
+            finish_proc(curr_process, time, memory_list, spec, &executed_count);
             
             // calculate stats
             calc_stats(&min_throughput, &max_throughput, &total_throughput, &throughput, &last_timestamp,
@@ -275,7 +272,7 @@ void rr(process_list_t *process_list, unit_t *memory_list, status_list_t *status
             // finishing process
             arrived_list = proc_arrive(arriving_process, arrived_list, time, &arrived_count);
             curr_process->remaining_time = 0;
-            finish_proc(curr_process, time, memory_list, status_list, spec, &executed_count);
+            finish_proc(curr_process, time, memory_list, spec, &executed_count);
 
             // calculate stats
             calc_stats(&min_throughput, &max_throughput, &total_throughput, &throughput, &last_timestamp,
@@ -293,7 +290,7 @@ void rr(process_list_t *process_list, unit_t *memory_list, status_list_t *status
 }
 
 // shortest job first / shortest process next (spn)
-void sjf(process_list_t *process_list, unit_t *memory_list, status_list_t *status_list, spec_t spec) {
+void sjf(process_list_t *process_list, unit_t *memory_list, spec_t spec) {
 
     if (process_list == NULL) {
         perror("ERROR scheduling empty list");
@@ -346,11 +343,11 @@ void sjf(process_list_t *process_list, unit_t *memory_list, status_list_t *statu
         }
 
         // run the process
-        time += run_proc(min_process, time, memory_list, status_list, spec);
+        time += run_proc(min_process, time, memory_list, spec);
         time += min_process->job_time;
 
         // finish the process
-        finish_proc(min_process, time, memory_list, status_list, spec, &executed_count);
+        finish_proc(min_process, time, memory_list, spec, &executed_count);
         
         // calculate stats
         calc_stats(&min_throughput, &max_throughput, &total_throughput, &throughput, &last_timestamp,
@@ -402,7 +399,7 @@ void calc_stats(int *min_tp, int *max_tp, int *tot_tp, int *tp, int *last_timest
 }
 
 // free a linked list
-void free_lists(process_list_t *proc_list, unit_t *mem_list, status_list_t* status_list) {
+void free_lists(process_list_t *proc_list, unit_t *mem_list) {
     // free process list
     if (proc_list != NULL) {
         process_t *prev, *curr = proc_list->head_process;
@@ -416,15 +413,4 @@ void free_lists(process_list_t *proc_list, unit_t *mem_list, status_list_t* stat
 
     // free memory list
     free(mem_list);
-
-    // free status list
-    if (status_list != NULL) {
-        status_t *prev, *curr = status_list->head;
-        while (curr != NULL) {
-            prev = curr;
-            curr = curr->next;
-            free(prev);
-        }
-        free(status_list);
-    }
 }

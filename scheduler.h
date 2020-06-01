@@ -47,14 +47,14 @@ void read_args(int argc, char *argv[], char* file_name, spec_t *spec);
 process_list_t *read_process(char *file_name);
 
 // does stuff with single process
-int run_proc(process_t *proc, int time, unit_t *memory_list, status_list_t *status_list, spec_t spec);
-void finish_proc(process_t *proc, int time, unit_t *memory_list, status_list_t *status_list, spec_t spec, int *executed_count);
+int run_proc(process_t *proc, int time, unit_t *memory_list, spec_t spec);
+void finish_proc(process_t *proc, int time, unit_t *memory_list, spec_t spec, int *executed_count);
 
 // cpu scheduling
-void schedule(process_list_t *process_list, unit_t *memory_list, status_list_t *status_list, spec_t spec);
-void fcfs(process_list_t *process_list, unit_t *memory_list, status_list_t *status_list, spec_t spec);
-void rr(process_list_t *process_list, unit_t *memory_list, status_list_t *status_list, spec_t spec);
-void sjf(process_list_t *process_list, unit_t *memory_list, status_list_t *status_list, spec_t spec);
+void schedule(process_list_t *process_list, unit_t *memory_list, spec_t spec);
+void fcfs(process_list_t *process_list, unit_t *memory_list, spec_t spec);
+void rr(process_list_t *process_list, unit_t *memory_list, spec_t spec);
+void sjf(process_list_t *process_list, unit_t *memory_list, spec_t spec);
 
 // memory allocation
 void virtual_mem();
@@ -65,5 +65,5 @@ void calc_stats(int *min_tp, int *max_tp, int *tot_tp, int *tp, int *last_timest
                 int *tot_turnaround, float *max_overhead, float *tot_overhead, int *last_recorded,
                 int time, process_t *proc);
 
-void free_lists(process_list_t *proc_list, unit_t *mem_list, status_list_t* status_list);
+void free_lists(process_list_t *proc_list, unit_t *mem_list);
 #endif

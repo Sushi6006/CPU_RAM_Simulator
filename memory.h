@@ -44,9 +44,9 @@ int mem_has_proc(unit_t *mem, int size, int proc_id);
 int has_enough(status_list_t *status_list, int req_mem);
 status_t *create_status(int status, int start, int size);
 status_list_t *add_status(status_list_t *list, status_t *new_status);
-status_list_t *update_status(unit_t *memory_list, int len);
+status_list_t *update_status(status_list_t *status_list, unit_t *memory_list, int len);
 
-status_list_t *swap_mem(unit_t *memory_list, int memsize, status_list_t *status_list, process_t *proc, int time);
+status_list_t *swap_mem(unit_t *memory_list, int memsize, process_t *proc, int time);
 void evict_proc(unit_t *memory_list, int memsize, int proc_id, int *evicted_add, int *evicted_count);
 // void *finish_proc(unit_t *memory_list, int memsize, int proc_id);
 
