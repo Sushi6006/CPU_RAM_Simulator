@@ -154,7 +154,6 @@ void finish_proc(process_t *proc, int time, unit_t *memory_list, spec_t spec, in
 
     char *msg = (char*)malloc(MAX_MSG_LEN * sizeof(char));
     sprintf(msg, FINISHED_MSG, spec.proc_count - (*executed_count));
-    print_status(time, proc->status, proc->id, msg);
     
     // free memory allocated to process
     int *evicted_add = (int*)malloc(spec.mem_size * sizeof(int));
@@ -177,6 +176,8 @@ void finish_proc(process_t *proc, int time, unit_t *memory_list, spec_t spec, in
         free(msg2);
 
     }
+
+    print_status(time, proc->status, proc->id, msg);
     free(msg);
 }
 
