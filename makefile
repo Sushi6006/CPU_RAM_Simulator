@@ -2,10 +2,10 @@ build:
 	gcc -o scheduler output.c processlist.c memory.c scheduler.c -Wall -lm
 
 run_test:
-	./scheduler -f processes.txt -a ff -s 200 -m p
+	./scheduler -f processes.txt -a ff -s 100 -m p
 
 run_test2:
-	./scheduler -f processes.txt -a cs -s 200 -m p -q 10
+	./scheduler -f processes.txt -a cs -s 100 -m p -q 10
 
 run_comp:
 	python3 runner.py

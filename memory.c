@@ -44,6 +44,20 @@ int mem_has_proc(unit_t *mem, int size, int proc_id) {
     return 0;
 }
 
+int mem_occupied(unit_t *mem, int size, int *proc_mem, int proc_id) {
+    int count = 0;
+    int proc_count = 0;
+    for (int i = 0; i < size; i++) {
+        if (mem[i].proc_id != HOLE) {
+            count++;
+        }
+        if (mem[i].proc_id == proc_id) {
+            proc_mem[proc_count++] = i;
+        }
+    }
+    return count;
+}
+
 // check if theres a block of memory fit the need
 // return: -1 if no, the address if available
 int has_enough(status_list_t *status_list, int req_mem) {

@@ -56,14 +56,9 @@ void fcfs(process_list_t *process_list, unit_t *memory_list, spec_t spec);
 void rr(process_list_t *process_list, unit_t *memory_list, spec_t spec);
 void sjf(process_list_t *process_list, unit_t *memory_list, spec_t spec);
 
-// memory allocation
-void virtual_mem();
-void swapping();
-void cm();
 
 void calc_stats(int *min_tp, int *max_tp, int *tot_tp, int *tp, int *last_timestamp,
                 int *tot_turnaround, float *max_overhead, float *tot_overhead, int *last_recorded,
                 int time, process_t *proc);
-
 void free_lists(process_list_t *proc_list, unit_t *mem_list);
 #endif

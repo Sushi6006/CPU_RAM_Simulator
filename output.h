@@ -18,6 +18,7 @@
 
 // messages to be printed out
 #define RUNNING_MSG "remaining-time=%d"
+#define RUNNING_MSG2 ", load-time=%d, mem-usage=%d%%, mem-addresses=["
 #define EVICTED_MSG "mem-addresses=["
 #define FINISHED_MSG "proc-remaining=%d"
 

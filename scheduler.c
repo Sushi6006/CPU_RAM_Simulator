@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
     } else {
         // still need to allocate, otherwise
         // gets terminated abnormally
-        memory_list = init_memory_list(0);
+        memory_list = init_memory_list(1);
     }
     spec.proc_count = process_list->process_count;
     
@@ -111,7 +111,6 @@ int run_proc(process_t *proc, int time, unit_t *memory_list, spec_t spec) {
     proc->status = RUNNING;
     char *msg = (char*)malloc(MAX_MSG_LEN * sizeof(char));
     sprintf(msg, RUNNING_MSG, proc->remaining_time);
-    print_status(time, proc->status, proc->id, msg);
 
     // set time for memory
     if (spec.mem_size != UNSPECIFIED) {
@@ -119,7 +118,30 @@ int run_proc(process_t *proc, int time, unit_t *memory_list, spec_t spec) {
             swap_mem(memory_list, spec.mem_size, proc, time);   
             extra_time += proc->mem_req * TIME_PER_PAGE;
         }
+        
+        // second part of msg if memory loading is required
+        char *msg2 = (char*)malloc(MAX_MSG_LEN * sizeof(char));
+        // printf("MSG2 ALLOCATED\n");
+        int *proc_mem = (int*)malloc(spec.mem_size * sizeof(int) + 1);
+        int mem_usage = mem_occupied(memory_list, spec.mem_size, proc_mem, proc->id);
+        int usage_percentage = (int)ceil((float)mem_usage / (float)spec.mem_size * 100.0);
+
+        sprintf(msg2, RUNNING_MSG2, extra_time, usage_percentage);
+
+        for (int i = 0; i < mem_usage; i++) {
+            char addr_str[ADDR_STR_LEN];
+            sprintf(addr_str, i < mem_usage - 1 ? "%d," : "%d]", proc_mem[i]);
+            strcat(msg2, addr_str);
+        }
+
+        strcat(msg, msg2);
+        free(msg2);
+        // free(proc_mem);
     }
+
+    print_status(time, proc->status, proc->id, msg);
+
+    free(msg);
 
     return extra_time;
 }
@@ -135,12 +157,27 @@ void finish_proc(process_t *proc, int time, unit_t *memory_list, spec_t spec, in
     print_status(time, proc->status, proc->id, msg);
     
     // free memory allocated to process
-    int *add_evicted = (int*)malloc(spec.mem_size * sizeof(int));  // will be ignored
-    int count = 0;  // will be ignored
-    evict_proc(memory_list, spec.mem_size, proc->id, add_evicted, &count);
+    int *evicted_add = (int*)malloc(spec.mem_size * sizeof(int));
+    int evicted_count = 0;
+    evict_proc(memory_list, spec.mem_size, proc->id, evicted_add, &evicted_count);
+
+    // print message
+    char *msg2 = (char*)malloc(MAX_MSG_LEN * sizeof(char));
+    strcpy(msg2, EVICTED_MSG);
+    for (int i = 0; i < evicted_count; i++) {
+        char addr_str[ADDR_STR_LEN];
+        sprintf(addr_str, i < evicted_count - 1 ? "%d," : "%d]", evicted_add[i]);
+        strcat(msg2, addr_str);
+    }
+
+    // print messsage
+    print_status(time, EVICTED, -1, msg);  // no proc id needed
+
+    free(msg);
+    free(msg2);
 }
 
-// select algo for the simulation
+// select algo for the simulationw
 void schedule(process_list_t *process_list, unit_t *memory_list, spec_t spec) {
     switch (spec.sch_algo) {
         case SCH_FF:
