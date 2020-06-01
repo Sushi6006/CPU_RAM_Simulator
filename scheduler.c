@@ -161,20 +161,23 @@ void finish_proc(process_t *proc, int time, unit_t *memory_list, spec_t spec, in
     int evicted_count = 0;
     evict_proc(memory_list, spec.mem_size, proc->id, evicted_add, &evicted_count);
 
-    // print message
-    char *msg2 = (char*)malloc(MAX_MSG_LEN * sizeof(char));
-    strcpy(msg2, EVICTED_MSG);
-    for (int i = 0; i < evicted_count; i++) {
-        char addr_str[ADDR_STR_LEN];
-        sprintf(addr_str, i < evicted_count - 1 ? "%d," : "%d]", evicted_add[i]);
-        strcat(msg2, addr_str);
+    if (spec.mem_size != UNSPECIFIED) {
+        // print message
+        char *msg2 = (char*)malloc(MAX_MSG_LEN * sizeof(char));
+        strcpy(msg2, EVICTED_MSG);
+        for (int i = 0; i < evicted_count; i++) {
+            char addr_str[ADDR_STR_LEN];
+            sprintf(addr_str, i < evicted_count - 1 ? "%d," : "%d]", evicted_add[i]);
+            strcat(msg2, addr_str);
+        }
+
+        // print messsage
+        print_status(time, EVICTED, -1, msg);  // no proc id needed
+
+        free(msg2);
+
     }
-
-    // print messsage
-    print_status(time, EVICTED, -1, msg);  // no proc id needed
-
     free(msg);
-    free(msg2);
 }
 
 // select algo for the simulationw
