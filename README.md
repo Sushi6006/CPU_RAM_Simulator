@@ -11,6 +11,7 @@ Project done by Leyan LIN in May, 2020
   - `benchmark-cs.txt` is provided as required
   - `processes.txt` is the test given in description
   - `processes2.txt` is my own test case
+  - `rr_memoryoverlap.txt`, `reordering.txt` and `timejumps.txt` are given in tests
 - **source files**
   - `scheduler.c` is the main file
   - `scheduler.h` contains scheduling, allocation, processes related stuff
@@ -19,7 +20,8 @@ Project done by Leyan LIN in May, 2020
   - `output.c` and `output.h` are for outputs
 - **misc**
   - `mem_allo_test.c` is for testing memory allocation before implement it
-  - `runner.py` is a comparator for different algorithms
+  - `comparator.py` is a comparator for different algorithms
+  - `runner.py` is a runner to test the program and print the output in a file
   - *from github.com/joshcarp/scheduler_tester*
     - `dockerfile`
     - `scripts`

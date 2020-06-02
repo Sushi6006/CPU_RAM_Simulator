@@ -29,7 +29,6 @@ status_list_t *init_status_list(int size) {
     }
     // initialise as an empty list with all memory available
     status_list->head = status_list->foot = NULL;
-    status_list = add_status(status_list, create_status(HOLE, 0, size));
 
     return status_list;
 }
@@ -118,12 +117,6 @@ status_list_t *update_status(status_list_t *status_list, unit_t *memory_list, in
     // init
     int last_status = memory_list[0].proc_id == HOLE ? HOLE : OCCU;
     int last_start = 0;
-    // status_list_t *status_list;
-    // i don't quite understand why its 64
-    // but if i dont do this, i get 
-    // `malloc(): unsorted double linked list corrupted`
-    // and i have no clue why
-    // status_list = (status_list_t*)malloc(64 * sizeof(*status_list));
     for (int i = 1; i < len; i++) {
         int curr_status = memory_list[i].proc_id == HOLE ? HOLE : OCCU;
         if (curr_status != last_status) {
@@ -146,7 +139,7 @@ status_list_t *swap_mem(unit_t *memory_list, int memsize, process_t *proc, int t
     }
 
     status_list_t *status_list = init_status_list(memsize);
-    update_status(status_list, memory_list, memsize);
+    status_list = update_status(status_list, memory_list, memsize);
     int position;           // where to be allocated
     int evicted_count = 0;  // whether processes have been evicted
     int *evicted_add = (int*)malloc(memsize * sizeof(int));  // evicted addresses

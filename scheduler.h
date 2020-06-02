@@ -32,7 +32,7 @@
 #define EVICTED 3     // evicted
 #define FINISHED 4    // finished
 
-#define THROUGHPUT_TIMEFRAME 60
+#define THROUGHPUT_TIMEFRAME 60.0
 
 typedef struct Specifications {
     int sch_algo;    // scheduling algorithm
