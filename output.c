@@ -29,7 +29,7 @@ void print_status(int time, int status, int proc_id, char *msg) {
 void print_stats(int process_executed, int total_turnaround, float total_overhead, float max_overhead, int time,
                  int avg_throughput, int min_throughput, int max_throughput) {
     printf("Throughput %d, %d, %d\n", avg_throughput, min_throughput, max_throughput);
-    printf("Turnaround time %d\n", (int)ceil((float)total_turnaround / (float)process_executed));
+    printf("Turnaround time %d\n", (int)ceil((double)total_turnaround / (double)process_executed));
     printf("Time overhead %.2f %.2f\n", max_overhead, total_overhead / process_executed);
     printf("Makespan %d\n", time);
 }

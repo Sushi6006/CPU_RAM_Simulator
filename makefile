@@ -2,7 +2,7 @@ build:
 	gcc -o scheduler output.c processlist.c memory.c scheduler.c -Wall -lm
 
 run_test:
-	./scheduler -f processes.txt -a ff -s 100 -m p
+	./scheduler -f timejumps.txt -a rr -s 100 -m p -q 10
 
 clean:
 	rm -f scheduler
@@ -26,9 +26,6 @@ compare:
 
 runner:
 	python3 runner.py
-
-run_test2:
-	./scheduler -f processes.txt -a cs -s 100 -m p -q 10
 
 test:
 	# give permission using chmod first, then run the script from joshcarp/scheduler_test

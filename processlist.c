@@ -70,7 +70,7 @@ process_list_t *delete_head_proc(process_list_t *list) {
         perror("ERROR removing process from list");
         exit(EXIT_FAILURE);
     }
-
+    
     process_t *head_proc = list->head_process;
     list->head_process = head_proc->next;
     free(head_proc);

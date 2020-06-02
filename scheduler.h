@@ -48,7 +48,7 @@ process_list_t *read_process(char *file_name);
 
 // does stuff with single process
 int run_proc(process_t *proc, int time, unit_t *memory_list, spec_t spec);
-void finish_proc(process_t *proc, int time, unit_t *memory_list, spec_t spec, int *executed_count);
+void finish_proc(process_t *proc, int time, unit_t *memory_list, spec_t spec, int arrived_count, int *executed_count);
 
 // cpu scheduling
 void schedule(process_list_t *process_list, unit_t *memory_list, spec_t spec);
