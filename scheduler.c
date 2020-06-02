@@ -172,9 +172,7 @@ void finish_proc(process_t *proc, int time, unit_t *memory_list, spec_t spec, in
 
         // print messsage
         print_status(time, EVICTED, -1, msg2);  // no proc id needed
-
         free(msg2);
-
     }
 
     print_status(time, proc->status, proc->id, msg);
@@ -249,8 +247,9 @@ void fcfs(process_list_t *process_list, unit_t *memory_list, spec_t spec) {
     }
 
     // print stats
+    int avg_throughput = (int)ceil((float)executed_count / (ceil((float)time / THROUGHPUT_TIMEFRAME)));
     print_stats(executed_count, total_turnaround, total_overhead, max_overhead, time,
-                (int)ceil((float)time / THROUGHPUT_TIMEFRAME), min_throughput, max_throughput);
+                avg_throughput, min_throughput, max_throughput);
 }
 
 // robin round
