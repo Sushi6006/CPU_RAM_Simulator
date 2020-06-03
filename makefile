@@ -1,8 +1,8 @@
 build:
 	gcc -o scheduler output.c processlist.c memory.c scheduler.c -Wall -lm
 
-run_test:
-	./scheduler -f timejumps.txt -a rr -s 100 -m p -q 10
+run:
+	./scheduler -f rr_memoryoverlap.txt -a rr -s 20 -m v -q 10
 
 clean:
 	rm -f scheduler
@@ -24,10 +24,10 @@ mem_allo_test:
 compare:
 	python3 comparator.py
 
-runner:
+test:
 	python3 runner.py
 
-test:
-	# give permission using chmod first, then run the script from joshcarp/scheduler_test
-	chmod 755 -R scripts/
-	./scripts/test.sh
+# test:
+# 	# give permission using chmod first, then run the script from joshcarp/scheduler_test
+# 	chmod 755 -R scripts/
+# 	./scripts/test.sh

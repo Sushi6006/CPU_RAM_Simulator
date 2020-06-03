@@ -9,6 +9,27 @@
 #include "processlist.h"
 #include "memory.h"
 
+// convert a list into a string in "..., ..., ...]" form, yes without the first bracket
+char *list_to_str(int *list, int size) {
+
+    char *s = (char*)malloc(MAX_MSG_LEN * sizeof(char));
+    strcpy(s, "");
+
+    for (int i = 0; i < size; i++) {
+        char addr_str[ADDR_STR_LEN];
+        if ((i != 0) && (list[i] == 0)) {
+            // initialisation caused some 0 at the end
+            // if it is not the first 0 in the list, ignore them
+            s[strlen(s) - 1] = ']';  // replace the last comma with ]
+            break;
+        }
+        sprintf(addr_str, i < size - 1 ? "%d," : "%d]", list[i]);
+        strcat(s, addr_str);
+    }
+
+    return s;
+}
+
 // print out the status when changed
 void print_status(int time, int status, int proc_id, char *msg) {
     switch (status) {

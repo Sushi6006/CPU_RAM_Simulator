@@ -5,6 +5,7 @@
 #include "memory.h"
 
 #define PAGE_SIZE 4
+#define PAGE_NEEDED_V 4
 #define ADDR_STR_LEN 8  // max length of a number(with comma) represeting an addr
 #define TIME_PER_PAGE 2
 
@@ -40,15 +41,20 @@ typedef struct MemPage {
 unit_t *init_memory_list(int size);
 status_list_t *init_status_list(int size);
 
+// FOR SWAPPING
 int mem_has_proc(unit_t *mem, int size, int proc_id);
-int mem_occupied(unit_t *mem, int size, int *proc_mem, int proc_id);
+int mem_occupied_by_proc(unit_t *mem, int size, int *proc_mem, int proc_id);
 int has_enough(status_list_t *status_list, int req_mem);
 status_t *create_status(int status, int start, int size);
 status_list_t *add_status(status_list_t *list, status_t *new_status);
 status_list_t *update_status(status_list_t *status_list, unit_t *memory_list, int len);
-
-status_list_t *swap_mem(unit_t *memory_list, int memsize, process_t *proc, int time);
 void evict_proc(unit_t *memory_list, int memsize, int proc_id, int *evicted_add, int *evicted_count);
-// void *finish_proc(unit_t *memory_list, int memsize, int proc_id);
+void swap_mem(unit_t *memory_list, int memsize, process_t *proc, int time);
+
+// FOR VIRTUAL MEMORY
+int num_empty(unit_t *memory_list, int memsize);
+int proc_page_count(unit_t *mem, int size, int proc_id);
+int evict_page(unit_t *memory_list, int memsize, int proc_id);
+int virt_mem(unit_t *memory_list, int memsize, process_t *proc, int time);
 
 #endif

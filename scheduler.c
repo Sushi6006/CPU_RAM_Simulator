@@ -114,41 +114,30 @@ int run_proc(process_t *proc, int time, unit_t *memory_list, spec_t spec) {
 
     // set time for memory
     if (spec.mem_size != UNSPECIFIED) {
-        if (!mem_has_proc(memory_list, spec.mem_size, proc->id)) {
-            swap_mem(memory_list, spec.mem_size, proc, time);   
-            extra_time += proc->mem_req * TIME_PER_PAGE;
-        }
-        
-        // second part of msg if memory loading is required
-        char *msg2 = (char*)malloc(MAX_MSG_LEN * sizeof(char));
-        // printf("MSG2 ALLOCATED\n");
-        int *proc_mem = (int*)malloc(spec.mem_size * sizeof(int) + 1);
-        int mem_usage = mem_occupied(memory_list, spec.mem_size, proc_mem, proc->id);
-        int usage_percentage = (int)ceil((double)mem_usage / (double)spec.mem_size * 100.0);
-
-        sprintf(msg2, RUNNING_MSG2, extra_time, usage_percentage);
-
-        for (int i = 0; i < mem_usage; i++) {
-            char addr_str[ADDR_STR_LEN];
-            if ((i != 0) && (proc_mem[i] == 0)) {
-                // initialisation caused some 0 at the end
-                // if it is not the first 0 in the list, ignore them
-                msg2[strlen(msg2) - 1] = ']';  // replace the last comma with ]
-                break;
+        // swapping
+        if (spec.mem_allo == MEM_P) {
+            if (!mem_has_proc(memory_list, spec.mem_size, proc->id)) {
+                swap_mem(memory_list, spec.mem_size, proc, time);   
+                extra_time = proc->mem_req * TIME_PER_PAGE;
             }
-            sprintf(addr_str, i < mem_usage - 1 ? "%d," : "%d]", proc_mem[i]);
-            strcat(msg2, addr_str);
-        }
+            
+            // second part of msg if memory loading is required
+            char *msg2 = (char*)malloc(MAX_MSG_LEN * sizeof(char));
+            int *proc_mem = (int*)malloc(spec.mem_size * sizeof(int) + 1);
+            int mem_usage = mem_occupied_by_proc(memory_list, spec.mem_size, proc_mem, proc->id);
+            int usage_percentage = (int)ceil((double)mem_usage / (double)spec.mem_size * 100.0);
 
-        strcat(msg, msg2);
-        free(msg2);
-        // free(proc_mem);
+            sprintf(msg2, RUNNING_MSG2, extra_time, usage_percentage, list_to_str(proc_mem, mem_usage));
+
+            strcat(msg, msg2);
+            free(msg2);
+        } else if (spec.mem_allo == MEM_V) {  // virtual memory
+            extra_time = virt_mem(memory_list, spec.mem_size, proc, time);
+        }
     }
 
     print_status(time, proc->status, proc->id, msg);
-
     free(msg);
-
     return extra_time;
 }
 
@@ -170,13 +159,7 @@ void finish_proc(process_t *proc, int time, unit_t *memory_list, spec_t spec, in
         // print message
         char *msg2 = (char*)malloc(MAX_MSG_LEN * sizeof(char));
         strcpy(msg2, EVICTED_MSG);
-        for (int i = 0; i < evicted_count; i++) {
-            char addr_str[ADDR_STR_LEN];
-            sprintf(addr_str, i < evicted_count - 1 ? "%d," : "%d]", evicted_add[i]);
-            strcat(msg2, addr_str);
-        }
-
-        // print messsage
+        strcat(msg2, list_to_str(evicted_add, evicted_count));
         print_status(time, EVICTED, -1, msg2);  // no proc id needed
         free(msg2);
     }
@@ -319,28 +302,15 @@ void rr(process_list_t *process_list, unit_t *memory_list, spec_t spec) {
         }
         time += run_proc(curr_process, time, memory_list, spec);
 
-        // all process arrived and executing last process
-        if ((arrived_count == process_list->process_count) && (curr_process->next == NULL)) {
-            // still run quantum by quantum
-            time += curr_process->remaining_time;
-            // finishing process
-            finish_proc(curr_process, time, memory_list, spec, num_arrived(process_list, time), &executed_count);
-            
-            // calculate stats
-            calc_stats(&min_throughput, &max_throughput, &total_throughput, &throughput, &last_timestamp,
-                       &total_turnaround, &max_overhead, &total_overhead, &last_finished,
-                       time, curr_process);
-
-            // remove finished process
-            arrived_list = delete_head_proc(arrived_list);
-        } else if (curr_process->remaining_time > quantum) {  
+        // cannot finish within quantum
+        if (curr_process->remaining_time > quantum) {  
             time += quantum;
             // let process arrive before moving curr proc to the end
             arrived_list = proc_arrive(arriving_process, arrived_list, time, &arrived_count);
             curr_process->remaining_time -= quantum;
             // move process to end of queue
             arrived_list = move_proc_to_end(arrived_list, curr_process);
-        } else {
+        } else {  // can finish within quantum
             time += curr_process->remaining_time;
             // finishing process
             arrived_list = proc_arrive(arriving_process, arrived_list, time, &arrived_count);

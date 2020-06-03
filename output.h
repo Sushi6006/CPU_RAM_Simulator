@@ -18,12 +18,13 @@
 
 // messages to be printed out
 #define RUNNING_MSG "remaining-time=%d"
-#define RUNNING_MSG2 ", load-time=%d, mem-usage=%d%%, mem-addresses=["
+#define RUNNING_MSG2 ", load-time=%d, mem-usage=%d%%, mem-addresses=[%s"
 #define EVICTED_MSG "mem-addresses=["
 #define FINISHED_MSG "proc-remaining=%d"
 
 
 // for required output
+char *list_to_str(int *list, int size);
 void print_status(int time, int status, int proc_id, char *msg);
 void print_stats(int process_executed, int total_turnaround, float total_overhead, float max_overhead, int time,
                  int avg_throughput, int min_throughput, int max_throughput);
