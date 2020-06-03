@@ -16,7 +16,7 @@ Test #5 PASSED
 Test #6 -- running ./scheduler -f rr_memoryoverlap.txt -a rr -s 20 -m v -q 10
 Test #6 FAILED
 ========== DIFF OUTPUT ============
-3,40c3,32
+3,36c3,28
 < 20, RUNNING, id=2, remaining-time=41, load-time=8, mem-usage=100%, mem-addresses=[0,1,2,3]
 < 38, EVICTED, mem-addresses=[0,1,2,4]
 < 38, RUNNING, id=3, remaining-time=21, load-time=8, mem-usage=100%, mem-addresses=[0,1,2,4]
@@ -51,10 +51,6 @@ Test #6 FAILED
 < 250, RUNNING, id=2, remaining-time=4, load-time=8, mem-usage=100%, mem-addresses=[0,1,2,3,4]
 < 262, EVICTED, mem-addresses=[0,1,2,3,4]
 < 262, FINISHED, id=2, proc-remaining=0
-< Throughput 1, 0, 2
-< Turnaround time 225
-< Time overhead 9.40 7.74
-< Makespan 262
 ---
 > 20, RUNNING, id=2, remaining-time=40, load-time=9, mem-usage=100%, mem-addresses=[0,1,2,3]
 > 39, EVICTED, mem-addresses=[0,1,2,4]
@@ -82,7 +78,11 @@ Test #6 FAILED
 > 224, RUNNING, id=2, remaining-time=10, load-time=8, mem-usage=100%, mem-addresses=[0,1,2,3,4]
 > 242, EVICTED, mem-addresses=[0,1,2,3,4]
 > 242, FINISHED, id=2, proc-remaining=0
-> Throughput 1, 0, 1
+38,40c30,32
+< Turnaround time 225
+< Time overhead 9.40 7.74
+< Makespan 262
+---
 > Turnaround time 192
 > Time overhead 6.95 6.46
 > Makespan 242
@@ -116,7 +116,7 @@ Test #6 FAILED
 224, RUNNING, id=2, remaining-time=10, load-time=8, mem-usage=100%, mem-addresses=[0,1,2,3,4]
 242, EVICTED, mem-addresses=[0,1,2,3,4]
 242, FINISHED, id=2, proc-remaining=0
-Throughput 1, 0, 1
+Throughput 1, 0, 2
 Turnaround time 192
 Time overhead 6.95 6.46
 Makespan 242
@@ -134,52 +134,12 @@ Test #9 -- running ./scheduler -f timejumps.txt -a rr -s 100 -m v -q 10
 Test #9 PASSED
 
 Test #10 -- running ./scheduler -f rr_memoryoverlap.txt -a rr -s 40  -m p -q 10
-Test #10 FAILED
-========== DIFF OUTPUT ============
-27c27
-< Throughput 1, 0, 2
----
-> Throughput 1, 0, 1
-===================================
-========== STDOUT ============
-0, RUNNING, id=1, remaining-time=30, load-time=10, mem-usage=50%, mem-addresses=[0,1,2,3,4]
-20, RUNNING, id=2, remaining-time=40, load-time=10, mem-usage=100%, mem-addresses=[5,6,7,8,9]
-40, EVICTED, mem-addresses=[0,1,2,3,4]
-40, RUNNING, id=3, remaining-time=20, load-time=10, mem-usage=100%, mem-addresses=[0,1,2,3,4]
-60, EVICTED, mem-addresses=[5,6,7,8,9]
-60, RUNNING, id=4, remaining-time=30, load-time=10, mem-usage=100%, mem-addresses=[5,6,7,8,9]
-80, EVICTED, mem-addresses=[0,1,2,3,4]
-80, RUNNING, id=1, remaining-time=20, load-time=10, mem-usage=100%, mem-addresses=[0,1,2,3,4]
-100, EVICTED, mem-addresses=[5,6,7,8,9]
-100, RUNNING, id=2, remaining-time=30, load-time=10, mem-usage=100%, mem-addresses=[5,6,7,8,9]
-120, EVICTED, mem-addresses=[0,1,2,3,4]
-120, RUNNING, id=3, remaining-time=10, load-time=10, mem-usage=100%, mem-addresses=[0,1,2,3,4]
-140, EVICTED, mem-addresses=[0,1,2,3,4]
-140, FINISHED, id=3, proc-remaining=3
-140, RUNNING, id=4, remaining-time=20, load-time=10, mem-usage=100%, mem-addresses=[0,1,2,3,4]
-160, EVICTED, mem-addresses=[5,6,7,8,9]
-160, RUNNING, id=1, remaining-time=10, load-time=10, mem-usage=100%, mem-addresses=[5,6,7,8,9]
-180, EVICTED, mem-addresses=[5,6,7,8,9]
-180, FINISHED, id=1, proc-remaining=2
-180, RUNNING, id=2, remaining-time=20, load-time=10, mem-usage=100%, mem-addresses=[5,6,7,8,9]
-200, RUNNING, id=4, remaining-time=10, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,3,4]
-210, EVICTED, mem-addresses=[0,1,2,3,4]
-210, FINISHED, id=4, proc-remaining=1
-210, RUNNING, id=2, remaining-time=10, load-time=0, mem-usage=50%, mem-addresses=[5,6,7,8,9]
-220, EVICTED, mem-addresses=[5,6,7,8,9]
-220, FINISHED, id=2, proc-remaining=0
-Throughput 1, 0, 1
-Turnaround time 181
-Time overhead 6.75 6.13
-Makespan 220
-==============================
----------- STDERR ------------
-------------------------------
+Test #10 PASSED
 
 Test #11 -- running ./scheduler -f rr_memoryoverlap.txt -a rr -s 40 -m v -q 10
 Test #11 FAILED
 ========== DIFF OUTPUT ============
-4,38c4,30
+4,34c4,26
 < 40, RUNNING, id=3, remaining-time=21, load-time=8, mem-usage=100%, mem-addresses=[0,1,2,3]
 < 58, EVICTED, mem-addresses=[4,5,6,7]
 < 58, RUNNING, id=4, remaining-time=31, load-time=8, mem-usage=100%, mem-addresses=[4,5,6,7]
@@ -211,10 +171,6 @@ Test #11 FAILED
 < 241, RUNNING, id=2, remaining-time=2, load-time=0, mem-usage=50%, mem-addresses=[2,3,4,6,7]
 < 243, EVICTED, mem-addresses=[2,3,4,6,7]
 < 243, FINISHED, id=2, proc-remaining=0
-< Throughput 1, 0, 2
-< Turnaround time 218
-< Time overhead 9.50 7.55
-< Makespan 243
 ---
 > 40, RUNNING, id=3, remaining-time=20, load-time=9, mem-usage=100%, mem-addresses=[0,1,2,3]
 > 59, EVICTED, mem-addresses=[4,5,6,7]
@@ -239,7 +195,11 @@ Test #11 FAILED
 > 237, RUNNING, id=2, remaining-time=10, load-time=0, mem-usage=50%, mem-addresses=[2,3,4,5,8]
 > 247, EVICTED, mem-addresses=[2,3,4,5,8]
 > 247, FINISHED, id=2, proc-remaining=0
-> Throughput 1, 0, 1
+36,38c28,30
+< Turnaround time 218
+< Time overhead 9.50 7.55
+< Makespan 243
+---
 > Turnaround time 206
 > Time overhead 7.70 7.00
 > Makespan 247
@@ -271,7 +231,7 @@ Test #11 FAILED
 237, RUNNING, id=2, remaining-time=10, load-time=0, mem-usage=50%, mem-addresses=[2,3,4,5,8]
 247, EVICTED, mem-addresses=[2,3,4,5,8]
 247, FINISHED, id=2, proc-remaining=0
-Throughput 1, 0, 1
+Throughput 1, 0, 2
 Turnaround time 206
 Time overhead 7.70 7.00
 Makespan 247

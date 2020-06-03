@@ -233,6 +233,7 @@ void fcfs(process_list_t *process_list, unit_t *memory_list, spec_t spec) {
     int executed_count = 0;
     // init min with the value of 61 because min job time would be 1 in a 60 unit time frame
     int min_throughput = 61, max_throughput = 0, total_throughput = 0;
+    int finish_times[spec.proc_count + 1];
     // this keeps track of throughput in each time period
     int throughput = 0, last_timestamp = 0, last_finished = 0;
     int total_turnaround = 0;
@@ -247,6 +248,7 @@ void fcfs(process_list_t *process_list, unit_t *memory_list, spec_t spec) {
             time += curr_process->job_time;
 
             // process finished
+            finish_times[executed_count] = time;
             finish_proc(curr_process, time, memory_list, spec, num_arrived(process_list, time), &executed_count);
             
             // calculate stats
@@ -264,9 +266,21 @@ void fcfs(process_list_t *process_list, unit_t *memory_list, spec_t spec) {
     }
 
     // print stats
+    int min_tp = 61, max_tp = -1, total_tp = 0;
+    for (int i = 0; i < time; i += THROUGHPUT_TIMEFRAME) {
+        int count = 0;
+        for (int j = 0; j < executed_count; j++) {
+            if ((finish_times[j] > i) && (finish_times[j] <= i + THROUGHPUT_TIMEFRAME)) {
+                count++;
+            }
+        }
+        if (count > max_tp) max_tp = count;
+        if (count < min_tp) min_tp = count;
+        total_tp += count;
+    }
     int avg_throughput = (int)ceil((double)executed_count / (ceil((double)time / THROUGHPUT_TIMEFRAME)));
     print_stats(executed_count, total_turnaround, total_overhead, max_overhead, time,
-                avg_throughput, min_throughput, max_throughput);
+                avg_throughput, min_tp, max_tp);
 }
 
 // robin round
@@ -291,6 +305,7 @@ void rr(process_list_t *process_list, unit_t *memory_list, spec_t spec) {
     int min_throughput = 61, max_throughput = 0, total_throughput = 0;
     // this keeps track of throughput in each time period
     int throughput = 0, last_timestamp = 0, last_finished = 0;
+    int finish_times[spec.proc_count + 1];
     int total_turnaround = 0;
     float max_overhead = 0, total_overhead = 0;
 
@@ -322,6 +337,7 @@ void rr(process_list_t *process_list, unit_t *memory_list, spec_t spec) {
             // finishing process
             arrived_list = proc_arrive(arriving_process, arrived_list, time, &arrived_count);
             curr_process->remaining_time = 0;
+            finish_times[executed_count] = time;
             finish_proc(curr_process, time, memory_list, spec, num_arrived(process_list, time), &executed_count);
 
             // calculate stats
@@ -335,9 +351,20 @@ void rr(process_list_t *process_list, unit_t *memory_list, spec_t spec) {
     }
 
     // print stats
+    int min_tp = 61, max_tp = -1;
+    for (int i = 0; i < time; i += THROUGHPUT_TIMEFRAME) {
+        int count = 0;
+        for (int j = 0; j < executed_count; j++) {
+            if ((finish_times[j] > i) && (finish_times[j] <= i + THROUGHPUT_TIMEFRAME)) {
+                count++;
+            }
+        }
+        if (count > max_tp) max_tp = count;
+        if (count < min_tp) min_tp = count;
+    }
     int avg_throughput = (int)ceil((double)executed_count / (ceil((double)time / THROUGHPUT_TIMEFRAME)));
     print_stats(executed_count, total_turnaround, total_overhead, max_overhead, time,
-                avg_throughput, min_throughput, max_throughput);
+                avg_throughput, min_tp, max_tp);
 }
 
 // shortest job first / shortest process next (spn)
@@ -361,6 +388,7 @@ void sjf(process_list_t *process_list, unit_t *memory_list, spec_t spec) {
     int min_throughput = 61, max_throughput = 0, total_throughput = 0;
     // this keeps track of throughput in each time period
     int throughput = 0, last_timestamp = 0, last_finished = 0;
+    int finish_times[spec.proc_count + 1];
     int total_turnaround = 0;
     float max_overhead = 0, total_overhead = 0;
 
@@ -390,7 +418,6 @@ void sjf(process_list_t *process_list, unit_t *memory_list, spec_t spec) {
             min_process = create_process(temp->arrival_time, temp->id,
                                          temp->mem_req, temp->job_time);
             arrived_list = delete_head_proc(arrived_list);
-            // free(temp);  <- already freed in `delete_head_proc`
         }
 
         // run the process
@@ -398,6 +425,7 @@ void sjf(process_list_t *process_list, unit_t *memory_list, spec_t spec) {
         time += min_process->job_time;
 
         // finish the process
+        finish_times[executed_count] = time;
         finish_proc(min_process, time, memory_list, spec, num_arrived(process_list, time), &executed_count);
         
         // calculate stats
@@ -407,9 +435,21 @@ void sjf(process_list_t *process_list, unit_t *memory_list, spec_t spec) {
     }
 
     // print stats
+    int min_tp = 61, max_tp = -1, total_tp = 0;
+    for (int i = 0; i < time + THROUGHPUT_TIMEFRAME; i += THROUGHPUT_TIMEFRAME) {
+        int count = 0;
+        for (int j = 0; j < executed_count; j++) {
+            if ((finish_times[j] > i) && (finish_times[j] <= i + THROUGHPUT_TIMEFRAME)) {
+                count++;
+            }
+        }
+        if (count > max_tp) max_tp = count;
+        if (count < min_tp) min_tp = count;
+        total_tp += count;
+    }
     int avg_throughput = (int)ceil((double)executed_count / (ceil((double)time / THROUGHPUT_TIMEFRAME)));
     print_stats(executed_count, total_turnaround, total_overhead, max_overhead, time,
-                avg_throughput, min_throughput, max_throughput);
+                avg_throughput, min_tp, max_tp);
 }
 
 // calculate required stats
