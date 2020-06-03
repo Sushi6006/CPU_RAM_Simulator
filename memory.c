@@ -207,7 +207,6 @@ int num_empty(unit_t *memory_list, int memsize) {
             count++;
         }
     }
-
     return count;
 }
 
@@ -233,6 +232,19 @@ int evict_page(unit_t *memory_list, int memsize, int proc_id) {
     }
     // page not found
     return -1;
+}
+
+// sort the result of mem evicted
+void sort_evicted_add(int *evicted_add, int count) {
+    for (int i = 0; i < count - 1; i++) {
+        for (int j = i + 1; j < count; j++) {
+            if (evicted_add[j] <= evicted_add[i]) {
+                int temp = evicted_add[i];
+                evicted_add[i] = evicted_add[j];
+                evicted_add[j] = temp;
+            }
+        }
+    }
 }
 
 // virtual memory stuff, return extra time
@@ -272,13 +284,25 @@ int virt_mem(unit_t *memory_list, int memsize, process_t *proc, int time) {
                         }
                     }
                 }
-                evicted_add[evicted_count++] = evict_page(memory_list, memsize, min_proc);
+                evicted_add[evicted_count] = evict_page(memory_list, memsize, min_proc);
+                evicted_count++;
             }
 
+            // printf("EVICTED LIST: ");
+            // for (int i = 0; i < evicted_count; i++) printf("%d ", evicted_add[i]);
+            // printf("\n");
+            
+            sort_evicted_add(evicted_add, evicted_count);
+
             // print evict message
-            char *msg = (char*)malloc(MAX_MSG_LEN * sizeof(char));
-            strcpy(msg, EVICTED_MSG);
-            strcat(msg, list_to_str(evicted_add, evicted_count));
+            if (evicted_count > 0) {
+                char *msg = (char*)malloc(MAX_MSG_LEN * sizeof(char));
+                strcpy(msg, EVICTED_MSG);
+                strcat(msg, list_to_str(evicted_add, evicted_count));
+                // print messsage
+                print_status(time, EVICTED, -1, msg);  // no proc id needed
+                free(msg);
+            }
 
             // allocate
             for (int i = 0; i < memsize; i++) {
@@ -287,10 +311,15 @@ int virt_mem(unit_t *memory_list, int memsize, process_t *proc, int time) {
                     memory_list[i].time_used = time;
                 }
             }
+
+            // add page fault time
+            page_count = proc_page_count(memory_list, memsize, proc->id);
+            extra_time += proc->mem_req - page_count;
+
         }  // end of - no free page, process not (enough) in memory 
 
     } else {  // if there are free pages
-        if (page_count >= page_req) {
+        if (page_count >= page_req) {  // has enough page to run
             // fill in empty page
             for (int i = 0; i < memsize; i++) {
                 // if reaches requirement
@@ -304,10 +333,13 @@ int virt_mem(unit_t *memory_list, int memsize, process_t *proc, int time) {
                     extra_time += TIME_PER_PAGE;
                 }
             }
+            // add page fault time
+            page_count = proc_page_count(memory_list, memsize, proc->id);
+            extra_time += proc->mem_req - page_count;
+
         } else {  // less than required amount of pages in memory
             // release first
             while (num_empty(memory_list, memsize) < page_req) {
-                // printf("SARTED EVICTION\n");
                 // find min
                 int min_time = -1, min_proc = -1;
                 for (int i = 0; i < memsize; i++) { 
@@ -319,8 +351,26 @@ int virt_mem(unit_t *memory_list, int memsize, process_t *proc, int time) {
                         }
                     }
                 }
-                evicted_add[evicted_count++] = evict_page(memory_list, memsize, min_proc);
+                evicted_add[evicted_count] = evict_page(memory_list, memsize, min_proc);
+                evicted_count++;
             }
+
+            // printf("EVICTED LIST: ");
+            // for (int i = 0; i < evicted_count; i++) printf("%d ", evicted_add[i]);
+            // printf("\n");
+
+            sort_evicted_add(evicted_add, evicted_count);
+
+            // print evict message
+            if (evicted_count > 0) {
+                char *msg = (char*)malloc(MAX_MSG_LEN * sizeof(char));
+                strcpy(msg, EVICTED_MSG);
+                strcat(msg, list_to_str(evicted_add, evicted_count));
+                // print messsage
+                print_status(time, EVICTED, -1, msg);  // no proc id needed
+                free(msg);
+            }
+        
             // allocate as many as possible
             for (int i = 0; i < memsize; i++) {
                 // if reaches requirement
@@ -334,6 +384,11 @@ int virt_mem(unit_t *memory_list, int memsize, process_t *proc, int time) {
                     extra_time += TIME_PER_PAGE;
                 }
             }
+
+            // add page fault time
+            page_count = proc_page_count(memory_list, memsize, proc->id);
+            extra_time += proc->mem_req - page_count;
+            
         }
     }
 

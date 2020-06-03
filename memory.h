@@ -41,10 +41,10 @@ typedef struct MemPage {
 unit_t *init_memory_list(int size);
 status_list_t *init_status_list(int size);
 
-// FOR SWAPPING
 int mem_has_proc(unit_t *mem, int size, int proc_id);
 int mem_occupied_by_proc(unit_t *mem, int size, int *proc_mem, int proc_id);
 int has_enough(status_list_t *status_list, int req_mem);
+// FOR SWAPPING
 status_t *create_status(int status, int start, int size);
 status_list_t *add_status(status_list_t *list, status_t *new_status);
 status_list_t *update_status(status_list_t *status_list, unit_t *memory_list, int len);

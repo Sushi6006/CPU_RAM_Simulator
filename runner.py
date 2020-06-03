@@ -1,7 +1,7 @@
 from subprocess import *
 
 # create commands
-cmd = "make test".split()
+cmd = "make output".split()
 
 # run commands
 res = Popen(cmd, stdout=PIPE, stderr=STDOUT)

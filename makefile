@@ -27,7 +27,7 @@ compare:
 test:
 	python3 runner.py
 
-# test:
-# 	# give permission using chmod first, then run the script from joshcarp/scheduler_test
-# 	chmod 755 -R scripts/
-# 	./scripts/test.sh
+output:
+	# give permission using chmod first, then run the script from joshcarp/scheduler_test
+	chmod 755 -R scripts/
+	./scripts/test.sh

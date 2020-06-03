@@ -14,17 +14,9 @@ Test #5 -- running ./scheduler -f rr_memoryoverlap.txt -a ff -s 20 -m p -q 10
 Test #5 PASSED
 
 Test #6 -- running ./scheduler -f rr_memoryoverlap.txt -a rr -s 20 -m v -q 10
-./scripts/test.sh: line 46: 20172 Segmentation fault      $(cat ${CASES_DIR}/testcase${i}.in) 2> /tmp/stderr > /tmp/stdout
-Test #6 WARNING: did not exit normally -- exit code: 139
-========== STDOUT ============
-==============================
----------- STDERR ------------
-------------------------------
 Test #6 FAILED
 ========== DIFF OUTPUT ============
-1,40d0
-< 0, RUNNING, id=1, remaining-time=30, load-time=10, mem-usage=100%, mem-addresses=[0,1,2,3,4]
-< 20, EVICTED, mem-addresses=[0,1,2,3]
+3,40c3,32
 < 20, RUNNING, id=2, remaining-time=41, load-time=8, mem-usage=100%, mem-addresses=[0,1,2,3]
 < 38, EVICTED, mem-addresses=[0,1,2,4]
 < 38, RUNNING, id=3, remaining-time=21, load-time=8, mem-usage=100%, mem-addresses=[0,1,2,4]
@@ -63,8 +55,71 @@ Test #6 FAILED
 < Turnaround time 225
 < Time overhead 9.40 7.74
 < Makespan 262
+---
+> 20, RUNNING, id=2, remaining-time=40, load-time=9, mem-usage=100%, mem-addresses=[0,1,2,3]
+> 39, EVICTED, mem-addresses=[0,1,2,4]
+> 39, RUNNING, id=3, remaining-time=20, load-time=11, mem-usage=100%, mem-addresses=[0,1,2,4]
+> 60, EVICTED, mem-addresses=[0,1,2,3]
+> 60, RUNNING, id=4, remaining-time=30, load-time=11, mem-usage=100%, mem-addresses=[0,1,2,3]
+> 81, EVICTED, mem-addresses=[0,1,2,4]
+> 81, RUNNING, id=1, remaining-time=20, load-time=11, mem-usage=100%, mem-addresses=[0,1,2,4]
+> 102, EVICTED, mem-addresses=[0,1,2,3]
+> 102, RUNNING, id=2, remaining-time=30, load-time=11, mem-usage=100%, mem-addresses=[0,1,2,3]
+> 123, EVICTED, mem-addresses=[0,1,2,4]
+> 123, RUNNING, id=3, remaining-time=10, load-time=11, mem-usage=100%, mem-addresses=[0,1,2,4]
+> 144, EVICTED, mem-addresses=[0,1,2,4]
+> 144, FINISHED, id=3, proc-remaining=3
+> 144, RUNNING, id=4, remaining-time=20, load-time=9, mem-usage=100%, mem-addresses=[0,1,2,4]
+> 163, EVICTED, mem-addresses=[0,1,2,3]
+> 163, RUNNING, id=1, remaining-time=10, load-time=11, mem-usage=100%, mem-addresses=[0,1,2,3]
+> 184, EVICTED, mem-addresses=[0,1,2,3]
+> 184, FINISHED, id=1, proc-remaining=2
+> 184, RUNNING, id=2, remaining-time=20, load-time=9, mem-usage=100%, mem-addresses=[0,1,2,3]
+> 203, EVICTED, mem-addresses=[0,1,2,4]
+> 203, RUNNING, id=4, remaining-time=10, load-time=11, mem-usage=100%, mem-addresses=[0,1,2,4]
+> 224, EVICTED, mem-addresses=[0,1,2,4]
+> 224, FINISHED, id=4, proc-remaining=1
+> 224, RUNNING, id=2, remaining-time=10, load-time=8, mem-usage=100%, mem-addresses=[0,1,2,3,4]
+> 242, EVICTED, mem-addresses=[0,1,2,3,4]
+> 242, FINISHED, id=2, proc-remaining=0
+> Throughput 1, 0, 1
+> Turnaround time 192
+> Time overhead 6.95 6.46
+> Makespan 242
 ===================================
 ========== STDOUT ============
+0, RUNNING, id=1, remaining-time=30, load-time=10, mem-usage=100%, mem-addresses=[0,1,2,3,4]
+20, EVICTED, mem-addresses=[0,1,2,3]
+20, RUNNING, id=2, remaining-time=40, load-time=9, mem-usage=100%, mem-addresses=[0,1,2,3]
+39, EVICTED, mem-addresses=[0,1,2,4]
+39, RUNNING, id=3, remaining-time=20, load-time=11, mem-usage=100%, mem-addresses=[0,1,2,4]
+60, EVICTED, mem-addresses=[0,1,2,3]
+60, RUNNING, id=4, remaining-time=30, load-time=11, mem-usage=100%, mem-addresses=[0,1,2,3]
+81, EVICTED, mem-addresses=[0,1,2,4]
+81, RUNNING, id=1, remaining-time=20, load-time=11, mem-usage=100%, mem-addresses=[0,1,2,4]
+102, EVICTED, mem-addresses=[0,1,2,3]
+102, RUNNING, id=2, remaining-time=30, load-time=11, mem-usage=100%, mem-addresses=[0,1,2,3]
+123, EVICTED, mem-addresses=[0,1,2,4]
+123, RUNNING, id=3, remaining-time=10, load-time=11, mem-usage=100%, mem-addresses=[0,1,2,4]
+144, EVICTED, mem-addresses=[0,1,2,4]
+144, FINISHED, id=3, proc-remaining=3
+144, RUNNING, id=4, remaining-time=20, load-time=9, mem-usage=100%, mem-addresses=[0,1,2,4]
+163, EVICTED, mem-addresses=[0,1,2,3]
+163, RUNNING, id=1, remaining-time=10, load-time=11, mem-usage=100%, mem-addresses=[0,1,2,3]
+184, EVICTED, mem-addresses=[0,1,2,3]
+184, FINISHED, id=1, proc-remaining=2
+184, RUNNING, id=2, remaining-time=20, load-time=9, mem-usage=100%, mem-addresses=[0,1,2,3]
+203, EVICTED, mem-addresses=[0,1,2,4]
+203, RUNNING, id=4, remaining-time=10, load-time=11, mem-usage=100%, mem-addresses=[0,1,2,4]
+224, EVICTED, mem-addresses=[0,1,2,4]
+224, FINISHED, id=4, proc-remaining=1
+224, RUNNING, id=2, remaining-time=10, load-time=8, mem-usage=100%, mem-addresses=[0,1,2,3,4]
+242, EVICTED, mem-addresses=[0,1,2,3,4]
+242, FINISHED, id=2, proc-remaining=0
+Throughput 1, 0, 1
+Turnaround time 192
+Time overhead 6.95 6.46
+Makespan 242
 ==============================
 ---------- STDERR ------------
 ------------------------------
@@ -76,63 +131,7 @@ Test #8 -- running ./scheduler -f timejumps.txt -a rr -s 100 -m p -q 10
 Test #8 PASSED
 
 Test #9 -- running ./scheduler -f timejumps.txt -a rr -s 100 -m v -q 10
-./scripts/test.sh: line 46: 20194 Segmentation fault      $(cat ${CASES_DIR}/testcase${i}.in) 2> /tmp/stderr > /tmp/stdout
-Test #9 WARNING: did not exit normally -- exit code: 139
-========== STDOUT ============
-==============================
----------- STDERR ------------
-------------------------------
-Test #9 FAILED
-========== DIFF OUTPUT ============
-1,43d0
-< 0, RUNNING, id=1, remaining-time=30, load-time=6, mem-usage=12%, mem-addresses=[0,1,2]
-< 16, RUNNING, id=1, remaining-time=20, load-time=0, mem-usage=12%, mem-addresses=[0,1,2]
-< 26, RUNNING, id=1, remaining-time=10, load-time=0, mem-usage=12%, mem-addresses=[0,1,2]
-< 36, EVICTED, mem-addresses=[0,1,2]
-< 36, FINISHED, id=1, proc-remaining=1
-< 36, RUNNING, id=2, remaining-time=40, load-time=10, mem-usage=20%, mem-addresses=[0,1,2,3,4]
-< 56, RUNNING, id=3, remaining-time=20, load-time=16, mem-usage=52%, mem-addresses=[5,6,7,8,9,10,11,12]
-< 82, RUNNING, id=2, remaining-time=30, load-time=0, mem-usage=52%, mem-addresses=[0,1,2,3,4]
-< 92, RUNNING, id=3, remaining-time=10, load-time=0, mem-usage=52%, mem-addresses=[5,6,7,8,9,10,11,12]
-< 102, EVICTED, mem-addresses=[5,6,7,8,9,10,11,12]
-< 102, FINISHED, id=3, proc-remaining=1
-< 102, RUNNING, id=2, remaining-time=20, load-time=0, mem-usage=20%, mem-addresses=[0,1,2,3,4]
-< 112, RUNNING, id=2, remaining-time=10, load-time=0, mem-usage=20%, mem-addresses=[0,1,2,3,4]
-< 122, EVICTED, mem-addresses=[0,1,2,3,4]
-< 122, FINISHED, id=2, proc-remaining=0
-< 140, RUNNING, id=4, remaining-time=30, load-time=20, mem-usage=40%, mem-addresses=[0,1,2,3,4,5,6,7,8,9]
-< 170, RUNNING, id=4, remaining-time=20, load-time=0, mem-usage=40%, mem-addresses=[0,1,2,3,4,5,6,7,8,9]
-< 180, RUNNING, id=4, remaining-time=10, load-time=0, mem-usage=40%, mem-addresses=[0,1,2,3,4,5,6,7,8,9]
-< 190, EVICTED, mem-addresses=[0,1,2,3,4,5,6,7,8,9]
-< 190, FINISHED, id=4, proc-remaining=0
-< 280, RUNNING, id=5, remaining-time=30, load-time=6, mem-usage=12%, mem-addresses=[0,1,2]
-< 296, RUNNING, id=5, remaining-time=20, load-time=0, mem-usage=12%, mem-addresses=[0,1,2]
-< 306, RUNNING, id=5, remaining-time=10, load-time=0, mem-usage=12%, mem-addresses=[0,1,2]
-< 316, EVICTED, mem-addresses=[0,1,2]
-< 316, FINISHED, id=5, proc-remaining=0
-< 360, RUNNING, id=6, remaining-time=25, load-time=10, mem-usage=20%, mem-addresses=[0,1,2,3,4]
-< 380, RUNNING, id=6, remaining-time=15, load-time=0, mem-usage=20%, mem-addresses=[0,1,2,3,4]
-< 390, RUNNING, id=6, remaining-time=5, load-time=0, mem-usage=20%, mem-addresses=[0,1,2,3,4]
-< 395, EVICTED, mem-addresses=[0,1,2,3,4]
-< 395, FINISHED, id=6, proc-remaining=0
-< 400, RUNNING, id=7, remaining-time=20, load-time=16, mem-usage=32%, mem-addresses=[0,1,2,3,4,5,6,7]
-< 426, RUNNING, id=8, remaining-time=30, load-time=20, mem-usage=72%, mem-addresses=[8,9,10,11,12,13,14,15,16,17]
-< 456, RUNNING, id=7, remaining-time=10, load-time=0, mem-usage=72%, mem-addresses=[0,1,2,3,4,5,6,7]
-< 466, EVICTED, mem-addresses=[0,1,2,3,4,5,6,7]
-< 466, FINISHED, id=7, proc-remaining=1
-< 466, RUNNING, id=8, remaining-time=20, load-time=0, mem-usage=40%, mem-addresses=[8,9,10,11,12,13,14,15,16,17]
-< 476, RUNNING, id=8, remaining-time=10, load-time=0, mem-usage=40%, mem-addresses=[8,9,10,11,12,13,14,15,16,17]
-< 486, EVICTED, mem-addresses=[8,9,10,11,12,13,14,15,16,17]
-< 486, FINISHED, id=8, proc-remaining=0
-< Throughput 1, 0, 1
-< Turnaround time 54
-< Time overhead 3.30 1.97
-< Makespan 486
-===================================
-========== STDOUT ============
-==============================
----------- STDERR ------------
-------------------------------
+Test #9 PASSED
 
 Test #10 -- running ./scheduler -f rr_memoryoverlap.txt -a rr -s 40  -m p -q 10
 Test #10 FAILED
@@ -178,18 +177,9 @@ Makespan 220
 ------------------------------
 
 Test #11 -- running ./scheduler -f rr_memoryoverlap.txt -a rr -s 40 -m v -q 10
-./scripts/test.sh: line 46: 20216 Segmentation fault      $(cat ${CASES_DIR}/testcase${i}.in) 2> /tmp/stderr > /tmp/stdout
-Test #11 WARNING: did not exit normally -- exit code: 139
-========== STDOUT ============
-==============================
----------- STDERR ------------
-------------------------------
 Test #11 FAILED
 ========== DIFF OUTPUT ============
-1,38d0
-< 0, RUNNING, id=1, remaining-time=30, load-time=10, mem-usage=50%, mem-addresses=[0,1,2,3,4]
-< 20, RUNNING, id=2, remaining-time=40, load-time=10, mem-usage=100%, mem-addresses=[5,6,7,8,9]
-< 40, EVICTED, mem-addresses=[0,1,2,3]
+4,38c4,30
 < 40, RUNNING, id=3, remaining-time=21, load-time=8, mem-usage=100%, mem-addresses=[0,1,2,3]
 < 58, EVICTED, mem-addresses=[4,5,6,7]
 < 58, RUNNING, id=4, remaining-time=31, load-time=8, mem-usage=100%, mem-addresses=[4,5,6,7]
@@ -225,8 +215,66 @@ Test #11 FAILED
 < Turnaround time 218
 < Time overhead 9.50 7.55
 < Makespan 243
+---
+> 40, RUNNING, id=3, remaining-time=20, load-time=9, mem-usage=100%, mem-addresses=[0,1,2,3]
+> 59, EVICTED, mem-addresses=[4,5,6,7]
+> 59, RUNNING, id=4, remaining-time=30, load-time=17, mem-usage=100%, mem-addresses=[4,5,6,7]
+> 86, EVICTED, mem-addresses=[0,1,8,9]
+> 86, RUNNING, id=1, remaining-time=20, load-time=13, mem-usage=100%, mem-addresses=[0,1,8,9]
+> 109, EVICTED, mem-addresses=[2,3,4,5]
+> 109, RUNNING, id=2, remaining-time=30, load-time=17, mem-usage=100%, mem-addresses=[2,3,4,5]
+> 136, EVICTED, mem-addresses=[0,1,6,7]
+> 136, RUNNING, id=3, remaining-time=10, load-time=13, mem-usage=100%, mem-addresses=[0,1,6,7]
+> 159, EVICTED, mem-addresses=[0,1,6,7]
+> 159, FINISHED, id=3, proc-remaining=3
+> 159, RUNNING, id=4, remaining-time=20, load-time=9, mem-usage=100%, mem-addresses=[0,1,6,7]
+> 178, EVICTED, mem-addresses=[2,3,8,9]
+> 178, RUNNING, id=1, remaining-time=10, load-time=21, mem-usage=100%, mem-addresses=[2,3,8,9]
+> 209, EVICTED, mem-addresses=[2,3,8,9]
+> 209, FINISHED, id=1, proc-remaining=2
+> 209, RUNNING, id=2, remaining-time=20, load-time=6, mem-usage=90%, mem-addresses=[2,3,4,5,8]
+> 225, RUNNING, id=4, remaining-time=10, load-time=2, mem-usage=100%, mem-addresses=[0,1,6,7,9]
+> 237, EVICTED, mem-addresses=[0,1,6,7,9]
+> 237, FINISHED, id=4, proc-remaining=1
+> 237, RUNNING, id=2, remaining-time=10, load-time=0, mem-usage=50%, mem-addresses=[2,3,4,5,8]
+> 247, EVICTED, mem-addresses=[2,3,4,5,8]
+> 247, FINISHED, id=2, proc-remaining=0
+> Throughput 1, 0, 1
+> Turnaround time 206
+> Time overhead 7.70 7.00
+> Makespan 247
 ===================================
 ========== STDOUT ============
+0, RUNNING, id=1, remaining-time=30, load-time=10, mem-usage=50%, mem-addresses=[0,1,2,3,4]
+20, RUNNING, id=2, remaining-time=40, load-time=10, mem-usage=100%, mem-addresses=[5,6,7,8,9]
+40, EVICTED, mem-addresses=[0,1,2,3]
+40, RUNNING, id=3, remaining-time=20, load-time=9, mem-usage=100%, mem-addresses=[0,1,2,3]
+59, EVICTED, mem-addresses=[4,5,6,7]
+59, RUNNING, id=4, remaining-time=30, load-time=17, mem-usage=100%, mem-addresses=[4,5,6,7]
+86, EVICTED, mem-addresses=[0,1,8,9]
+86, RUNNING, id=1, remaining-time=20, load-time=13, mem-usage=100%, mem-addresses=[0,1,8,9]
+109, EVICTED, mem-addresses=[2,3,4,5]
+109, RUNNING, id=2, remaining-time=30, load-time=17, mem-usage=100%, mem-addresses=[2,3,4,5]
+136, EVICTED, mem-addresses=[0,1,6,7]
+136, RUNNING, id=3, remaining-time=10, load-time=13, mem-usage=100%, mem-addresses=[0,1,6,7]
+159, EVICTED, mem-addresses=[0,1,6,7]
+159, FINISHED, id=3, proc-remaining=3
+159, RUNNING, id=4, remaining-time=20, load-time=9, mem-usage=100%, mem-addresses=[0,1,6,7]
+178, EVICTED, mem-addresses=[2,3,8,9]
+178, RUNNING, id=1, remaining-time=10, load-time=21, mem-usage=100%, mem-addresses=[2,3,8,9]
+209, EVICTED, mem-addresses=[2,3,8,9]
+209, FINISHED, id=1, proc-remaining=2
+209, RUNNING, id=2, remaining-time=20, load-time=6, mem-usage=90%, mem-addresses=[2,3,4,5,8]
+225, RUNNING, id=4, remaining-time=10, load-time=2, mem-usage=100%, mem-addresses=[0,1,6,7,9]
+237, EVICTED, mem-addresses=[0,1,6,7,9]
+237, FINISHED, id=4, proc-remaining=1
+237, RUNNING, id=2, remaining-time=10, load-time=0, mem-usage=50%, mem-addresses=[2,3,4,5,8]
+247, EVICTED, mem-addresses=[2,3,4,5,8]
+247, FINISHED, id=2, proc-remaining=0
+Throughput 1, 0, 1
+Turnaround time 206
+Time overhead 7.70 7.00
+Makespan 247
 ==============================
 ---------- STDERR ------------
 ------------------------------
@@ -263,6 +311,6 @@ Running `./scheduler -f benchmark-cm.txt -a rr -s 100 -m cm -q 10`
 ---------- STDERR ------------
 ------------------------------
 
-make[1]: *** [makefile:33: test] Error 1
+make[1]: *** [makefile:33: output] Error 1
 make[1]: Leaving directory '/home/leyanl/comp30023/comp30023-2020-project-2'
 
