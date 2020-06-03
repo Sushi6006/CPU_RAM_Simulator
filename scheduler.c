@@ -422,13 +422,19 @@ void calc_stats(int *min_tp, int *max_tp, int *tot_tp, int *tp, int *last_timest
     if (time < (*last_timestamp) + THROUGHPUT_TIMEFRAME) {
         (*tp)++;
     } else {
-        if (time == (*last_timestamp) + THROUGHPUT_TIMEFRAME) {
-            (*tp)++;
-        }
+
+        // FIXME: if the previous interval has no process finished
+        // this line wouldnt actually run
+        // so max is miscalculated
         // there is an interval where no process was compeleted
         if (time > (*last_finished) + THROUGHPUT_TIMEFRAME) {
             (*min_tp) = 0;
         }
+
+        if (time == (*last_timestamp) + THROUGHPUT_TIMEFRAME) {
+            (*tp)++;
+        }
+
         (*last_timestamp) += THROUGHPUT_TIMEFRAME;
         // update min, max and total
         if ((*tp) > (*max_tp)) (*max_tp) = (*tp);

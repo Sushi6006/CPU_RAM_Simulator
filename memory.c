@@ -77,6 +77,19 @@ int has_enough(status_list_t *status_list, int req_mem) {
     return -1;
 }
 
+// sort the result of mem evicted
+void sort_evicted_add(int *evicted_add, int count) {
+    for (int i = 0; i < count - 1; i++) {
+        for (int j = i + 1; j < count; j++) {
+            if (evicted_add[j] <= evicted_add[i]) {
+                int temp = evicted_add[i];
+                evicted_add[i] = evicted_add[j];
+                evicted_add[j] = temp;
+            }
+        }
+    }
+}
+
 // create a status node
 status_t *create_status(int status, int start, int size) {
     status_t *new_status;
@@ -177,6 +190,8 @@ void swap_mem(unit_t *memory_list, int memsize, process_t *proc, int time) {
         status_list = update_status(status_list, memory_list, memsize);
     }
 
+    sort_evicted_add(evicted_add, evicted_count);
+
     // print evict message
     if (evicted_count > 0) {
         // convert evicted add to string
@@ -234,19 +249,6 @@ int evict_page(unit_t *memory_list, int memsize, int proc_id) {
     return -1;
 }
 
-// sort the result of mem evicted
-void sort_evicted_add(int *evicted_add, int count) {
-    for (int i = 0; i < count - 1; i++) {
-        for (int j = i + 1; j < count; j++) {
-            if (evicted_add[j] <= evicted_add[i]) {
-                int temp = evicted_add[i];
-                evicted_add[i] = evicted_add[j];
-                evicted_add[j] = temp;
-            }
-        }
-    }
-}
-
 // virtual memory stuff, return extra time
 int virt_mem(unit_t *memory_list, int memsize, process_t *proc, int time) {
 
@@ -288,10 +290,6 @@ int virt_mem(unit_t *memory_list, int memsize, process_t *proc, int time) {
                 evicted_count++;
             }
 
-            // printf("EVICTED LIST: ");
-            // for (int i = 0; i < evicted_count; i++) printf("%d ", evicted_add[i]);
-            // printf("\n");
-            
             sort_evicted_add(evicted_add, evicted_count);
 
             // print evict message
@@ -354,11 +352,7 @@ int virt_mem(unit_t *memory_list, int memsize, process_t *proc, int time) {
                 evicted_add[evicted_count] = evict_page(memory_list, memsize, min_proc);
                 evicted_count++;
             }
-
-            // printf("EVICTED LIST: ");
-            // for (int i = 0; i < evicted_count; i++) printf("%d ", evicted_add[i]);
-            // printf("\n");
-
+            
             sort_evicted_add(evicted_add, evicted_count);
 
             // print evict message
@@ -388,7 +382,7 @@ int virt_mem(unit_t *memory_list, int memsize, process_t *proc, int time) {
             // add page fault time
             page_count = proc_page_count(memory_list, memsize, proc->id);
             extra_time += proc->mem_req - page_count;
-            
+
         }
     }
 

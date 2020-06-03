@@ -44,6 +44,8 @@ status_list_t *init_status_list(int size);
 int mem_has_proc(unit_t *mem, int size, int proc_id);
 int mem_occupied_by_proc(unit_t *mem, int size, int *proc_mem, int proc_id);
 int has_enough(status_list_t *status_list, int req_mem);
+void sort_evicted_add(int *evicted_add, int count);
+
 // FOR SWAPPING
 status_t *create_status(int status, int start, int size);
 status_list_t *add_status(status_list_t *list, status_t *new_status);
