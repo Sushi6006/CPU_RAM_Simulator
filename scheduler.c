@@ -337,7 +337,7 @@ void rr(process_list_t *process_list, unit_t *memory_list, spec_t spec) {
         }
     }
 
-    // print stats
+    // calc & print stats
     int min_tp = 61, max_tp = -1;
     for (int i = 0; i < time; i += THROUGHPUT_TIMEFRAME) {
         int count = 0;
@@ -414,7 +414,7 @@ void sjf(process_list_t *process_list, unit_t *memory_list, spec_t spec) {
         calc_stats(&total_turnaround, &max_overhead, &total_overhead, time, min_process);
     }
 
-    // print stats
+    // calc & print stats
     int min_tp = 61, max_tp = -1;
     for (int i = 0; i < time + THROUGHPUT_TIMEFRAME; i += THROUGHPUT_TIMEFRAME) {
         int count = 0;
