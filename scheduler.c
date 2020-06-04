@@ -38,7 +38,8 @@ int main(int argc, char *argv[]) {
 
     // free
     free_lists(process_list, memory_list);
-
+    
+    // yay
     return 0;
 }
 
@@ -92,7 +93,7 @@ process_list_t *read_process(char *file_name) {
     // read processes line by line
     char *line = (char*)malloc(MAX_PROC_LINE * sizeof(char));
     size_t len; ssize_t read;
-    while ((read = getline(&line, &len, process_file)) != -1) {
+    while ((read = getline(&line, &len, process_file)) != EOF) {
         long long arrival_time, id, mem_req, job_time;
         sscanf(line, "%lld%lld%lld%lld", &arrival_time, &id, &mem_req, &job_time);
         process_list = add_process(process_list, create_process(arrival_time, id, mem_req / 4, job_time));
@@ -116,42 +117,42 @@ long long run_proc(process_t *proc, long long time, unit_t *memory_list, spec_t 
 
     // set time for memory
     if (spec.mem_size != UNSPECIFIED) {
-        // swapping
-        if (spec.mem_allo == MEM_P) {
-            if (!mem_has_proc(memory_list, spec.mem_size, proc->id)) {
-                swap_mem(memory_list, spec.mem_size, proc, time);   
-                extra_time = proc->mem_req * TIME_PER_PAGE;
-            }
-            
-            // second part of msg if memory loading is required
-            long long *proc_mem = (long long*)malloc(spec.mem_size * sizeof(long long) + 1);
-            long long mem_usage = calc_mem_usage(memory_list, spec.mem_size);
-            int usage_percentage = (int)ceil((double)mem_usage / (double)spec.mem_size * 100.0);
-            long long proc_usage = calc_proc_usage(memory_list, spec.mem_size, proc_mem, proc->id, time);
-            sprintf(msg2, RUNNING_MSG2, extra_time, usage_percentage, list_to_str(proc_mem, proc_usage));
-
-        } else if (spec.mem_allo == MEM_V) {  // virtual memory
-            extra_time = virt_mem(memory_list, spec.mem_size, proc, time);
-            long long *proc_mem = (long long*)malloc(spec.mem_size * sizeof(long long) + 1);
-            long long mem_usage = calc_mem_usage(memory_list, spec.mem_size);
-            int usage_percentage = (int)ceil((double)mem_usage / (double)spec.mem_size * 100.0);
-            long long proc_usage = calc_proc_usage(memory_list, spec.mem_size, proc_mem, proc->id, time);
-            sprintf(msg2, RUNNING_MSG2, extra_time, usage_percentage, list_to_str(proc_mem, proc_usage));
-        } else {  // cm
-            extra_time = cm(memory_list, spec.mem_size, proc, time);
-            long long *proc_mem = (long long*)malloc(spec.mem_size * sizeof(long long) + 1);
-            long long mem_usage = calc_mem_usage(memory_list, spec.mem_size);
-            int usage_percentage = (int)ceil((double)mem_usage / (double)spec.mem_size * 100.0);
-            long long proc_usage = calc_proc_usage(memory_list, spec.mem_size, proc_mem, proc->id, time);
-            sprintf(msg2, RUNNING_MSG2, extra_time, usage_percentage, list_to_str(proc_mem, proc_usage));
+        switch (spec.mem_allo) {
+            case MEM_P:
+                // Swapping
+                if (!mem_has_proc(memory_list, spec.mem_size, proc->id)) {
+                    swap_mem(memory_list, spec.mem_size, proc, time);   
+                    extra_time = proc->mem_req * TIME_PER_PAGE;
+                }
+                break;
+            case  MEM_V:
+                // Virtual Memory
+                extra_time = virt_mem(memory_list, spec.mem_size, proc, time);
+                break;
+            case BYO:
+                // CM
+                extra_time = cm(memory_list, spec.mem_size, proc, time);
+                break;
+            default:
+                perror("ERROR selecting memory allocation");
+                exit(EXIT_FAILURE);
         }
+
+        // calculates and prepare output message
+        long long *proc_mem = (long long*)malloc(spec.mem_size * sizeof(long long) + 1);
+        long long mem_usage = calc_mem_usage(memory_list, spec.mem_size);
+        int usage_percentage = (int)ceil((double)mem_usage / (double)spec.mem_size * 100.0);
+        long long proc_usage = calc_proc_usage(memory_list, spec.mem_size, proc_mem, proc->id, time);
+        sprintf(msg2, RUNNING_MSG2, extra_time, usage_percentage, list_to_str(proc_mem, proc_usage));
     }
 
+    // add second part of message if required (limited memory)
     sprintf(msg, RUNNING_MSG, proc->remaining_time);
     strcat(msg, msg2);
-
+    // print running message
     print_status(time, proc->status, proc->id, msg);
     free(msg);
+
     return extra_time;
 }
 
@@ -163,18 +164,18 @@ void finish_proc(process_t *proc, long long time, unit_t *memory_list, spec_t sp
 
     char *msg = (char*)malloc(MAX_MSG_LEN * sizeof(char));
     sprintf(msg, FINISHED_MSG, arrived_count - (*executed_count));
-    
-    // free memory allocated to process
-    long long *evicted_add = (long long*)malloc(spec.mem_size * sizeof(long long));
-    long long evicted_count = 0;
-    evict_proc(memory_list, spec.mem_size, proc->id, evicted_add, &evicted_count);
 
+    // evict memory if needed (limited memory)
     if (spec.mem_size != UNSPECIFIED) {
+        // free memory allocated to process
+        long long *evicted_add = (long long*)malloc(spec.mem_size * sizeof(long long));
+        long long evicted_count = 0;
+        evict_proc(memory_list, spec.mem_size, proc->id, evicted_add, &evicted_count);
         // print message
         char *msg2 = (char*)malloc(MAX_MSG_LEN * sizeof(char));
         strcpy(msg2, EVICTED_MSG);
         strcat(msg2, list_to_str(evicted_add, evicted_count));
-        print_status(time, EVICTED, -1, msg2);  // no proc id needed
+        print_status(time, EVICTED, HOLE, msg2);  // no proc id needed
         free(msg2);
     }
 
@@ -186,16 +187,15 @@ void finish_proc(process_t *proc, long long time, unit_t *memory_list, spec_t sp
 void schedule(process_list_t *process_list, unit_t *memory_list, spec_t spec) {
     switch (spec.sch_algo) {
         case SCH_FF:
+            // First-Come First-Served
             fcfs(process_list, memory_list, spec);
             break;
         case SCH_RR:
-            if (spec.quantum == -1) {  // quantum not given
-                perror("ERROR trying to run Round-Robin without quantum");
-                exit(EXIT_FAILURE);
-            }
+            // Round-Robin
             rr(process_list, memory_list, spec);
             break;
         case BYO:
+            // Shortest Job First / Shortest Process Next
             sjf(process_list, memory_list, spec);
             break;
         default:

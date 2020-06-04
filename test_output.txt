@@ -33,247 +33,228 @@ Test #11 PASSED
 
 Running `./scheduler -f benchmark-cs.txt -a rr -s 100 -m v -q 10`
 ========== STDOUT ============
-0, RUNNING, id=4, remaining-time=30, load-time=48, mem-usage=96%, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]
-58, EVICTED, mem-addresses=[0,1,2]
-58, RUNNING, id=2, remaining-time=44, load-time=8, mem-usage=100%, mem-addresses=[0,1,2,24]
-76, EVICTED, mem-addresses=[3,4,5,6]
-76, RUNNING, id=1, remaining-time=41, load-time=8, mem-usage=100%, mem-addresses=[3,4,5,6]
-94, EVICTED, mem-addresses=[7]
-94, RUNNING, id=3, remaining-time=30, load-time=2, mem-usage=100%, mem-addresses=[7]
-106, RUNNING, id=4, remaining-time=28, load-time=0, mem-usage=100%, mem-addresses=[8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]
-116, RUNNING, id=2, remaining-time=38, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,24]
-126, RUNNING, id=1, remaining-time=52, load-time=0, mem-usage=100%, mem-addresses=[3,4,5,6]
-136, RUNNING, id=3, remaining-time=20, load-time=0, mem-usage=100%, mem-addresses=[7]
-146, RUNNING, id=4, remaining-time=26, load-time=0, mem-usage=100%, mem-addresses=[8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]
-156, RUNNING, id=2, remaining-time=32, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,24]
-166, RUNNING, id=1, remaining-time=63, load-time=0, mem-usage=100%, mem-addresses=[3,4,5,6]
-176, RUNNING, id=3, remaining-time=10, load-time=0, mem-usage=100%, mem-addresses=[7]
-186, EVICTED, mem-addresses=[7]
-186, FINISHED, id=3, proc-remaining=3
-186, RUNNING, id=4, remaining-time=23, load-time=2, mem-usage=100%, mem-addresses=[7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]
-198, RUNNING, id=2, remaining-time=26, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,24]
-208, RUNNING, id=1, remaining-time=74, load-time=0, mem-usage=100%, mem-addresses=[3,4,5,6]
-218, RUNNING, id=4, remaining-time=20, load-time=0, mem-usage=100%, mem-addresses=[7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]
-228, RUNNING, id=2, remaining-time=20, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,24]
-238, RUNNING, id=1, remaining-time=85, load-time=0, mem-usage=100%, mem-addresses=[3,4,5,6]
-248, RUNNING, id=4, remaining-time=17, load-time=0, mem-usage=100%, mem-addresses=[7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]
-258, RUNNING, id=2, remaining-time=14, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,24]
-268, RUNNING, id=1, remaining-time=96, load-time=0, mem-usage=100%, mem-addresses=[3,4,5,6]
-278, RUNNING, id=4, remaining-time=14, load-time=0, mem-usage=100%, mem-addresses=[7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]
-288, RUNNING, id=2, remaining-time=8, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,24]
-296, EVICTED, mem-addresses=[0,1,2,24]
-296, FINISHED, id=2, proc-remaining=2
-296, RUNNING, id=1, remaining-time=103, load-time=8, mem-usage=100%, mem-addresses=[0,1,2,3,4,5,6,24]
-314, RUNNING, id=4, remaining-time=11, load-time=0, mem-usage=100%, mem-addresses=[7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]
-324, RUNNING, id=1, remaining-time=110, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,3,4,5,6,24]
-334, RUNNING, id=4, remaining-time=8, load-time=0, mem-usage=100%, mem-addresses=[7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]
-342, EVICTED, mem-addresses=[7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]
-342, FINISHED, id=4, proc-remaining=1
-342, RUNNING, id=1, remaining-time=100, load-time=34, mem-usage=100%, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-386, RUNNING, id=1, remaining-time=90, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-396, RUNNING, id=1, remaining-time=80, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-406, RUNNING, id=1, remaining-time=70, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-416, RUNNING, id=1, remaining-time=60, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-426, RUNNING, id=1, remaining-time=50, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-436, RUNNING, id=1, remaining-time=40, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-446, RUNNING, id=1, remaining-time=30, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-456, RUNNING, id=1, remaining-time=20, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-466, RUNNING, id=1, remaining-time=10, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-476, EVICTED, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-476, FINISHED, id=1, proc-remaining=0
-Throughput 1, 0, 1
-Turnaround time 318
-Time overhead 23.55 11.95
-Makespan 476
+0, RUNNING, id=1, remaining-time=90, load-time=16, mem-usage=32%, mem-addresses=[0,1,2,3,4,5,6,7]
+26, RUNNING, id=1, remaining-time=80, load-time=0, mem-usage=32%, mem-addresses=[0,1,2,3,4,5,6,7]
+36, RUNNING, id=2, remaining-time=90, load-time=16, mem-usage=64%, mem-addresses=[8,9,10,11,12,13,14,15]
+62, RUNNING, id=1, remaining-time=70, load-time=0, mem-usage=64%, mem-addresses=[0,1,2,3,4,5,6,7]
+72, RUNNING, id=3, remaining-time=90, load-time=16, mem-usage=96%, mem-addresses=[16,17,18,19,20,21,22,23]
+98, RUNNING, id=2, remaining-time=80, load-time=0, mem-usage=96%, mem-addresses=[8,9,10,11,12,13,14,15]
+108, RUNNING, id=1, remaining-time=60, load-time=0, mem-usage=96%, mem-addresses=[0,1,2,3,4,5,6,7]
+118, EVICTED, mem-addresses=[16,17,18]
+118, RUNNING, id=4, remaining-time=5, load-time=8, mem-usage=100%, mem-addresses=[16,17,18,24]
+131, EVICTED, mem-addresses=[16,17,18,24]
+131, FINISHED, id=4, proc-remaining=3
+131, RUNNING, id=3, remaining-time=80, load-time=6, mem-usage=96%, mem-addresses=[16,17,18,19,20,21,22,23]
+147, RUNNING, id=2, remaining-time=70, load-time=0, mem-usage=96%, mem-addresses=[8,9,10,11,12,13,14,15]
+157, RUNNING, id=1, remaining-time=50, load-time=0, mem-usage=96%, mem-addresses=[0,1,2,3,4,5,6,7]
+167, RUNNING, id=3, remaining-time=70, load-time=0, mem-usage=96%, mem-addresses=[16,17,18,19,20,21,22,23]
+177, RUNNING, id=2, remaining-time=60, load-time=0, mem-usage=96%, mem-addresses=[8,9,10,11,12,13,14,15]
+187, RUNNING, id=1, remaining-time=40, load-time=0, mem-usage=96%, mem-addresses=[0,1,2,3,4,5,6,7]
+197, RUNNING, id=3, remaining-time=60, load-time=0, mem-usage=96%, mem-addresses=[16,17,18,19,20,21,22,23]
+207, RUNNING, id=2, remaining-time=50, load-time=0, mem-usage=96%, mem-addresses=[8,9,10,11,12,13,14,15]
+217, RUNNING, id=1, remaining-time=30, load-time=0, mem-usage=96%, mem-addresses=[0,1,2,3,4,5,6,7]
+227, RUNNING, id=3, remaining-time=50, load-time=0, mem-usage=96%, mem-addresses=[16,17,18,19,20,21,22,23]
+237, RUNNING, id=2, remaining-time=40, load-time=0, mem-usage=96%, mem-addresses=[8,9,10,11,12,13,14,15]
+247, RUNNING, id=1, remaining-time=20, load-time=0, mem-usage=96%, mem-addresses=[0,1,2,3,4,5,6,7]
+257, RUNNING, id=3, remaining-time=40, load-time=0, mem-usage=96%, mem-addresses=[16,17,18,19,20,21,22,23]
+267, RUNNING, id=2, remaining-time=30, load-time=0, mem-usage=96%, mem-addresses=[8,9,10,11,12,13,14,15]
+277, RUNNING, id=1, remaining-time=10, load-time=0, mem-usage=96%, mem-addresses=[0,1,2,3,4,5,6,7]
+287, EVICTED, mem-addresses=[0,1,2,3,4,5,6,7]
+287, FINISHED, id=1, proc-remaining=2
+287, RUNNING, id=3, remaining-time=30, load-time=0, mem-usage=64%, mem-addresses=[16,17,18,19,20,21,22,23]
+297, RUNNING, id=2, remaining-time=20, load-time=0, mem-usage=64%, mem-addresses=[8,9,10,11,12,13,14,15]
+307, RUNNING, id=3, remaining-time=20, load-time=0, mem-usage=64%, mem-addresses=[16,17,18,19,20,21,22,23]
+317, RUNNING, id=2, remaining-time=10, load-time=0, mem-usage=64%, mem-addresses=[8,9,10,11,12,13,14,15]
+327, EVICTED, mem-addresses=[8,9,10,11,12,13,14,15]
+327, FINISHED, id=2, proc-remaining=1
+327, RUNNING, id=3, remaining-time=10, load-time=0, mem-usage=32%, mem-addresses=[16,17,18,19,20,21,22,23]
+337, EVICTED, mem-addresses=[16,17,18,19,20,21,22,23]
+337, FINISHED, id=3, proc-remaining=0
+Throughput 1, 0, 2
+Turnaround time 226
+Time overhead 41.00 12.64
+Makespan 337
 ==============================
 ---------- STDERR ------------
 ------------------------------
 Running `./scheduler -f benchmark-cs.txt -a ff -s 100 -m v`
 ========== STDOUT ============
-0, RUNNING, id=4, remaining-time=30, load-time=48, mem-usage=96%, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]
-78, EVICTED, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]
-78, FINISHED, id=4, proc-remaining=3
-78, RUNNING, id=2, remaining-time=40, load-time=16, mem-usage=32%, mem-addresses=[0,1,2,3,4,5,6,7]
-134, EVICTED, mem-addresses=[0,1,2,3,4,5,6,7]
-134, FINISHED, id=2, proc-remaining=2
-134, RUNNING, id=1, remaining-time=20, load-time=50, mem-usage=100%, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-204, EVICTED, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-204, FINISHED, id=1, proc-remaining=1
-204, RUNNING, id=3, remaining-time=30, load-time=2, mem-usage=4%, mem-addresses=[0]
-236, EVICTED, mem-addresses=[0]
-236, FINISHED, id=3, proc-remaining=0
+0, RUNNING, id=1, remaining-time=90, load-time=16, mem-usage=32%, mem-addresses=[0,1,2,3,4,5,6,7]
+106, EVICTED, mem-addresses=[0,1,2,3,4,5,6,7]
+106, FINISHED, id=1, proc-remaining=3
+106, RUNNING, id=2, remaining-time=90, load-time=16, mem-usage=32%, mem-addresses=[0,1,2,3,4,5,6,7]
+212, EVICTED, mem-addresses=[0,1,2,3,4,5,6,7]
+212, FINISHED, id=2, proc-remaining=2
+212, RUNNING, id=3, remaining-time=90, load-time=16, mem-usage=32%, mem-addresses=[0,1,2,3,4,5,6,7]
+318, EVICTED, mem-addresses=[0,1,2,3,4,5,6,7]
+318, FINISHED, id=3, proc-remaining=1
+318, RUNNING, id=4, remaining-time=1, load-time=16, mem-usage=32%, mem-addresses=[0,1,2,3,4,5,6,7]
+335, EVICTED, mem-addresses=[0,1,2,3,4,5,6,7]
+335, FINISHED, id=4, proc-remaining=0
 Throughput 1, 0, 2
-Turnaround time 156
-Time overhead 9.95 5.76
-Makespan 236
+Turnaround time 198
+Time overhead 245.00 62.77
+Makespan 335
 ==============================
 ---------- STDERR ------------
 ------------------------------
 Running `./scheduler -f benchmark-cs.txt -a cs -s 100 -m v`
 ========== STDOUT ============
-0, RUNNING, id=4, remaining-time=30, load-time=48, mem-usage=96%, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]
-78, EVICTED, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]
-78, FINISHED, id=4, proc-remaining=3
-78, RUNNING, id=1, remaining-time=20, load-time=50, mem-usage=100%, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-148, EVICTED, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-148, FINISHED, id=1, proc-remaining=2
-148, RUNNING, id=3, remaining-time=30, load-time=2, mem-usage=4%, mem-addresses=[0]
-180, EVICTED, mem-addresses=[0]
-180, FINISHED, id=3, proc-remaining=1
-180, RUNNING, id=2, remaining-time=40, load-time=16, mem-usage=32%, mem-addresses=[0,1,2,3,4,5,6,7]
-236, EVICTED, mem-addresses=[0,1,2,3,4,5,6,7]
-236, FINISHED, id=2, proc-remaining=0
-Throughput 1, 0, 2
+0, RUNNING, id=1, remaining-time=90, load-time=16, mem-usage=32%, mem-addresses=[0,1,2,3,4,5,6,7]
+106, EVICTED, mem-addresses=[0,1,2,3,4,5,6,7]
+106, FINISHED, id=1, proc-remaining=3
+106, RUNNING, id=4, remaining-time=1, load-time=16, mem-usage=32%, mem-addresses=[0,1,2,3,4,5,6,7]
+123, EVICTED, mem-addresses=[0,1,2,3,4,5,6,7]
+123, FINISHED, id=4, proc-remaining=2
+123, RUNNING, id=2, remaining-time=90, load-time=16, mem-usage=32%, mem-addresses=[0,1,2,3,4,5,6,7]
+229, EVICTED, mem-addresses=[0,1,2,3,4,5,6,7]
+229, FINISHED, id=2, proc-remaining=1
+229, RUNNING, id=3, remaining-time=90, load-time=16, mem-usage=32%, mem-addresses=[0,1,2,3,4,5,6,7]
+335, EVICTED, mem-addresses=[0,1,2,3,4,5,6,7]
+335, FINISHED, id=3, proc-remaining=0
+Throughput 1, 0, 1
 Turnaround time 154
-Time overhead 7.15 5.23
-Makespan 236
+Time overhead 33.00 9.86
+Makespan 335
 ==============================
 ---------- STDERR ------------
 ------------------------------
 
 Running `./scheduler -f benchmark-cm.txt -a rr -s 100 -m v -q 10`
 ========== STDOUT ============
-0, RUNNING, id=4, remaining-time=30, load-time=48, mem-usage=96%, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]
-58, EVICTED, mem-addresses=[0,1,2]
-58, RUNNING, id=2, remaining-time=44, load-time=8, mem-usage=100%, mem-addresses=[0,1,2,24]
-76, EVICTED, mem-addresses=[3,4,5,6]
-76, RUNNING, id=1, remaining-time=41, load-time=8, mem-usage=100%, mem-addresses=[3,4,5,6]
-94, EVICTED, mem-addresses=[7]
-94, RUNNING, id=3, remaining-time=30, load-time=2, mem-usage=100%, mem-addresses=[7]
-106, RUNNING, id=4, remaining-time=28, load-time=0, mem-usage=100%, mem-addresses=[8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]
-116, RUNNING, id=2, remaining-time=38, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,24]
-126, RUNNING, id=1, remaining-time=52, load-time=0, mem-usage=100%, mem-addresses=[3,4,5,6]
-136, RUNNING, id=3, remaining-time=20, load-time=0, mem-usage=100%, mem-addresses=[7]
-146, RUNNING, id=4, remaining-time=26, load-time=0, mem-usage=100%, mem-addresses=[8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]
-156, RUNNING, id=2, remaining-time=32, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,24]
-166, RUNNING, id=1, remaining-time=63, load-time=0, mem-usage=100%, mem-addresses=[3,4,5,6]
-176, RUNNING, id=3, remaining-time=10, load-time=0, mem-usage=100%, mem-addresses=[7]
-186, EVICTED, mem-addresses=[7]
-186, FINISHED, id=3, proc-remaining=3
-186, RUNNING, id=4, remaining-time=23, load-time=2, mem-usage=100%, mem-addresses=[7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]
-198, RUNNING, id=2, remaining-time=26, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,24]
-208, RUNNING, id=1, remaining-time=74, load-time=0, mem-usage=100%, mem-addresses=[3,4,5,6]
-218, RUNNING, id=4, remaining-time=20, load-time=0, mem-usage=100%, mem-addresses=[7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]
-228, RUNNING, id=2, remaining-time=20, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,24]
-238, RUNNING, id=1, remaining-time=85, load-time=0, mem-usage=100%, mem-addresses=[3,4,5,6]
-248, RUNNING, id=4, remaining-time=17, load-time=0, mem-usage=100%, mem-addresses=[7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]
-258, RUNNING, id=2, remaining-time=14, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,24]
-268, RUNNING, id=1, remaining-time=96, load-time=0, mem-usage=100%, mem-addresses=[3,4,5,6]
-278, RUNNING, id=4, remaining-time=14, load-time=0, mem-usage=100%, mem-addresses=[7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]
-288, RUNNING, id=2, remaining-time=8, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,24]
-296, EVICTED, mem-addresses=[0,1,2,24]
-296, FINISHED, id=2, proc-remaining=2
-296, RUNNING, id=1, remaining-time=103, load-time=8, mem-usage=100%, mem-addresses=[0,1,2,3,4,5,6,24]
-314, RUNNING, id=4, remaining-time=11, load-time=0, mem-usage=100%, mem-addresses=[7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]
-324, RUNNING, id=1, remaining-time=110, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,3,4,5,6,24]
-334, RUNNING, id=4, remaining-time=8, load-time=0, mem-usage=100%, mem-addresses=[7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]
-342, EVICTED, mem-addresses=[7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]
-342, FINISHED, id=4, proc-remaining=1
-342, RUNNING, id=1, remaining-time=100, load-time=34, mem-usage=100%, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-386, RUNNING, id=1, remaining-time=90, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-396, RUNNING, id=1, remaining-time=80, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-406, RUNNING, id=1, remaining-time=70, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-416, RUNNING, id=1, remaining-time=60, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-426, RUNNING, id=1, remaining-time=50, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-436, RUNNING, id=1, remaining-time=40, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-446, RUNNING, id=1, remaining-time=30, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-456, RUNNING, id=1, remaining-time=20, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-466, RUNNING, id=1, remaining-time=10, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-476, EVICTED, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-476, FINISHED, id=1, proc-remaining=0
-Throughput 1, 0, 1
-Turnaround time 318
-Time overhead 23.55 11.95
-Makespan 476
+0, RUNNING, id=1, remaining-time=60, load-time=16, mem-usage=32%, mem-addresses=[0,1,2,3,4,5,6,7]
+26, RUNNING, id=1, remaining-time=50, load-time=0, mem-usage=32%, mem-addresses=[0,1,2,3,4,5,6,7]
+36, RUNNING, id=2, remaining-time=60, load-time=16, mem-usage=64%, mem-addresses=[8,9,10,11,12,13,14,15]
+62, RUNNING, id=1, remaining-time=40, load-time=0, mem-usage=64%, mem-addresses=[0,1,2,3,4,5,6,7]
+72, RUNNING, id=3, remaining-time=60, load-time=16, mem-usage=96%, mem-addresses=[16,17,18,19,20,21,22,23]
+98, RUNNING, id=2, remaining-time=50, load-time=0, mem-usage=96%, mem-addresses=[8,9,10,11,12,13,14,15]
+108, RUNNING, id=1, remaining-time=30, load-time=0, mem-usage=96%, mem-addresses=[0,1,2,3,4,5,6,7]
+118, EVICTED, mem-addresses=[16,17,18]
+118, RUNNING, id=4, remaining-time=64, load-time=8, mem-usage=100%, mem-addresses=[16,17,18,24]
+136, RUNNING, id=3, remaining-time=53, load-time=0, mem-usage=100%, mem-addresses=[19,20,21,22,23]
+146, RUNNING, id=2, remaining-time=40, load-time=0, mem-usage=100%, mem-addresses=[8,9,10,11,12,13,14,15]
+156, RUNNING, id=1, remaining-time=20, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,3,4,5,6,7]
+166, RUNNING, id=4, remaining-time=58, load-time=0, mem-usage=100%, mem-addresses=[16,17,18,24]
+176, RUNNING, id=3, remaining-time=46, load-time=0, mem-usage=100%, mem-addresses=[19,20,21,22,23]
+186, RUNNING, id=2, remaining-time=30, load-time=0, mem-usage=100%, mem-addresses=[8,9,10,11,12,13,14,15]
+196, RUNNING, id=1, remaining-time=10, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,3,4,5,6,7]
+206, EVICTED, mem-addresses=[0,1,2,3,4,5,6,7]
+206, FINISHED, id=1, proc-remaining=3
+206, RUNNING, id=4, remaining-time=48, load-time=8, mem-usage=84%, mem-addresses=[0,1,2,3,16,17,18,24]
+224, RUNNING, id=3, remaining-time=36, load-time=6, mem-usage=96%, mem-addresses=[4,5,6,19,20,21,22,23]
+240, RUNNING, id=2, remaining-time=20, load-time=0, mem-usage=96%, mem-addresses=[8,9,10,11,12,13,14,15]
+250, RUNNING, id=4, remaining-time=38, load-time=0, mem-usage=96%, mem-addresses=[0,1,2,3,16,17,18,24]
+260, RUNNING, id=3, remaining-time=26, load-time=0, mem-usage=96%, mem-addresses=[4,5,6,19,20,21,22,23]
+270, RUNNING, id=2, remaining-time=10, load-time=0, mem-usage=96%, mem-addresses=[8,9,10,11,12,13,14,15]
+280, EVICTED, mem-addresses=[8,9,10,11,12,13,14,15]
+280, FINISHED, id=2, proc-remaining=2
+280, RUNNING, id=4, remaining-time=28, load-time=0, mem-usage=64%, mem-addresses=[0,1,2,3,16,17,18,24]
+290, RUNNING, id=3, remaining-time=16, load-time=0, mem-usage=64%, mem-addresses=[4,5,6,19,20,21,22,23]
+300, RUNNING, id=4, remaining-time=18, load-time=0, mem-usage=64%, mem-addresses=[0,1,2,3,16,17,18,24]
+310, RUNNING, id=3, remaining-time=6, load-time=0, mem-usage=64%, mem-addresses=[4,5,6,19,20,21,22,23]
+316, EVICTED, mem-addresses=[4,5,6,19,20,21,22,23]
+316, FINISHED, id=3, proc-remaining=1
+316, RUNNING, id=4, remaining-time=8, load-time=0, mem-usage=32%, mem-addresses=[0,1,2,3,16,17,18,24]
+324, EVICTED, mem-addresses=[0,1,2,3,16,17,18,24]
+324, FINISHED, id=4, proc-remaining=0
+Throughput 1, 0, 2
+Turnaround time 237
+Time overhead 4.27 3.94
+Makespan 324
 ==============================
 ---------- STDERR ------------
 ------------------------------
 Running `./scheduler -f benchmark-cm.txt -a rr -s 100 -m p -q 10`
 ========== STDOUT ============
-0, RUNNING, id=4, remaining-time=30, load-time=48, mem-usage=96%, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]
-58, EVICTED, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]
-58, RUNNING, id=2, remaining-time=40, load-time=16, mem-usage=32%, mem-addresses=[0,1,2,3,4,5,6,7]
-84, EVICTED, mem-addresses=[0,1,2,3,4,5,6,7]
-84, RUNNING, id=1, remaining-time=20, load-time=50, mem-usage=100%, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-144, EVICTED, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-144, RUNNING, id=3, remaining-time=30, load-time=2, mem-usage=4%, mem-addresses=[0]
-156, RUNNING, id=4, remaining-time=20, load-time=48, mem-usage=100%, mem-addresses=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-214, EVICTED, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-214, RUNNING, id=2, remaining-time=30, load-time=16, mem-usage=32%, mem-addresses=[0,1,2,3,4,5,6,7]
-240, EVICTED, mem-addresses=[0,1,2,3,4,5,6,7]
-240, RUNNING, id=1, remaining-time=10, load-time=50, mem-usage=100%, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-300, EVICTED, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-300, FINISHED, id=1, proc-remaining=3
-300, RUNNING, id=3, remaining-time=20, load-time=2, mem-usage=4%, mem-addresses=[0]
-312, RUNNING, id=4, remaining-time=10, load-time=48, mem-usage=100%, mem-addresses=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-370, EVICTED, mem-addresses=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-370, FINISHED, id=4, proc-remaining=2
-370, RUNNING, id=2, remaining-time=20, load-time=16, mem-usage=36%, mem-addresses=[1,2,3,4,5,6,7,8]
-396, RUNNING, id=3, remaining-time=10, load-time=0, mem-usage=36%, mem-addresses=[0]
-406, EVICTED, mem-addresses=[0]
-406, FINISHED, id=3, proc-remaining=1
-406, RUNNING, id=2, remaining-time=10, load-time=0, mem-usage=32%, mem-addresses=[1,2,3,4,5,6,7,8]
-416, EVICTED, mem-addresses=[1,2,3,4,5,6,7,8]
-416, FINISHED, id=2, proc-remaining=0
-Throughput 1, 0, 3
-Turnaround time 366
-Time overhead 14.75 12.57
-Makespan 416
+0, RUNNING, id=1, remaining-time=60, load-time=16, mem-usage=32%, mem-addresses=[0,1,2,3,4,5,6,7]
+26, RUNNING, id=1, remaining-time=50, load-time=0, mem-usage=32%, mem-addresses=[0,1,2,3,4,5,6,7]
+36, RUNNING, id=2, remaining-time=60, load-time=16, mem-usage=64%, mem-addresses=[8,9,10,11,12,13,14,15]
+62, RUNNING, id=1, remaining-time=40, load-time=0, mem-usage=64%, mem-addresses=[0,1,2,3,4,5,6,7]
+72, RUNNING, id=3, remaining-time=60, load-time=16, mem-usage=96%, mem-addresses=[16,17,18,19,20,21,22,23]
+98, RUNNING, id=2, remaining-time=50, load-time=0, mem-usage=96%, mem-addresses=[8,9,10,11,12,13,14,15]
+108, RUNNING, id=1, remaining-time=30, load-time=0, mem-usage=96%, mem-addresses=[0,1,2,3,4,5,6,7]
+118, EVICTED, mem-addresses=[16,17,18,19,20,21,22,23]
+118, RUNNING, id=4, remaining-time=60, load-time=16, mem-usage=96%, mem-addresses=[16,17,18,19,20,21,22,23]
+144, EVICTED, mem-addresses=[8,9,10,11,12,13,14,15]
+144, RUNNING, id=3, remaining-time=50, load-time=16, mem-usage=96%, mem-addresses=[8,9,10,11,12,13,14,15]
+170, EVICTED, mem-addresses=[0,1,2,3,4,5,6,7]
+170, RUNNING, id=2, remaining-time=40, load-time=16, mem-usage=96%, mem-addresses=[0,1,2,3,4,5,6,7]
+196, EVICTED, mem-addresses=[16,17,18,19,20,21,22,23]
+196, RUNNING, id=1, remaining-time=20, load-time=16, mem-usage=96%, mem-addresses=[16,17,18,19,20,21,22,23]
+222, EVICTED, mem-addresses=[8,9,10,11,12,13,14,15]
+222, RUNNING, id=4, remaining-time=50, load-time=16, mem-usage=96%, mem-addresses=[8,9,10,11,12,13,14,15]
+248, EVICTED, mem-addresses=[0,1,2,3,4,5,6,7]
+248, RUNNING, id=3, remaining-time=40, load-time=16, mem-usage=96%, mem-addresses=[0,1,2,3,4,5,6,7]
+274, EVICTED, mem-addresses=[16,17,18,19,20,21,22,23]
+274, RUNNING, id=2, remaining-time=30, load-time=16, mem-usage=96%, mem-addresses=[16,17,18,19,20,21,22,23]
+300, EVICTED, mem-addresses=[8,9,10,11,12,13,14,15]
+300, RUNNING, id=1, remaining-time=10, load-time=16, mem-usage=96%, mem-addresses=[8,9,10,11,12,13,14,15]
+326, EVICTED, mem-addresses=[8,9,10,11,12,13,14,15]
+326, FINISHED, id=1, proc-remaining=3
+326, RUNNING, id=4, remaining-time=40, load-time=16, mem-usage=96%, mem-addresses=[8,9,10,11,12,13,14,15]
+352, RUNNING, id=3, remaining-time=30, load-time=0, mem-usage=96%, mem-addresses=[0,1,2,3,4,5,6,7]
+362, RUNNING, id=2, remaining-time=20, load-time=0, mem-usage=96%, mem-addresses=[16,17,18,19,20,21,22,23]
+372, RUNNING, id=4, remaining-time=30, load-time=0, mem-usage=96%, mem-addresses=[8,9,10,11,12,13,14,15]
+382, RUNNING, id=3, remaining-time=20, load-time=0, mem-usage=96%, mem-addresses=[0,1,2,3,4,5,6,7]
+392, RUNNING, id=2, remaining-time=10, load-time=0, mem-usage=96%, mem-addresses=[16,17,18,19,20,21,22,23]
+402, EVICTED, mem-addresses=[16,17,18,19,20,21,22,23]
+402, FINISHED, id=2, proc-remaining=2
+402, RUNNING, id=4, remaining-time=20, load-time=0, mem-usage=64%, mem-addresses=[8,9,10,11,12,13,14,15]
+412, RUNNING, id=3, remaining-time=10, load-time=0, mem-usage=64%, mem-addresses=[0,1,2,3,4,5,6,7]
+422, EVICTED, mem-addresses=[0,1,2,3,4,5,6,7]
+422, FINISHED, id=3, proc-remaining=1
+422, RUNNING, id=4, remaining-time=10, load-time=0, mem-usage=32%, mem-addresses=[8,9,10,11,12,13,14,15]
+432, EVICTED, mem-addresses=[8,9,10,11,12,13,14,15]
+432, FINISHED, id=4, proc-remaining=0
+Throughput 1, 0, 2
+Turnaround time 351
+Time overhead 6.20 5.84
+Makespan 432
 ==============================
 ---------- STDERR ------------
 ------------------------------
 Running `./scheduler -f benchmark-cm.txt -a rr -s 100 -m cm -q 10`
 ========== STDOUT ============
-0, RUNNING, id=4, remaining-time=30, load-time=48, mem-usage=96%, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]
-58, EVICTED, mem-addresses=[0,1,2]
-58, RUNNING, id=2, remaining-time=44, load-time=8, mem-usage=100%, mem-addresses=[0,1,2,24]
-76, EVICTED, mem-addresses=[0,1,2,24]
-76, RUNNING, id=1, remaining-time=41, load-time=8, mem-usage=100%, mem-addresses=[0,1,2,24]
-94, EVICTED, mem-addresses=[0]
-94, RUNNING, id=3, remaining-time=30, load-time=2, mem-usage=100%, mem-addresses=[0]
-106, RUNNING, id=4, remaining-time=23, load-time=0, mem-usage=100%, mem-addresses=[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]
-116, EVICTED, mem-addresses=[3,4,5,6]
-116, RUNNING, id=2, remaining-time=38, load-time=8, mem-usage=100%, mem-addresses=[3,4,5,6]
-134, EVICTED, mem-addresses=[3]
-134, RUNNING, id=1, remaining-time=52, load-time=2, mem-usage=100%, mem-addresses=[1,2,3,24]
-146, RUNNING, id=3, remaining-time=20, load-time=0, mem-usage=100%, mem-addresses=[0]
-156, RUNNING, id=4, remaining-time=20, load-time=0, mem-usage=100%, mem-addresses=[7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]
-166, EVICTED, mem-addresses=[7]
-166, RUNNING, id=2, remaining-time=32, load-time=2, mem-usage=100%, mem-addresses=[4,5,6,7]
-178, RUNNING, id=1, remaining-time=63, load-time=0, mem-usage=100%, mem-addresses=[1,2,3,24]
-188, RUNNING, id=3, remaining-time=10, load-time=0, mem-usage=100%, mem-addresses=[0]
-198, EVICTED, mem-addresses=[0]
-198, FINISHED, id=3, proc-remaining=3
-198, RUNNING, id=4, remaining-time=17, load-time=2, mem-usage=100%, mem-addresses=[0,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]
-210, RUNNING, id=2, remaining-time=26, load-time=0, mem-usage=100%, mem-addresses=[4,5,6,7]
-220, RUNNING, id=1, remaining-time=74, load-time=0, mem-usage=100%, mem-addresses=[1,2,3,24]
-230, RUNNING, id=4, remaining-time=14, load-time=0, mem-usage=100%, mem-addresses=[0,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]
-240, RUNNING, id=2, remaining-time=20, load-time=0, mem-usage=100%, mem-addresses=[4,5,6,7]
-250, RUNNING, id=1, remaining-time=85, load-time=0, mem-usage=100%, mem-addresses=[1,2,3,24]
-260, RUNNING, id=4, remaining-time=11, load-time=0, mem-usage=100%, mem-addresses=[0,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]
-270, RUNNING, id=2, remaining-time=14, load-time=0, mem-usage=100%, mem-addresses=[4,5,6,7]
-280, RUNNING, id=1, remaining-time=96, load-time=0, mem-usage=100%, mem-addresses=[1,2,3,24]
-290, RUNNING, id=4, remaining-time=8, load-time=0, mem-usage=100%, mem-addresses=[0,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]
-298, EVICTED, mem-addresses=[0,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]
-298, FINISHED, id=4, proc-remaining=2
-298, RUNNING, id=2, remaining-time=4, load-time=8, mem-usage=48%, mem-addresses=[0,4,5,6,7,8,9,10]
-310, EVICTED, mem-addresses=[0,4,5,6,7,8,9,10]
-310, FINISHED, id=2, proc-remaining=1
-310, RUNNING, id=1, remaining-time=86, load-time=42, mem-usage=100%, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-362, RUNNING, id=1, remaining-time=76, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-372, RUNNING, id=1, remaining-time=66, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-382, RUNNING, id=1, remaining-time=56, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-392, RUNNING, id=1, remaining-time=46, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-402, RUNNING, id=1, remaining-time=36, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-412, RUNNING, id=1, remaining-time=26, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-422, RUNNING, id=1, remaining-time=16, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-432, RUNNING, id=1, remaining-time=6, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-438, EVICTED, mem-addresses=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24]
-438, FINISHED, id=1, proc-remaining=0
-Throughput 1, 0, 1
-Turnaround time 304
-Time overhead 21.65 11.30
-Makespan 438
+0, RUNNING, id=1, remaining-time=60, load-time=16, mem-usage=32%, mem-addresses=[0,1,2,3,4,5,6,7]
+26, RUNNING, id=1, remaining-time=50, load-time=0, mem-usage=32%, mem-addresses=[0,1,2,3,4,5,6,7]
+36, RUNNING, id=2, remaining-time=60, load-time=16, mem-usage=64%, mem-addresses=[8,9,10,11,12,13,14,15]
+62, RUNNING, id=1, remaining-time=40, load-time=0, mem-usage=64%, mem-addresses=[0,1,2,3,4,5,6,7]
+72, RUNNING, id=3, remaining-time=60, load-time=16, mem-usage=96%, mem-addresses=[16,17,18,19,20,21,22,23]
+98, RUNNING, id=2, remaining-time=50, load-time=0, mem-usage=96%, mem-addresses=[8,9,10,11,12,13,14,15]
+108, RUNNING, id=1, remaining-time=30, load-time=0, mem-usage=96%, mem-addresses=[0,1,2,3,4,5,6,7]
+118, EVICTED, mem-addresses=[0,1,2]
+118, RUNNING, id=4, remaining-time=64, load-time=8, mem-usage=100%, mem-addresses=[0,1,2,24]
+136, RUNNING, id=3, remaining-time=50, load-time=0, mem-usage=100%, mem-addresses=[16,17,18,19,20,21,22,23]
+146, RUNNING, id=2, remaining-time=40, load-time=0, mem-usage=100%, mem-addresses=[8,9,10,11,12,13,14,15]
+156, RUNNING, id=1, remaining-time=23, load-time=0, mem-usage=100%, mem-addresses=[3,4,5,6,7]
+166, RUNNING, id=4, remaining-time=58, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,24]
+176, RUNNING, id=3, remaining-time=40, load-time=0, mem-usage=100%, mem-addresses=[16,17,18,19,20,21,22,23]
+186, RUNNING, id=2, remaining-time=30, load-time=0, mem-usage=100%, mem-addresses=[8,9,10,11,12,13,14,15]
+196, RUNNING, id=1, remaining-time=16, load-time=0, mem-usage=100%, mem-addresses=[3,4,5,6,7]
+206, RUNNING, id=4, remaining-time=52, load-time=0, mem-usage=100%, mem-addresses=[0,1,2,24]
+216, RUNNING, id=3, remaining-time=30, load-time=0, mem-usage=100%, mem-addresses=[16,17,18,19,20,21,22,23]
+226, RUNNING, id=2, remaining-time=20, load-time=0, mem-usage=100%, mem-addresses=[8,9,10,11,12,13,14,15]
+236, RUNNING, id=1, remaining-time=9, load-time=0, mem-usage=100%, mem-addresses=[3,4,5,6,7]
+245, EVICTED, mem-addresses=[3,4,5,6,7]
+245, FINISHED, id=1, proc-remaining=3
+245, RUNNING, id=4, remaining-time=42, load-time=8, mem-usage=96%, mem-addresses=[0,1,2,3,4,5,6,24]
+263, RUNNING, id=3, remaining-time=20, load-time=0, mem-usage=96%, mem-addresses=[16,17,18,19,20,21,22,23]
+273, RUNNING, id=2, remaining-time=10, load-time=0, mem-usage=96%, mem-addresses=[8,9,10,11,12,13,14,15]
+283, EVICTED, mem-addresses=[8,9,10,11,12,13,14,15]
+283, FINISHED, id=2, proc-remaining=2
+283, RUNNING, id=4, remaining-time=32, load-time=0, mem-usage=64%, mem-addresses=[0,1,2,3,4,5,6,24]
+293, RUNNING, id=3, remaining-time=10, load-time=0, mem-usage=64%, mem-addresses=[16,17,18,19,20,21,22,23]
+303, EVICTED, mem-addresses=[16,17,18,19,20,21,22,23]
+303, FINISHED, id=3, proc-remaining=1
+303, RUNNING, id=4, remaining-time=22, load-time=0, mem-usage=32%, mem-addresses=[0,1,2,3,4,5,6,24]
+313, RUNNING, id=4, remaining-time=12, load-time=0, mem-usage=32%, mem-addresses=[0,1,2,3,4,5,6,24]
+323, RUNNING, id=4, remaining-time=2, load-time=0, mem-usage=32%, mem-addresses=[0,1,2,3,4,5,6,24]
+325, EVICTED, mem-addresses=[0,1,2,3,4,5,6,24]
+325, FINISHED, id=4, proc-remaining=0
+Throughput 1, 0, 2
+Turnaround time 244
+Time overhead 4.22 4.07
+Makespan 325
 ==============================
 ---------- STDERR ------------
 ------------------------------
