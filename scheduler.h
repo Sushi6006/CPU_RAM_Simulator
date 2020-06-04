@@ -37,9 +37,9 @@
 typedef struct Specifications {
     int sch_algo;    // scheduling algorithm
     int mem_allo;    // memory management
-    int mem_size;    // size of memory
-    int quantum;     // quantum
-    int proc_count;  // number of processes
+    long long mem_size;    // size of memory
+    long long quantum;     // quantum
+    long long proc_count;  // number of processes
 } spec_t;
 
 // functions for input
@@ -47,8 +47,8 @@ void read_args(int argc, char *argv[], char* file_name, spec_t *spec);
 process_list_t *read_process(char *file_name);
 
 // does stuff with single process
-int run_proc(process_t *proc, int time, unit_t *memory_list, spec_t spec);
-void finish_proc(process_t *proc, int time, unit_t *memory_list, spec_t spec, int arrived_count, int *executed_count);
+long long run_proc(process_t *proc, long long time, unit_t *memory_list, spec_t spec);
+void finish_proc(process_t *proc, long long time, unit_t *memory_list, spec_t spec, long long arrived_count, long long *executed_count);
 
 // cpu scheduling
 void schedule(process_list_t *process_list, unit_t *memory_list, spec_t spec);
@@ -56,6 +56,6 @@ void fcfs(process_list_t *process_list, unit_t *memory_list, spec_t spec);
 void rr(process_list_t *process_list, unit_t *memory_list, spec_t spec);
 void sjf(process_list_t *process_list, unit_t *memory_list, spec_t spec);
 
-void calc_stats(int *tot_turnaround, float *max_overhead, float *tot_overhead, int time, process_t *proc);
+void calc_stats(long long *tot_turnaround, float *max_overhead, float *tot_overhead, long long time, process_t *proc);
 void free_lists(process_list_t *proc_list, unit_t *mem_list);
 #endif

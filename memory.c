@@ -10,9 +10,9 @@
 #include "output.h"
 
 // create an empty list where all memory available
-unit_t *init_memory_list(int size) {
+unit_t *init_memory_list(long long size) {
     unit_t *memory_list = (unit_t*)malloc(size * sizeof(unit_t));
-    for (int i = 0; i < size; i++) {
+    for (long long i = 0; i < size; i++) {
         memory_list[i].proc_id = HOLE;    // not occupied
         memory_list[i].time_used = HOLE;  // never used
     }
@@ -20,7 +20,7 @@ unit_t *init_memory_list(int size) {
 }
 
 // create a list of memory status with all memory available
-status_list_t *init_status_list(int size) {
+status_list_t *init_status_list(long long size) {
     status_list_t *status_list;
     status_list = (status_list_t*)malloc(size * sizeof(*status_list));
     if (status_list == NULL) {
@@ -34,8 +34,8 @@ status_list_t *init_status_list(int size) {
 }
 
 // check if process is in memory for swapping
-int mem_has_proc(unit_t *mem, int size, int proc_id) {
-    for (int i = 0; i < size; i++) {
+int mem_has_proc(unit_t *mem, long long size, long long proc_id) {
+    for (long long i = 0; i < size; i++) {
         if (mem[i].proc_id == proc_id) {
             return 1;
         }
@@ -43,23 +43,33 @@ int mem_has_proc(unit_t *mem, int size, int proc_id) {
     return 0;
 }
 
-int mem_occupied_by_proc(unit_t *mem, int size, int *proc_mem, int proc_id) {
-    int count = 0;
-    int proc_count = 0;
-    for (int i = 0; i < size; i++) {
+// calculate memory usage, and also marked as used
+long long calc_mem_usage(unit_t *mem, long long size) {
+    long long count = 0;
+    for (long long i = 0; i < size; i++) {
         if (mem[i].proc_id != HOLE) {
             count++;
-        }
-        if (mem[i].proc_id == proc_id) {
-            proc_mem[proc_count++] = i;
         }
     }
     return count;
 }
 
+// calculate page count occupied by proc, and writes memory address to proc_mem
+// and mark as used
+long long calc_proc_usage(unit_t *mem, long long size, long long *proc_mem, long long proc_id, long long time) {
+    long long proc_count = 0;
+    for (long long i = 0; i < size; i++) {
+        if (mem[i].proc_id == proc_id) {
+            mem[i].time_used = time;
+            proc_mem[proc_count++] = i;
+        }
+    }
+    return proc_count;
+}
+
 // check if theres a block of memory fit the need
 // return: -1 if no, the address if available
-int has_enough(status_list_t *status_list, int req_mem) {
+long long has_enough(status_list_t *status_list, long long req_mem) {
 
     if (status_list == NULL) {
         perror("ERROR finding empty memory in null list");
@@ -78,11 +88,11 @@ int has_enough(status_list_t *status_list, int req_mem) {
 }
 
 // sort the result of mem evicted
-void sort_evicted_add(int *evicted_add, int count) {
-    for (int i = 0; i < count - 1; i++) {
-        for (int j = i + 1; j < count; j++) {
+void sort_evicted_add(long long *evicted_add, long long count) {
+    for (long long i = 0; i < count - 1; i++) {
+        for (long long j = i + 1; j < count; j++) {
             if (evicted_add[j] <= evicted_add[i]) {
-                int temp = evicted_add[i];
+                long long temp = evicted_add[i];
                 evicted_add[i] = evicted_add[j];
                 evicted_add[j] = temp;
             }
@@ -91,7 +101,7 @@ void sort_evicted_add(int *evicted_add, int count) {
 }
 
 // create a status node
-status_t *create_status(int status, int start, int size) {
+status_t *create_status(int status, long long start, long long size) {
     status_t *new_status;
     new_status = (status_t*)malloc(sizeof(*new_status));
     if (new_status == NULL) {
@@ -126,11 +136,11 @@ status_list_t *add_status(status_list_t *list, status_t *new_status) {
 }
 
 // update status list with given memory
-status_list_t *update_status(status_list_t *status_list, unit_t *memory_list, int len) {
+status_list_t *update_status(status_list_t *status_list, unit_t *memory_list, long long len) {
     // init
     int last_status = memory_list[0].proc_id == HOLE ? HOLE : OCCU;
-    int last_start = 0;
-    for (int i = 1; i < len; i++) {
+    long long last_start = 0;
+    for (long long i = 1; i < len; i++) {
         int curr_status = memory_list[i].proc_id == HOLE ? HOLE : OCCU;
         if (curr_status != last_status) {
             status_list = add_status(status_list,
@@ -144,9 +154,9 @@ status_list_t *update_status(status_list_t *status_list, unit_t *memory_list, in
 }
 
 // evict one process from memory
-void evict_proc(unit_t *memory_list, int memsize, int proc_id, int *evicted_add, int *evicted_count) {
+void evict_proc(unit_t *memory_list, long long memsize, long long proc_id, long long *evicted_add, long long *evicted_count) {
     
-    for (int i = 0; i < memsize; i++) {
+    for (long long i = 0; i < memsize; i++) {
         if (memory_list[i].proc_id == proc_id) {
             memory_list[i].proc_id = HOLE;
             evicted_add[*evicted_count] = i;
@@ -157,7 +167,7 @@ void evict_proc(unit_t *memory_list, int memsize, int proc_id, int *evicted_add,
 }
 
 // allocate process into memory, return new status list
-void swap_mem(unit_t *memory_list, int memsize, process_t *proc, int time) {
+void swap_mem(unit_t *memory_list, long long memsize, process_t *proc, long long time) {
 
     if ((memory_list == NULL) || (proc == NULL)) {
         perror("ERROR allocating process to memory");
@@ -166,16 +176,16 @@ void swap_mem(unit_t *memory_list, int memsize, process_t *proc, int time) {
 
     status_list_t *status_list = init_status_list(memsize);
     status_list = update_status(status_list, memory_list, memsize);
-    int position;           // where to be allocated
-    int evicted_count = 0;  // whether processes have been evicted
-    int *evicted_add = (int*)malloc(memsize * sizeof(int));  // evicted addresses
+    long long position;           // where to be allocated
+    long long evicted_count = 0;  // whether processes have been evicted
+    long long *evicted_add = (long long*)malloc(memsize * sizeof(long long));  // evicted addresses
     
     // evict processes until has enough space
     while ((position = has_enough(status_list, proc->mem_req)) == -1) {
         // find earliest proc to remove
         // find the first value and use it as the init value for min
-        int min_time = -1, min_proc = -1;
-        for (int i = 0; i < memsize; i++) {
+        long long min_time = -1, min_proc = -1;
+        for (long long i = 0; i < memsize; i++) {
             // this memory is occupied
             if (memory_list[i].proc_id != -1) {
                 if ((min_time == -1)  || (memory_list[i].time_used < min_time)) {
@@ -205,7 +215,7 @@ void swap_mem(unit_t *memory_list, int memsize, process_t *proc, int time) {
         free(msg);
     }
 
-    for (int i = position; i < position + proc->mem_req; i++) {
+    for (long long i = position; i < position + proc->mem_req; i++) {
         memory_list[i].proc_id = proc->id;
         memory_list[i].time_used = time;
     }
@@ -215,9 +225,9 @@ void swap_mem(unit_t *memory_list, int memsize, process_t *proc, int time) {
 }
 
 // return how many empty pages are in the memory
-int num_empty(unit_t *memory_list, int memsize) {
-    int count = 0;
-    for (int i = 0; i < memsize; i++) {
+long long num_empty(unit_t *memory_list, long long memsize) {
+    long long count = 0;
+    for (long long i = 0; i < memsize; i++) {
         if (memory_list[i].proc_id == HOLE) {
             count++;
         }
@@ -227,9 +237,9 @@ int num_empty(unit_t *memory_list, int memsize) {
 
 // check if process is in memory for virtual memory
 // return page count of the process
-int proc_page_count(unit_t *mem, int size, int proc_id) {
-    int count = 0;
-    for (int i = 0; i < size; i++) {
+long long proc_page_count(unit_t *mem, long long size, long long proc_id) {
+    long long count = 0;
+    for (long long i = 0; i < size; i++) {
         if (mem[i].proc_id == proc_id) {
             count++;
         }
@@ -238,8 +248,8 @@ int proc_page_count(unit_t *mem, int size, int proc_id) {
 }
 
 // evict a page, and return the page number
-int evict_page(unit_t *memory_list, int memsize, int proc_id) {
-    for (int i = 0; i < memsize; i++) {
+long long evict_page(unit_t *memory_list, long long memsize, long long proc_id) {
+    for (long long i = 0; i < memsize; i++) {
         if (memory_list[i].proc_id == proc_id) {
             memory_list[i].proc_id = HOLE;
             return i;
@@ -250,7 +260,7 @@ int evict_page(unit_t *memory_list, int memsize, int proc_id) {
 }
 
 // virtual memory stuff, return extra time
-int virt_mem(unit_t *memory_list, int memsize, process_t *proc, int time) {
+long long virt_mem(unit_t *memory_list, long long memsize, process_t *proc, long long time) {
 
     if ((memory_list == NULL) || (proc == NULL)) {
         perror("ERROR allocating process to memory");
@@ -258,12 +268,12 @@ int virt_mem(unit_t *memory_list, int memsize, process_t *proc, int time) {
     }
     
     // calculate how many page to allocate
-    int empty_count = num_empty(memory_list, memsize);
-    int extra_time = 0;
-    int evicted_count = 0, *evicted_add = (int*)malloc(memsize * sizeof(int));
+    long long empty_count = num_empty(memory_list, memsize);
+    long long extra_time = 0;
+    long long evicted_count = 0, *evicted_add = (long long*)malloc(memsize * sizeof(long long));
 
-    int page_count = proc_page_count(memory_list, memsize, proc->id);
-    int page_req = PAGE_NEEDED_V > proc->mem_req ? proc->mem_req : PAGE_NEEDED_V;
+    long long page_count = proc_page_count(memory_list, memsize, proc->id);
+    long long page_req = PAGE_NEEDED_V > proc->mem_req ? proc->mem_req : PAGE_NEEDED_V;
 
     // if theres no free pages
     if (empty_count == 0) {
@@ -275,11 +285,11 @@ int virt_mem(unit_t *memory_list, int memsize, process_t *proc, int time) {
             }
         } else {  // no free page and proc not (enough) yet in memory
             // evict pages until enough
-            int page_in_mem = proc_page_count(memory_list, memsize, proc->id);
+            long long page_in_mem = proc_page_count(memory_list, memsize, proc->id);
             while (num_empty(memory_list, memsize) < page_req - page_in_mem) {
                 // find min
-                int min_time = -1, min_proc = -1;
-                for (int i = 0; i < memsize; i++) {
+                long long min_time = -1, min_proc = -1;
+                for (long long i = 0; i < memsize; i++) {
                     // this memory is occupied
                     if ((memory_list[i].proc_id != -1) && (memory_list[i].proc_id != proc->id)) {
                         if ((min_time == -1)  || (memory_list[i].time_used < min_time)) {
@@ -305,7 +315,7 @@ int virt_mem(unit_t *memory_list, int memsize, process_t *proc, int time) {
             }
 
             // allocate
-            for (int i = 0; i < memsize; i++) {
+            for (long long i = 0; i < memsize; i++) {
                 if (memory_list[i].proc_id == HOLE) {
                     memory_list[i].proc_id = proc->id;
                     memory_list[i].time_used = time;
@@ -324,7 +334,7 @@ int virt_mem(unit_t *memory_list, int memsize, process_t *proc, int time) {
     } else {  // if there are free pages
         if (page_count >= page_req) {  // has enough page to run
             // fill in empty page
-            for (int i = 0; i < memsize; i++) {
+            for (long long i = 0; i < memsize; i++) {
                 // if reaches requirement
                 if ((page_count = proc_page_count(memory_list, memsize, proc->id)) >= proc->mem_req) {
                     break;
@@ -344,11 +354,11 @@ int virt_mem(unit_t *memory_list, int memsize, process_t *proc, int time) {
 
         } else {  // less than required amount of pages in memory
             // release first
-            int page_in_mem = proc_page_count(memory_list, memsize, proc->id);
+            long long page_in_mem = proc_page_count(memory_list, memsize, proc->id);
             while (num_empty(memory_list, memsize) < page_req - page_in_mem) {
                 // find min
-                int min_time = -1, min_proc = -1;
-                for (int i = 0; i < memsize; i++) { 
+                long long min_time = -1, min_proc = -1;
+                for (long long i = 0; i < memsize; i++) { 
                     // this memory is occupied
                     if ((memory_list[i].proc_id != -1) && (memory_list[i].proc_id != proc->id)) {
                         if ((min_time == -1)  || (memory_list[i].time_used < min_time)) {
@@ -374,7 +384,8 @@ int virt_mem(unit_t *memory_list, int memsize, process_t *proc, int time) {
             }
         
             // allocate as many as possible
-            for (int i = 0; i < memsize; i++) {
+            // FIXME: added another mem at the end
+            for (long long i = 0; i < memsize; i++) {
                 // if reaches requirement
                 if ((page_count = proc_page_count(memory_list, memsize, proc->id)) >= proc->mem_req) {
                     break;

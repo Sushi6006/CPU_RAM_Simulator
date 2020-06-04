@@ -92,8 +92,8 @@ process_list_t *read_process(char *file_name) {
     char *line = (char*)malloc(MAX_PROC_LINE * sizeof(char));
     size_t len; ssize_t read;
     while ((read = getline(&line, &len, process_file)) != -1) {
-        int arrival_time, id, mem_req, job_time;
-        sscanf(line, "%d%d%d%d", &arrival_time, &id, &mem_req, &job_time);
+        long long arrival_time, id, mem_req, job_time;
+        sscanf(line, "%lld%lld%lld%lld", &arrival_time, &id, &mem_req, &job_time);
         process_list = add_process(process_list, create_process(arrival_time, id, mem_req / 4, job_time));
     }
 
@@ -104,9 +104,9 @@ process_list_t *read_process(char *file_name) {
 }
 
 // run the process, returns extra time taken
-int run_proc(process_t *proc, int time, unit_t *memory_list, spec_t spec) {
+long long run_proc(process_t *proc, long long time, unit_t *memory_list, spec_t spec) {
 
-    int extra_time = 0;  // extra time took to run the process
+    long long extra_time = 0;  // extra time took to run the process
 
     proc->status = RUNNING;
     char *msg = (char*)malloc(MAX_MSG_LEN * sizeof(char));
@@ -123,18 +123,19 @@ int run_proc(process_t *proc, int time, unit_t *memory_list, spec_t spec) {
             }
             
             // second part of msg if memory loading is required
-            int *proc_mem = (int*)malloc(spec.mem_size * sizeof(int) + 1);
-            int mem_usage = mem_occupied_by_proc(memory_list, spec.mem_size, proc_mem, proc->id);
+            long long *proc_mem = (long long*)malloc(spec.mem_size * sizeof(long long) + 1);
+            long long mem_usage = calc_mem_usage(memory_list, spec.mem_size);
             int usage_percentage = (int)ceil((double)mem_usage / (double)spec.mem_size * 100.0);
-
-            sprintf(msg2, RUNNING_MSG2, extra_time, usage_percentage, list_to_str(proc_mem, mem_usage));
+            long long proc_usage = calc_proc_usage(memory_list, spec.mem_size, proc_mem, proc->id, time);
+            sprintf(msg2, RUNNING_MSG2, extra_time, usage_percentage, list_to_str(proc_mem, proc_usage));
 
         } else if (spec.mem_allo == MEM_V) {  // virtual memory
             extra_time = virt_mem(memory_list, spec.mem_size, proc, time);
-            int *proc_mem = (int*)malloc(spec.mem_size * sizeof(int) + 1);
-            int mem_usage = mem_occupied_by_proc(memory_list, spec.mem_size, proc_mem, proc->id);
+            long long *proc_mem = (long long*)malloc(spec.mem_size * sizeof(long long) + 1);
+            long long mem_usage = calc_mem_usage(memory_list, spec.mem_size);
             int usage_percentage = (int)ceil((double)mem_usage / (double)spec.mem_size * 100.0);
-            sprintf(msg2, RUNNING_MSG2, extra_time, usage_percentage, list_to_str(proc_mem, mem_usage));
+            long long proc_usage = calc_proc_usage(memory_list, spec.mem_size, proc_mem, proc->id, time);
+            sprintf(msg2, RUNNING_MSG2, extra_time, usage_percentage, list_to_str(proc_mem, proc_usage));
         }
     }
 
@@ -147,7 +148,7 @@ int run_proc(process_t *proc, int time, unit_t *memory_list, spec_t spec) {
 }
 
 // finish up the prcoess
-void finish_proc(process_t *proc, int time, unit_t *memory_list, spec_t spec, int arrived_count, int *executed_count) {
+void finish_proc(process_t *proc, long long time, unit_t *memory_list, spec_t spec, long long arrived_count, long long *executed_count) {
     
     proc->status = FINISHED;
     (*executed_count)++;
@@ -156,8 +157,8 @@ void finish_proc(process_t *proc, int time, unit_t *memory_list, spec_t spec, in
     sprintf(msg, FINISHED_MSG, arrived_count - (*executed_count));
     
     // free memory allocated to process
-    int *evicted_add = (int*)malloc(spec.mem_size * sizeof(int));
-    int evicted_count = 0;
+    long long *evicted_add = (long long*)malloc(spec.mem_size * sizeof(long long));
+    long long evicted_count = 0;
     evict_proc(memory_list, spec.mem_size, proc->id, evicted_add, &evicted_count);
 
     if (spec.mem_size != UNSPECIFIED) {
@@ -196,14 +197,14 @@ void schedule(process_list_t *process_list, unit_t *memory_list, spec_t spec) {
 }
 
 // find the number of processes arrived before time x
-int num_arrived(process_list_t *proc_list, int time) {
+long long num_arrived(process_list_t *proc_list, long long time) {
     if (proc_list == NULL) {
         perror("ERROR finding arrived process in null list");
         exit(EXIT_FAILURE);
     }
 
     process_t *curr_proc = proc_list->head_process;
-    int count = 0;
+    long long count = 0;
     while (curr_proc != NULL) {
         if (curr_proc->arrival_time <= time) {
             count++;
@@ -225,12 +226,12 @@ void fcfs(process_list_t *process_list, unit_t *memory_list, spec_t spec) {
     }
 
     process_t *curr_process = process_list->head_process;  // current process
-    int time = 0;
+    long long time = 0;
 
     // for stats
-    int executed_count = 0;
-    int finish_times[spec.proc_count + 1];
-    int total_turnaround = 0;
+    long long executed_count = 0;
+    long long finish_times[spec.proc_count + 1];
+    long long total_turnaround = 0;
     float max_overhead = 0, total_overhead = 0;
 
     // every loop is one process
@@ -258,10 +259,10 @@ void fcfs(process_list_t *process_list, unit_t *memory_list, spec_t spec) {
     }
 
     // calc & print stats
-    int min_tp = 61, max_tp = -1, total_tp = 0;
-    for (int i = 0; i < time; i += THROUGHPUT_TIMEFRAME) {
-        int count = 0;
-        for (int j = 0; j < executed_count; j++) {
+    long long min_tp = 61, max_tp = -1, total_tp = 0;
+    for (long long i = 0; i < time; i += THROUGHPUT_TIMEFRAME) {
+        long long count = 0;
+        for (long long j = 0; j < executed_count; j++) {
             if ((finish_times[j] > i) && (finish_times[j] <= i + THROUGHPUT_TIMEFRAME)) {
                 count++;
             }
@@ -270,7 +271,7 @@ void fcfs(process_list_t *process_list, unit_t *memory_list, spec_t spec) {
         if (count < min_tp) min_tp = count;
         total_tp += count;
     }
-    int avg_tp = (int)ceil((double)executed_count / (ceil((double)time / THROUGHPUT_TIMEFRAME)));
+    long long avg_tp = (long long)ceil((double)executed_count / (ceil((double)time / THROUGHPUT_TIMEFRAME)));
     print_stats(executed_count, total_turnaround, total_overhead, max_overhead, time, avg_tp, min_tp, max_tp);
 }
 
@@ -283,17 +284,17 @@ void rr(process_list_t *process_list, unit_t *memory_list, spec_t spec) {
     }
 
     // init
-    int time = 0;
-    int quantum = spec.quantum;
+    long long time = 0;
+    long long quantum = spec.quantum;
 
     // for list to arrive
     process_list_t *arrived_list = init_process_list();
     process_t *curr_process, *arriving_process = process_list->head_process;
-    int executed_count = 0, arrived_count = 0;
+    long long executed_count = 0, arrived_count = 0;
 
     // for stats
-    int finish_times[spec.proc_count + 1];
-    int total_turnaround = 0;
+    long long finish_times[spec.proc_count + 1];
+    long long total_turnaround = 0;
     float max_overhead = 0, total_overhead = 0;
 
     // executing all processes
@@ -336,10 +337,10 @@ void rr(process_list_t *process_list, unit_t *memory_list, spec_t spec) {
     }
 
     // calc & print stats
-    int min_tp = 61, max_tp = -1;
-    for (int i = 0; i < time; i += THROUGHPUT_TIMEFRAME) {
-        int count = 0;
-        for (int j = 0; j < executed_count; j++) {
+    long long min_tp = 61, max_tp = -1;
+    for (long long i = 0; i < time; i += THROUGHPUT_TIMEFRAME) {
+        long long count = 0;
+        for (long long j = 0; j < executed_count; j++) {
             if ((finish_times[j] > i) && (finish_times[j] <= i + THROUGHPUT_TIMEFRAME)) {
                 count++;
             }
@@ -347,7 +348,7 @@ void rr(process_list_t *process_list, unit_t *memory_list, spec_t spec) {
         if (count > max_tp) max_tp = count;
         if (count < min_tp) min_tp = count;
     }
-    int avg_tp = (int)ceil((double)executed_count / (ceil((double)time / THROUGHPUT_TIMEFRAME)));
+    long long avg_tp = (long long)ceil((double)executed_count / (ceil((double)time / THROUGHPUT_TIMEFRAME)));
     print_stats(executed_count, total_turnaround, total_overhead, max_overhead, time, avg_tp, min_tp, max_tp);
 }
 
@@ -359,7 +360,7 @@ void sjf(process_list_t *process_list, unit_t *memory_list, spec_t spec) {
         exit(EXIT_FAILURE);
     }
     
-    int time = 0;
+    long long time = 0;
 
     // for processes to arrive
     process_list_t *arrived_list = init_process_list();
@@ -367,9 +368,9 @@ void sjf(process_list_t *process_list, unit_t *memory_list, spec_t spec) {
     process_t *arriving_process = process_list->head_process;
     
     // for stats
-    int executed_count = 0, arrived_count = 0;
-    int finish_times[spec.proc_count + 1];
-    int total_turnaround = 0;
+    long long executed_count = 0, arrived_count = 0;
+    long long finish_times[spec.proc_count + 1];
+    long long total_turnaround = 0;
     float max_overhead = 0, total_overhead = 0;
 
     while (executed_count < process_list->process_count) {
@@ -413,10 +414,10 @@ void sjf(process_list_t *process_list, unit_t *memory_list, spec_t spec) {
     }
 
     // calc & print stats
-    int min_tp = 61, max_tp = -1;
-    for (int i = 0; i < time + THROUGHPUT_TIMEFRAME; i += THROUGHPUT_TIMEFRAME) {
-        int count = 0;
-        for (int j = 0; j < executed_count; j++) {
+    long long min_tp = 61, max_tp = -1;
+    for (long long i = 0; i < time + THROUGHPUT_TIMEFRAME; i += THROUGHPUT_TIMEFRAME) {
+        long long count = 0;
+        for (long long j = 0; j < executed_count; j++) {
             if ((finish_times[j] > i) && (finish_times[j] <= i + THROUGHPUT_TIMEFRAME)) {
                 count++;
             }
@@ -424,15 +425,15 @@ void sjf(process_list_t *process_list, unit_t *memory_list, spec_t spec) {
         if (count > max_tp) max_tp = count;
         if (count < min_tp) min_tp = count;
     }
-    int avg_tp = (int)ceil((double)executed_count / (ceil((double)time / THROUGHPUT_TIMEFRAME)));
+    long long avg_tp = (long long)ceil((double)executed_count / (ceil((double)time / THROUGHPUT_TIMEFRAME)));
     print_stats(executed_count, total_turnaround, total_overhead, max_overhead, time, avg_tp, min_tp, max_tp);
 }
 
 // calculate required stats
-void calc_stats(int *tot_turnaround, float *max_overhead, float *tot_overhead, int time, process_t *proc) {
+void calc_stats(long long *tot_turnaround, float *max_overhead, float *tot_overhead, long long time, process_t *proc) {
 
     // calculate turnaround
-    int turnaround = time - proc->arrival_time ;
+    long long turnaround = time - proc->arrival_time ;
     (*tot_turnaround) += turnaround;
     
     // calculate overhead

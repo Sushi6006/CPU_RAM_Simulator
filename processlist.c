@@ -22,7 +22,7 @@ process_list_t *init_process_list() {
 }
 
 // create a process (pointer) with information
-process_t *create_process(int arrival_time, int id, int mem_req, int job_time) {
+process_t *create_process(long long arrival_time, long long id, long long mem_req, long long job_time) {
     
     process_t *new_process;
     new_process = (process_t*)malloc(sizeof(*new_process));
@@ -91,7 +91,7 @@ process_list_t *move_proc_to_end(process_list_t *list, process_t *process) {
 }
 
 // processes arrive, used by rr
-process_list_t *proc_arrive(process_t *arriving_proc, process_list_t *arrived_list, int time, int *arrived_count) {
+process_list_t *proc_arrive(process_t *arriving_proc, process_list_t *arrived_list, long long time, long long *arrived_count) {
     if (arriving_proc == NULL) {  // no more process to arrive
         return arrived_list;
     }
@@ -126,7 +126,7 @@ process_t *find_pre_min(process_list_t *list) {
 
     process_t *pre_min_proc = NULL;
     process_t *curr_proc = list->head_process;
-    int min_jobtime = curr_proc->job_time;
+    long long min_jobtime = curr_proc->job_time;
     
     while (curr_proc->next != NULL) {
         if (curr_proc->next->job_time < min_jobtime) {
@@ -169,7 +169,7 @@ void swap_proc(process_t *node1, process_t *node2) {
         exit(EXIT_FAILURE);
     }
 
-    int temp_arrival, temp_id, temp_mem, temp_jobtime, temp_status, temp_remaining;
+    long long temp_arrival, temp_id, temp_mem, temp_jobtime, temp_status, temp_remaining;
 
     temp_arrival = node1->arrival_time;
     temp_id = node1->id;
@@ -202,7 +202,7 @@ void sort(process_list_t *list) {
         exit(EXIT_SUCCESS);
     }
 
-    int swapped;
+    long long swapped;
     process_t *ptr1, *lptr = NULL;
     process_t *head = list->head_process;
     do {
