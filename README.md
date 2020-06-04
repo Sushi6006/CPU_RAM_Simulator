@@ -5,7 +5,7 @@ Project done by Leyan LIN in May, 2020
 - `README.md` is a readme
 - `makefile` is a makefile
 - `report.txt` is my report
-- `res` is a folder of provided stuff
+- `res/` is a folder of provided stuff
 - **input files**
   - `benchmark-cm.txt` is provided as required
   - `benchmark-cs.txt` is provided as required
@@ -19,10 +19,9 @@ Project done by Leyan LIN in May, 2020
   - `memory.c` and `memory.h` manages the data types and functions relating to memory
   - `output.c` and `output.h` are for outputs
 - **misc**
-  - `mem_allo_test.c` is for testing memory allocation before implement it
   - `comparator.py` is a comparator for different algorithms
   - `runner.py` is a runner to test the program and print the output in a file
   - *from github.com/joshcarp/scheduler_tester*
     - `dockerfile`
-    - `scripts`
-    - `tests`
+    - `scripts/`
+    - `tests/`
