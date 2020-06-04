@@ -22,7 +22,8 @@ mem_allo_test:
 	./mem_test
 
 compare:
-	python3 comparator.py
+	python3 sch_comparator.py
+	python3 mem_comparator.py
 
 test:
 	python3 runner.py

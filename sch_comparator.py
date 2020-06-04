@@ -2,9 +2,9 @@ from subprocess import *
 from itertools import zip_longest
 
 # create commands
-ff_cmd = "./scheduler -f processes.txt -a ff -s 100 -m p".split()
-rr_cmd = "./scheduler -f processes.txt -a rr -s 100 -m p -q 10".split()
-cs_cmd = "./scheduler -f processes.txt -a cs -s 100 -m p".split()
+ff_cmd = "./scheduler -f benchmark-cs.txt -a ff -s 100 -m p".split()
+rr_cmd = "./scheduler -f benchmark-cs.txt -a rr -s 100 -m p -q 10".split()
+cs_cmd = "./scheduler -f benchmark-cs.txt -a cs -s 100 -m p".split()
 
 # run commands
 ff_res = Popen(ff_cmd, stdout=PIPE, stderr=STDOUT)
@@ -24,11 +24,11 @@ rr_out = rr_out.decode("utf-8").split('\n')
 cs_out = cs_out.decode("utf-8").split('\n')
 
 # output
-print(f'{" ":6}{"ff":40}     {"rr":40}     {"ff":40}')
+# print(f'{" ":6}{"ff":40}     {"rr":40}     {"cs":40}')
 
 for i, (ff, rr, cs) in enumerate(zip_longest(ff_out, rr_out, cs_out)):
     ff = "" if ff == None else ff
     rr = "" if rr == None else rr
     cs = "" if cs == None else cs
     
-    print(f'{i + 1:>2}.   {ff:<40}     {rr:<40}     {cs:<40}')
+    print(f'{i + 1:>2}.   {ff[:40]:<40}     {rr[:40]:<40}     {cs[:40]:<40}')
