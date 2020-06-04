@@ -110,7 +110,8 @@ int run_proc(process_t *proc, int time, unit_t *memory_list, spec_t spec) {
 
     proc->status = RUNNING;
     char *msg = (char*)malloc(MAX_MSG_LEN * sizeof(char));
-    sprintf(msg, RUNNING_MSG, proc->remaining_time);
+    char *msg2 = (char*)malloc(MAX_MSG_LEN * sizeof(char));
+    strcpy(msg2, "");
 
     // set time for memory
     if (spec.mem_size != UNSPECIFIED) {
@@ -122,26 +123,23 @@ int run_proc(process_t *proc, int time, unit_t *memory_list, spec_t spec) {
             }
             
             // second part of msg if memory loading is required
-            char *msg2 = (char*)malloc(MAX_MSG_LEN * sizeof(char));
             int *proc_mem = (int*)malloc(spec.mem_size * sizeof(int) + 1);
             int mem_usage = mem_occupied_by_proc(memory_list, spec.mem_size, proc_mem, proc->id);
             int usage_percentage = (int)ceil((double)mem_usage / (double)spec.mem_size * 100.0);
 
             sprintf(msg2, RUNNING_MSG2, extra_time, usage_percentage, list_to_str(proc_mem, mem_usage));
 
-            strcat(msg, msg2);
-            free(msg2);
         } else if (spec.mem_allo == MEM_V) {  // virtual memory
             extra_time = virt_mem(memory_list, spec.mem_size, proc, time);
-            char *msg2 = (char*)malloc(MAX_MSG_LEN * sizeof(char));
             int *proc_mem = (int*)malloc(spec.mem_size * sizeof(int) + 1);
             int mem_usage = mem_occupied_by_proc(memory_list, spec.mem_size, proc_mem, proc->id);
             int usage_percentage = (int)ceil((double)mem_usage / (double)spec.mem_size * 100.0);
             sprintf(msg2, RUNNING_MSG2, extra_time, usage_percentage, list_to_str(proc_mem, mem_usage));
-            strcat(msg, msg2);
-            free(msg2);
         }
     }
+
+    sprintf(msg, RUNNING_MSG, proc->remaining_time);
+    strcat(msg, msg2);
 
     print_status(time, proc->status, proc->id, msg);
     free(msg);

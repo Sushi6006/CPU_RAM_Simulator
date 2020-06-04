@@ -270,19 +270,21 @@ int virt_mem(unit_t *memory_list, int memsize, process_t *proc, int time) {
         // if proc in memory
         if (page_count >= page_req) {  // no free page, but proc in memory
             // page fault
-            extra_time += proc->mem_req - page_count;
+            if (proc->mem_req > page_count) {
+                proc->remaining_time += proc->mem_req - page_count;
+            }
         } else {  // no free page and proc not (enough) yet in memory
             // evict pages until enough
-            while (num_empty(memory_list, memsize) < page_req) {
+            int page_in_mem = proc_page_count(memory_list, memsize, proc->id);
+            while (num_empty(memory_list, memsize) < page_req - page_in_mem) {
                 // find min
                 int min_time = -1, min_proc = -1;
                 for (int i = 0; i < memsize; i++) {
                     // this memory is occupied
-                    if (memory_list[i].proc_id != -1) {
+                    if ((memory_list[i].proc_id != -1) && (memory_list[i].proc_id != proc->id)) {
                         if ((min_time == -1)  || (memory_list[i].time_used < min_time)) {
                             min_time = memory_list[i].time_used;
                             min_proc = memory_list[i].proc_id;
-                            extra_time += TIME_PER_PAGE;
                         }
                     }
                 }
@@ -307,12 +309,15 @@ int virt_mem(unit_t *memory_list, int memsize, process_t *proc, int time) {
                 if (memory_list[i].proc_id == HOLE) {
                     memory_list[i].proc_id = proc->id;
                     memory_list[i].time_used = time;
+                    extra_time += TIME_PER_PAGE;
                 }
             }
 
             // add page fault time
             page_count = proc_page_count(memory_list, memsize, proc->id);
-            extra_time += proc->mem_req - page_count;
+            if (proc->mem_req > page_count) {
+                proc->remaining_time += proc->mem_req - page_count;
+            }
 
         }  // end of - no free page, process not (enough) in memory 
 
@@ -333,16 +338,19 @@ int virt_mem(unit_t *memory_list, int memsize, process_t *proc, int time) {
             }
             // add page fault time
             page_count = proc_page_count(memory_list, memsize, proc->id);
-            extra_time += proc->mem_req - page_count;
+            if (proc->mem_req > page_count) {
+                proc->remaining_time += proc->mem_req - page_count;
+            }
 
         } else {  // less than required amount of pages in memory
             // release first
-            while (num_empty(memory_list, memsize) < page_req) {
+            int page_in_mem = proc_page_count(memory_list, memsize, proc->id);
+            while (num_empty(memory_list, memsize) < page_req - page_in_mem) {
                 // find min
                 int min_time = -1, min_proc = -1;
                 for (int i = 0; i < memsize; i++) { 
                     // this memory is occupied
-                    if (memory_list[i].proc_id != -1) {
+                    if ((memory_list[i].proc_id != -1) && (memory_list[i].proc_id != proc->id)) {
                         if ((min_time == -1)  || (memory_list[i].time_used < min_time)) {
                             min_time = memory_list[i].time_used;
                             min_proc = memory_list[i].proc_id;
@@ -381,7 +389,9 @@ int virt_mem(unit_t *memory_list, int memsize, process_t *proc, int time) {
 
             // add page fault time
             page_count = proc_page_count(memory_list, memsize, proc->id);
-            extra_time += proc->mem_req - page_count;
+            if (proc->mem_req > page_count) {
+                proc->remaining_time += proc->mem_req - page_count;
+            }
 
         }
     }

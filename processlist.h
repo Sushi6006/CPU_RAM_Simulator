@@ -28,7 +28,7 @@ process_list_t *proc_arrive(process_t *arriving_proc, process_list_t *arrived_li
 
 process_t *find_pre_min(process_list_t *list);
 int compare(process_t *node1, process_t *node2);
-void swap(process_t *node1, process_t *node2);
+void swap_proc(process_t *node1, process_t *node2);
 void sort(process_list_t *list);
 
 #endif

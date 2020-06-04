@@ -161,7 +161,7 @@ int compare(process_t *node1, process_t *node2) {
 }
 
 // swap two nodes
-void swap(process_t *node1, process_t *node2) {
+void swap_proc(process_t *node1, process_t *node2) {
 
     // make sure nodes are valid
     if ((node1 == NULL) || (node2 == NULL)) {
@@ -210,7 +210,7 @@ void sort(process_list_t *list) {
         ptr1 = head;
         while (ptr1->next != lptr) {
             if (compare(ptr1, ptr1->next)) {
-                swap(ptr1, ptr1->next);
+                swap_proc(ptr1, ptr1->next);
                 swapped = 1;
             }
 
