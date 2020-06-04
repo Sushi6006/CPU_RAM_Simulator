@@ -4,9 +4,11 @@
 #include "processlist.h"
 #include "memory.h"
 
-#define MAX_FILENAME  128  // max length for a file name
-#define MAX_SCHE_ALGO 4    // max length for the name of the algorithm
-#define MAX_PROC_LINE 32   // max line of one process (in file)
+#define MAX_FILENAME  128   // max length for a file name
+#define MAX_SCHE_ALGO 4     // max length for the name of the algorithm
+#define MAX_PROC_LINE 32    // max line of one process (in file)
+
+#define DEFAULT_QUANTUM 10  // default quantum
 
 // define all the flags
 #define FLAG_FILE 'f'      // file name
@@ -28,7 +30,7 @@
 #define NOT_READY -1  // havent encountered the process
 #define ARRIVED 0     // never excuted
 #define RUNNING 1     // currently running
-#define PAUSED 2      // excuted but stopped, ended up not using this one
+// skipped 2 because i had "PAUSED" but didn't end up using it
 #define EVICTED 3     // evicted
 #define FINISHED 4    // finished
 

@@ -14,7 +14,8 @@ int main(int argc, char *argv[]) {
     // initialise all the variables
     char *file_name = (char*)malloc(sizeof(char) * MAX_FILENAME);  // the file name
     spec_t spec;
-    spec.sch_algo = spec.mem_allo = spec.mem_size = spec.quantum = UNSPECIFIED;
+    spec.sch_algo = spec.mem_allo = spec.mem_size = UNSPECIFIED;
+    spec.quantum = DEFAULT_QUANTUM;
 
     // read & store processes and other info
     read_args(argc, argv, file_name, &spec);
