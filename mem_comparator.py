@@ -2,9 +2,9 @@ from subprocess import *
 from itertools import zip_longest
 
 # create commands
-p_cmd = "./scheduler -f benchmark-cm.txt -a rr -s 100 -m p".split()
-v_cmd = "./scheduler -f benchmark-cm.txt -a rr -s 100 -m v -q 10".split()
-c_cmd = "./scheduler -f benchmark-cm.txt -a rr -s 100 -m cm".split()
+p_cmd = "./scheduler -f benchmark-cm.txt -a rr -s 32 -m p".split()
+v_cmd = "./scheduler -f benchmark-cm.txt -a rr -s 32 -m v -q 10".split()
+c_cmd = "./scheduler -f benchmark-cm.txt -a rr -s 32 -m cm".split()
 
 # run commands
 p_res = Popen(p_cmd, stdout=PIPE, stderr=STDOUT)
@@ -24,7 +24,7 @@ v_out = v_out.decode("utf-8").split('\n')
 c_out = c_out.decode("utf-8").split('\n')
 
 # output
-# print(f'{" ":6}{"p":40}     {"v":40}     {"c":40}')
+print(f'\n\n{" ":6}{"SWAPPING":^40}     {"VIRTUAL MEMORY":^40}     {"CM":^40}')
 
 for i, (p, v, c) in enumerate(zip_longest(p_out, v_out, c_out)):
     p = "" if p == None else p
@@ -32,3 +32,5 @@ for i, (p, v, c) in enumerate(zip_longest(p_out, v_out, c_out)):
     c = "" if c == None else c
     
     print(f'{i + 1:>2}.   {p[:40]:<40}     {v[:40]:<40}     {c[:40]:<40}')
+
+print("\n\n")

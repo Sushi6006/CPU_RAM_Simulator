@@ -24,7 +24,7 @@ rr_out = rr_out.decode("utf-8").split('\n')
 cs_out = cs_out.decode("utf-8").split('\n')
 
 # output
-# print(f'{" ":6}{"ff":40}     {"rr":40}     {"cs":40}')
+print(f'\n\n{" ":6}{"First-Come First-Served":^40}     {"Round Robin":^40}     {"CS":^40}')
 
 for i, (ff, rr, cs) in enumerate(zip_longest(ff_out, rr_out, cs_out)):
     ff = "" if ff == None else ff
@@ -32,3 +32,5 @@ for i, (ff, rr, cs) in enumerate(zip_longest(ff_out, rr_out, cs_out)):
     cs = "" if cs == None else cs
     
     print(f'{i + 1:>2}.   {ff[:40]:<40}     {rr[:40]:<40}     {cs[:40]:<40}')
+
+print("\n\n")
