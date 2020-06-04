@@ -54,5 +54,5 @@ long long num_empty(unit_t *memory_list, long long memsize);
 long long proc_page_count(unit_t *mem, long long size, long long proc_id);
 long long evict_page(unit_t *memory_list, long long memsize, long long proc_id);
 long long virt_mem(unit_t *memory_list, long long memsize, process_t *proc, long long time);
-
+long long cm(unit_t *memory_list, long long memsize, process_t *proc, long long time);
 #endif

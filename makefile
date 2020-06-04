@@ -2,7 +2,7 @@ build:
 	gcc -o scheduler output.c processlist.c memory.c scheduler.c -Wall -lm
 
 run:
-	./scheduler -f processes2.txt -a rr -s 100 -m v -q 10
+	./scheduler -f processes2.txt -a rr -s 100 -m cm -q 10
 
 clean:
 	rm -f scheduler

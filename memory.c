@@ -384,7 +384,157 @@ long long virt_mem(unit_t *memory_list, long long memsize, process_t *proc, long
             }
         
             // allocate as many as possible
-            // FIXME: added another mem at the end
+            for (long long i = 0; i < memsize; i++) {
+                // if reaches requirement
+                if ((page_count = proc_page_count(memory_list, memsize, proc->id)) >= proc->mem_req) {
+                    break;
+                }
+                // allocate
+                if (memory_list[i].proc_id == HOLE) {
+                    memory_list[i].proc_id = proc->id;
+                    memory_list[i].time_used = time;
+                    extra_time += TIME_PER_PAGE;
+                }
+            }
+
+            // add page fault time
+            page_count = proc_page_count(memory_list, memsize, proc->id);
+            if (proc->mem_req > page_count) {
+                proc->remaining_time += proc->mem_req - page_count;
+            }
+
+        }
+    }
+
+    return extra_time;
+    
+}
+
+// virtual memory, but evict most recent
+long long cm(unit_t *memory_list, long long memsize, process_t *proc, long long time) {
+
+    if ((memory_list == NULL) || (proc == NULL)) {
+        perror("ERROR allocating process to memory");
+        exit(EXIT_FAILURE);
+    }
+    
+    // calculate how many page to allocate
+    long long empty_count = num_empty(memory_list, memsize);
+    long long extra_time = 0;
+    long long evicted_count = 0, *evicted_add = (long long*)malloc(memsize * sizeof(long long));
+
+    long long page_count = proc_page_count(memory_list, memsize, proc->id);
+    long long page_req = PAGE_NEEDED_V > proc->mem_req ? proc->mem_req : PAGE_NEEDED_V;
+
+    // if theres no free pages
+    if (empty_count == 0) {
+        // if proc in memory
+        if (page_count >= page_req) {  // no free page, but proc in memory
+            // page fault
+            if (proc->mem_req > page_count) {
+                proc->remaining_time += proc->mem_req - page_count;
+            }
+        } else {  // no free page and proc not (enough) yet in memory
+            // evict pages until enough
+            long long page_in_mem = proc_page_count(memory_list, memsize, proc->id);
+            while (num_empty(memory_list, memsize) < page_req - page_in_mem) {
+                // find max
+                long long max_time = -1, max_proc = -1;
+                for (long long i = 0; i < memsize; i++) {
+                    // this memory is occupied
+                    if ((memory_list[i].proc_id != -1) && (memory_list[i].proc_id != proc->id)) {
+                        if (memory_list[i].time_used > max_time) {
+                            max_time = memory_list[i].time_used;
+                            max_proc = memory_list[i].proc_id;
+                        }
+                    }
+                }
+                evicted_add[evicted_count] = evict_page(memory_list, memsize, max_proc);
+                evicted_count++;
+            }
+
+            sort_evicted_add(evicted_add, evicted_count);
+
+            // print evict message
+            if (evicted_count > 0) {
+                char *msg = (char*)malloc(MAX_MSG_LEN * sizeof(char));
+                strcpy(msg, EVICTED_MSG);
+                strcat(msg, list_to_str(evicted_add, evicted_count));
+                // print messsage
+                print_status(time, EVICTED, -1, msg);  // no proc id needed
+                free(msg);
+            }
+
+            // allocate
+            for (long long i = 0; i < memsize; i++) {
+                if (memory_list[i].proc_id == HOLE) {
+                    memory_list[i].proc_id = proc->id;
+                    memory_list[i].time_used = time;
+                    extra_time += TIME_PER_PAGE;
+                }
+            }
+
+            // add page fault time
+            page_count = proc_page_count(memory_list, memsize, proc->id);
+            if (proc->mem_req > page_count) {
+                proc->remaining_time += proc->mem_req - page_count;
+            }
+
+        }  // end of - no free page, process not (enough) in memory 
+
+    } else {  // if there are free pages
+        if (page_count >= page_req) {  // has enough page to run
+            // fill in empty page
+            for (long long i = 0; i < memsize; i++) {
+                // if reaches requirement
+                if ((page_count = proc_page_count(memory_list, memsize, proc->id)) >= proc->mem_req) {
+                    break;
+                }
+                // allocate
+                if (memory_list[i].proc_id == HOLE) {
+                    memory_list[i].proc_id = proc->id;
+                    memory_list[i].time_used = time;
+                    extra_time += TIME_PER_PAGE;
+                }
+            }
+            // add page fault time
+            page_count = proc_page_count(memory_list, memsize, proc->id);
+            if (proc->mem_req > page_count) {
+                proc->remaining_time += proc->mem_req - page_count;
+            }
+
+        } else {  // less than required amount of pages in memory
+            // release first
+            long long page_in_mem = proc_page_count(memory_list, memsize, proc->id);
+            while (num_empty(memory_list, memsize) < page_req - page_in_mem) {
+                // find max
+                long long max_time = -1, max_proc = -1;
+                for (long long i = 0; i < memsize; i++) {
+                    // this memory is occupied
+                    if ((memory_list[i].proc_id != -1) && (memory_list[i].proc_id != proc->id)) {
+                        if (memory_list[i].time_used > max_time) {
+                            max_time = memory_list[i].time_used;
+                            max_proc = memory_list[i].proc_id;
+                        }
+                    }
+                }
+                evicted_add[evicted_count] = evict_page(memory_list, memsize, max_proc);
+                evicted_count++;
+            }
+            
+            sort_evicted_add(evicted_add, evicted_count);
+
+            // print evict message
+            if (evicted_count > 0) {
+                char *msg = (char*)malloc(MAX_MSG_LEN * sizeof(char));
+                strcpy(msg, EVICTED_MSG);
+                strcat(msg, list_to_str(evicted_add, evicted_count));
+                // print messsage
+                print_status(time, EVICTED, -1, msg);  // no proc id needed
+                free(msg);
+            }
+        
+            // allocate as many as possible
             for (long long i = 0; i < memsize; i++) {
                 // if reaches requirement
                 if ((page_count = proc_page_count(memory_list, memsize, proc->id)) >= proc->mem_req) {

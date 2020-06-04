@@ -137,6 +137,13 @@ long long run_proc(process_t *proc, long long time, unit_t *memory_list, spec_t 
             int usage_percentage = (int)ceil((double)mem_usage / (double)spec.mem_size * 100.0);
             long long proc_usage = calc_proc_usage(memory_list, spec.mem_size, proc_mem, proc->id, time);
             sprintf(msg2, RUNNING_MSG2, extra_time, usage_percentage, list_to_str(proc_mem, proc_usage));
+        } else {  // cm
+            extra_time = cm(memory_list, spec.mem_size, proc, time);
+            long long *proc_mem = (long long*)malloc(spec.mem_size * sizeof(long long) + 1);
+            long long mem_usage = calc_mem_usage(memory_list, spec.mem_size);
+            int usage_percentage = (int)ceil((double)mem_usage / (double)spec.mem_size * 100.0);
+            long long proc_usage = calc_proc_usage(memory_list, spec.mem_size, proc_mem, proc->id, time);
+            sprintf(msg2, RUNNING_MSG2, extra_time, usage_percentage, list_to_str(proc_mem, proc_usage));
         }
     }
 
